@@ -6,10 +6,15 @@ import pl.treksoft.kvision.Application
 import pl.treksoft.kvision.html.Span
 import pl.treksoft.kvision.i18n.DefaultI18nManager
 import pl.treksoft.kvision.i18n.I18n
+import pl.treksoft.kvision.panel.Root
 import pl.treksoft.kvision.panel.root
+import pl.treksoft.kvision.progress.progressBar
 import pl.treksoft.kvision.startApplication
+import sde.pages.PageManager
 
 class App : Application() {
+
+	lateinit var pageManager: PageManager
 
     override fun start(state: Map<String, Any>) {
         I18n.manager =
@@ -20,12 +25,18 @@ class App : Application() {
                 )
             )
         val root = root("kvapp") {
+	        progressBar(5, 0, 10, striped = true, animated = true)
         }
-        GlobalScope.launch {
-            val pingResult = Model.ping("Hello world from client!")
-            root.add(Span(pingResult))
-        }
+	    createPages(root)
     }
+
+	fun createPages(root: Root) {
+		GlobalScope.launch {
+			pageManager = PageManager()
+			pageManager.loadPages()
+			pageManager.fillRoot(root)
+		}
+	}
 }
 
 fun main() {
