@@ -4,10 +4,10 @@ import pl.treksoft.kvision.core.Component
 import pl.treksoft.kvision.html.Span
 import sde.project.Project
 
-class ProjectPage(val project: Project, pageManager: PageManager) : AbstractPage(pageManager)
+class ProjectExplorerPage(val project: Project, pageManager: PageManager) : AbstractPage(pageManager)
 {
 	override val name: String
-		get() = "Project"
+		get() = "Project Explorer"
 
 	override fun createComponent(): Component
 	{

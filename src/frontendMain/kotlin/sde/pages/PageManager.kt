@@ -28,7 +28,9 @@ class PageManager
 
 	private fun updatePages() {
 		tabContainer.removeAll()
+		var index = 0
 		for (page in pages) {
+			page.pageTabIndex = index++
 			tabContainer.addTab(page.name, page.createComponent())
 		}
 	}

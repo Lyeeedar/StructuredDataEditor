@@ -1,7 +1,6 @@
 package sde
 
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 import pl.treksoft.kvision.Application
 import pl.treksoft.kvision.html.Span
 import pl.treksoft.kvision.i18n.DefaultI18nManager
@@ -37,8 +36,19 @@ class App : Application() {
 			pageManager.fillRoot(root)
 		}
 	}
+
+	override fun dispose(): Map<String, Any>
+	{
+		AppModel.appScope.cancel()
+		return super.dispose()
+	}
 }
 
 fun main() {
     startApplication(::App)
+}
+
+object AppModel
+{
+	val appScope = MainScope()
 }
