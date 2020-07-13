@@ -9,8 +9,16 @@ class ProjectExplorerPage(val project: Project, pageManager: PageManager) : Abst
 	override val name: String
 		get() = "Project Explorer"
 
+	override val closeable: Boolean
+		get() = true
+
 	override fun createComponent(): Component
 	{
 		return Span("Im the project!")
+	}
+
+	override fun canClose(): Boolean
+	{
+		return true
 	}
 }

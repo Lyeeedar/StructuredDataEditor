@@ -19,6 +19,9 @@ class StartPage(pageManager: PageManager) : AbstractPage(pageManager)
 	override val name: String
 		get() = "Start Page"
 
+	override val closeable: Boolean
+		get() = false
+
 	lateinit var recentProjectsDiv: Div
 
 	override fun createComponent(): Component
@@ -86,6 +89,11 @@ class StartPage(pageManager: PageManager) : AbstractPage(pageManager)
 			updateRecentProjects()
 
 		}
+	}
+
+	override fun canClose(): Boolean
+	{
+		return false
 	}
 
 	private fun updateRecentProjects() {

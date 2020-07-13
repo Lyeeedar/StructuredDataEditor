@@ -8,7 +8,15 @@ class DataDocumentPage(val data: DataDocument, pageManager: PageManager) : Abstr
 	override val name: String
 		get() = data.name
 
+	override val closeable: Boolean
+		get() = true
+
 	override fun createComponent(): Component
+	{
+		TODO("Not yet implemented")
+	}
+
+	override fun canClose(): Boolean
 	{
 		TODO("Not yet implemented")
 	}

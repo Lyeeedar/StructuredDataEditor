@@ -9,13 +9,16 @@ abstract class AbstractPage(val pageManager: PageManager)
 	var pageTabIndex: Int = 0
 
 	abstract val name: String
+	abstract val closeable: Boolean
 	abstract fun createComponent(): Component
 
 	fun show() {
 		pageManager.tabContainer.activeIndex = pageTabIndex
 	}
 
-	fun dispose() {
+	abstract fun canClose(): Boolean
+
+	fun close() {
 		scope.cancel("Page disposed")
 	}
 }
