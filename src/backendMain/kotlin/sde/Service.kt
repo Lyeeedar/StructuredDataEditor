@@ -1,5 +1,8 @@
 package sde
 
+import sde.project.IProjectService
+import sde.project.Project
+
 actual class PingService : IPingService
 {
 
