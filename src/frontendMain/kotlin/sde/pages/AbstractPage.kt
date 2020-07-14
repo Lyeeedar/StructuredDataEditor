@@ -18,7 +18,7 @@ abstract class AbstractPage(val pageManager: PageManager)
 
 	abstract fun canClose(): Boolean
 
-	fun close() {
+	open fun close() {
 		scope.cancel("Page disposed")
 	}
 }

@@ -148,6 +148,7 @@ class StartPage(pageManager: PageManager) : AbstractPage(pageManager)
 
 	private fun openProject(project: Project) {
 		val projectPage = ProjectExplorerPage(project, pageManager)
+		pageManager.pages.remove(this)
 		pageManager.addPage(projectPage)
 		projectPage.show()
 	}

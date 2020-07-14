@@ -19,6 +19,26 @@ class ProjectExplorerPage(val project: Project, pageManager: PageManager) : Abst
 
 	override fun canClose(): Boolean
 	{
+		for (page in pageManager.pages) {
+			if (page != this && !page.canClose()) {
+				return false
+			}
+		}
+
 		return true
+	}
+
+	override fun close()
+	{
+		super.close()
+
+		for (page in pageManager.pages) {
+			if (page != this) {
+				page.close()
+			}
+		}
+
+		pageManager.pages.clear()
+		pageManager.addPage(StartPage(pageManager))
 	}
 }
