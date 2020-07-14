@@ -3,7 +3,6 @@ package sde.pages
 import kotlinx.coroutines.launch
 import pl.treksoft.kvision.core.Component
 import pl.treksoft.kvision.core.onClick
-import pl.treksoft.kvision.form.text.Text
 import pl.treksoft.kvision.html.*
 import sde.Services
 import sde.project.Project
@@ -71,7 +70,6 @@ class ProjectExplorerPage(val project: Project, pageManager: PageManager) : Abst
 
 abstract class AbstractProjectItemView(val item: ProjectItem, val page: ProjectExplorerPage)
 {
-	val name = item.path.split('/', '\\').last().split('.').first()
 	abstract fun getComponent(): Component
 
 	companion object
@@ -89,6 +87,8 @@ abstract class AbstractProjectItemView(val item: ProjectItem, val page: ProjectE
 
 class ProjectFolderView(item: ProjectItem, page: ProjectExplorerPage) : AbstractProjectItemView(item, page)
 {
+	val name = item.path.split('/', '\\').last().split('.').first()
+
 	private val li: Li = Li()
 	private var children: List<AbstractProjectItemView>? = null
 
@@ -141,9 +141,15 @@ class ProjectFolderView(item: ProjectItem, page: ProjectExplorerPage) : Abstract
 
 class ProjectFileView(item: ProjectItem, page: ProjectExplorerPage) : AbstractProjectItemView(item, page)
 {
+	val name = item.path.split('/', '\\').last()
+
 	override fun getComponent(): Component
 	{
-		return Li(name)
+		return Li(name) {
+			onClick { e ->
+				e.stopPropagation()
+			}
+		}
 	}
 
 }
