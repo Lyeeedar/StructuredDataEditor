@@ -24,12 +24,14 @@ class NewProjectConfig(var rootFolder: String, var defsFolder: String, var name:
 @Serializable
 class RecentProject() {
 	var path: String = ""
+	var name: String = ""
 
 	@ContextualSerialization
 	lateinit var lastOpened: LocalDateTime
 
-	constructor(path: String, lastOpened: LocalDateTime): this() {
+	constructor(path: String, name: String, lastOpened: LocalDateTime): this() {
 		this.path = path
+		this.name = name
 		this.lastOpened = lastOpened
 	}
 }

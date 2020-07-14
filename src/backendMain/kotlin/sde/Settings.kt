@@ -8,7 +8,7 @@ object Settings
 
 	init
 	{
-		recentProjects.add(RecentProject("D:/Users/Philip/workspace/MatchDungeon/android/assetsraw/ProjectRoot.xml", LocalDateTime.now()))
-		recentProjects.add(RecentProject("D:/Users/Philip/workspace/PortalClosers/game/assetsraw/ProjectRoot.xml", LocalDateTime.now()))
+		recentProjects.add(RecentProject("D:/Users/Philip/workspace/MatchDungeon/android/assetsraw/ProjectRoot.xml", "Project", LocalDateTime.now()))
+		recentProjects.add(RecentProject("D:/Users/Philip/workspace/PortalClosers/game/assetsraw/ProjectRoot.xml", "Project", LocalDateTime.now()))
 	}
 }

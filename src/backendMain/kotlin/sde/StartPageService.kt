@@ -10,12 +10,18 @@ import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
+import org.xml.sax.InputSource
 import pl.treksoft.kvision.remote.ServiceException
 import sde.project.Project
+import sde.util.getElement
+import sde.util.parseXml
+import sde.util.value
 import java.io.File
+import java.io.StringReader
 import java.rmi.ServerException
 import java.time.LocalDateTime
 import java.util.concurrent.Future
+import javax.xml.parsers.DocumentBuilderFactory
 
 actual class StartPageService : IStartPageService
 {
@@ -43,7 +49,7 @@ actual class StartPageService : IStartPageService
 	override suspend fun openProject(path: String): Project
 	{
 		removeRecentProject(path)
-		Settings.recentProjects.add(RecentProject(path, LocalDateTime.now()))
+		Settings.recentProjects.add(RecentProject(path, getProjectName(path), LocalDateTime.now()))
 
 		return Project()
 	}
@@ -97,6 +103,15 @@ actual class StartPageService : IStartPageService
 			val browser = DirectoryChooser()
 			browser.showDialog(null).canonicalPath
 		}
+	}
+
+	suspend fun getProjectName(path: String): String
+	{
+		val file = File(path)
+		val contents = file.readText()
+
+		val doc = contents.parseXml()
+		return doc.getElement("Name")?.value ?: "Project"
 	}
 }
 

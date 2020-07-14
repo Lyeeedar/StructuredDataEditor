@@ -150,7 +150,7 @@ class StartPage(pageManager: PageManager) : AbstractPage(pageManager)
 
 					hPanel {
 						vPanel {
-							h4(project.path.split("/").last())
+							h4(project.name)
 							span(project.path)
 						}
 
