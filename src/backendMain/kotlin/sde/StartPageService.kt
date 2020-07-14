@@ -6,9 +6,6 @@ import pl.treksoft.kvision.remote.ServiceException
 import sde.project.Project
 import sde.project.ProjectUtils
 import sde.util.JavaFXApplication
-import sde.util.getElement
-import sde.util.parseXml
-import sde.util.value
 import java.io.File
 import java.time.LocalDateTime
 
@@ -92,7 +89,7 @@ actual class StartPageService : IStartPageService
 	{
 		return JavaFXApplication.execute {
 			val browser = DirectoryChooser()
-			browser.showDialog(null).canonicalPath
+			browser.showDialog(null).canonicalPath.replace('\\', '/')
 		}
 	}
 }
