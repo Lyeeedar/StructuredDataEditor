@@ -7,7 +7,7 @@ import sde.project.Project
 class ProjectExplorerPage(val project: Project, pageManager: PageManager) : AbstractPage(pageManager)
 {
 	override val name: String
-		get() = "Project Explorer"
+		get() = "${project.name} Project"
 
 	override val closeable: Boolean
 		get() = true
