@@ -9,4 +9,5 @@ class Project
 	var path: String = ""
 	var definitions: List<AbstractDataDefinition> = ArrayList()
 	var projectItems: List<AbstractProjectItem> = ArrayList()
+	var recentItems: List<String> = ArrayList()
 }

@@ -13,8 +13,13 @@ interface IStartPageService {
 
 	suspend fun openProject(path: String): Project
 	suspend fun browseExistingProject(): Project
-	suspend fun createNewProject(): Project
+	suspend fun createNewProject(config: NewProjectConfig): Project
+
+	suspend fun browseFolder(): String
 }
+
+@Serializable
+class NewProjectConfig(var rootFolder: String, var defsFolder: String, var name: String)
 
 @Serializable
 class RecentProject() {

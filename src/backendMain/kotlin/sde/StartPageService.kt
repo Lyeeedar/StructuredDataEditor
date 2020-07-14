@@ -2,6 +2,7 @@ package sde
 
 import javafx.application.Application
 import javafx.application.Platform
+import javafx.stage.DirectoryChooser
 import javafx.stage.FileChooser
 import javafx.stage.Stage
 import kotlinx.coroutines.CompletableDeferred
@@ -51,7 +52,6 @@ actual class StartPageService : IStartPageService
 	{
 		val chosenFile = JavaFXApplication.execute {
 			val browser = FileChooser()
-			//browser.extensionFilters.add(FileChooser.ExtensionFilter("xml", "xml"))
 			browser.showOpenDialog(null)
 		}
 
@@ -63,11 +63,41 @@ actual class StartPageService : IStartPageService
 		return openProject(projectPath)
 	}
 
-	override suspend fun createNewProject(): Project
+	override suspend fun createNewProject(config: NewProjectConfig): Project
 	{
-		TODO("Not yet implemented")
+		val rootFolder = File(config.rootFolder)
+		val defsFolder = File(config.defsFolder)
+
+		if (!rootFolder.exists())
+		{
+			rootFolder.mkdirs()
+		}
+		if (!defsFolder.exists())
+		{
+			defsFolder.mkdirs()
+		}
+
+		val projRoot = File(rootFolder, "ProjectRoot.xml")
+
+		val contents = """
+			<Project>
+				<Name>${config.name}</Name>
+				<Definitions>${defsFolder.toRelativeString(rootFolder)}</Definitions>
+			</Project>
+		""".trimIndent()
+
+		projRoot.writeText(contents)
+
+		return openProject(projRoot.canonicalPath)
 	}
 
+	override suspend fun browseFolder(): String
+	{
+		return JavaFXApplication.execute {
+			val browser = DirectoryChooser()
+			browser.showDialog(null).canonicalPath
+		}
+	}
 }
 
 class JavaFXApplication() : Application()
@@ -85,7 +115,7 @@ class JavaFXApplication() : Application()
 	{
 		private var initDeferred: CompletableDeferred<Boolean>? = CompletableDeferred()
 
-		suspend fun init()
+		private suspend fun init()
 		{
 			if (initDeferred != null) {
 				GlobalScope.launch {

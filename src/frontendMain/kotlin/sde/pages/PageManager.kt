@@ -29,27 +29,36 @@ class PageManager
 
 	private fun updatePages() {
 		tabContainer.removeAll()
+
 		var index = 0
 		for (page in pages) {
 			page.pageTabIndex = index++
 			tabContainer.addTab(page.name, page.createComponent(), closable = page.closeable)
 		}
 
-		tabContainer.getElement()?.addEventListener("tabClosing", {
-			val index = it.asDynamic().detail.data as Int
-			val page = pages[index]
+		val el = tabContainer.getElement()
+		if (!addedListeners && el != null)
+		{
+			addedListeners = true
 
-			if (!page.canClose()) {
-				it.preventDefault()
-			}
-		})
+			el.addEventListener("tabClosing", {
+				val index = it.asDynamic().detail.data as Int
+				val page = pages[index]
 
-		tabContainer.getElement()?.addEventListener("tabClosed", {
-			val index = it.asDynamic().detail.data as Int
-			val page = pages[index]
+				if (!page.canClose()) {
+					it.preventDefault()
+				}
+			})
 
-			pages.remove(page)
-			page.close()
-		})
+			el.addEventListener("tabClosed", {
+				val index = it.asDynamic().detail.data as Int
+				val page = pages[index]
+
+				pages.remove(page)
+				page.close()
+			})
+		}
 	}
+
+	var addedListeners = false
 }
