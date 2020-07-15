@@ -1,11 +1,22 @@
 package sde.data.definition
 
-import sde.data.item.AbstractDataItem
+import org.w3c.dom.Node
+import sde.utils.getAttributeValue
 
 abstract class AbstractPrimitiveDataDefinition : AbstractDataDefinition()
 {
-	abstract fun defaultValue(): Any
-	abstract fun defaultValueString(): String
-	abstract fun writeToString(item: AbstractDataItem)
-	abstract fun loadFromString(data: String)
+	var default: Any = ""
+
+	override fun children(): List<AbstractDataDefinition>
+	{
+		return ArrayList()
+	}
+
+	override fun doParse(node: Node)
+	{
+		default = node.getAttributeValue("Default", "")
+
+		innerDoParse(node)
+	}
+	abstract fun innerDoParse(node: Node)
 }

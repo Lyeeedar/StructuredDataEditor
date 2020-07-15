@@ -7,6 +7,7 @@ import pl.treksoft.kvision.annotations.KVService
 interface IProjectService {
 	suspend fun getFolderContents(path: String): List<ProjectItem>
 	suspend fun getFileContents(path: String): String
+	suspend fun getFileDefType(path: String): String
 }
 
 @Serializable

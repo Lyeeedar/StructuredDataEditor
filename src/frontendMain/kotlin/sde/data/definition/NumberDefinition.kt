@@ -1,26 +1,19 @@
 package sde.data.definition
 
-import sde.data.item.AbstractDataItem
+import org.w3c.dom.Node
+import sde.utils.getAttributeValue
 
 class NumberDefinition : AbstractPrimitiveDataDefinition()
 {
-	override fun defaultValue(): Any
+	var minValue = -Float.MAX_VALUE
+	var maxValue = Float.MAX_VALUE
+	var useIntegers = false
+
+	override fun innerDoParse(node: Node)
 	{
-		TODO("Not yet implemented")
+		minValue = node.getAttributeValue("Min", minValue)
+		maxValue = node.getAttributeValue("Max", maxValue)
+		useIntegers = node.getAttributeValue("Type", "Float") == "Int"
 	}
 
-	override fun defaultValueString(): String
-	{
-		TODO("Not yet implemented")
-	}
-
-	override fun writeToString(item: AbstractDataItem)
-	{
-		TODO("Not yet implemented")
-	}
-
-	override fun loadFromString(data: String)
-	{
-		TODO("Not yet implemented")
-	}
 }

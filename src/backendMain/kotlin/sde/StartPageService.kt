@@ -3,7 +3,7 @@ package sde
 import javafx.stage.DirectoryChooser
 import javafx.stage.FileChooser
 import pl.treksoft.kvision.remote.ServiceException
-import sde.project.Project
+import sde.project.ProjectDef
 import sde.project.ProjectUtils
 import sde.util.JavaFXApplication
 import java.io.File
@@ -32,7 +32,7 @@ actual class StartPageService : IStartPageService
 		return didRemove
 	}
 
-	override suspend fun openProject(path: String): Project
+	override suspend fun openProject(path: String): ProjectDef
 	{
 		val proj = ProjectUtils.readFullProject(path)
 
@@ -42,7 +42,7 @@ actual class StartPageService : IStartPageService
 		return proj
 	}
 
-	override suspend fun browseExistingProject(): Project
+	override suspend fun browseExistingProject(): ProjectDef
 	{
 		val chosenFile = JavaFXApplication.execute {
 			val browser = FileChooser()
@@ -57,7 +57,7 @@ actual class StartPageService : IStartPageService
 		return openProject(projectPath)
 	}
 
-	override suspend fun createNewProject(config: NewProjectConfig): Project
+	override suspend fun createNewProject(config: NewProjectConfig): ProjectDef
 	{
 		val rootFolder = File(config.rootFolder)
 		val defsFolder = File(config.defsFolder)

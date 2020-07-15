@@ -7,7 +7,7 @@ import java.io.File
 
 object ProjectUtils
 {
-	fun readProjectRoot(path: String): Project {
+	fun readProjectRoot(path: String): ProjectDef {
 		val file = File(path)
 
 		val contents = file.readText()
@@ -16,7 +16,7 @@ object ProjectUtils
 		val name = xml.getElement("Name")?.value ?: "???"
 		val defs = File(file.parent, xml.getElement("Definitions")?.value ?: "Definitions").canonicalPath
 
-		val proj = Project()
+		val proj = ProjectDef()
 		proj.name = name
 		proj.projectRootPath = path
 		proj.defsFolder = defs
@@ -24,7 +24,7 @@ object ProjectUtils
 		return proj
 	}
 
-	fun readFullProject(path: String): Project {
+	fun readFullProject(path: String): ProjectDef {
 		val proj = readProjectRoot(path)
 
 		return proj

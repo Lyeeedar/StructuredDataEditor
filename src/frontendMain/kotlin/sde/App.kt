@@ -2,7 +2,6 @@ package sde
 
 import kotlinx.coroutines.*
 import pl.treksoft.kvision.Application
-import pl.treksoft.kvision.html.Span
 import pl.treksoft.kvision.i18n.DefaultI18nManager
 import pl.treksoft.kvision.i18n.I18n
 import pl.treksoft.kvision.panel.Root
@@ -14,6 +13,11 @@ import sde.pages.PageManager
 class App : Application() {
 
 	lateinit var pageManager: PageManager
+
+	init
+	{
+		pl.treksoft.kvision.require("css/bootstrap.css")
+	}
 
     override fun start(state: Map<String, Any>) {
         I18n.manager =

@@ -144,7 +144,6 @@ kotlin {
 
                 implementation("pl.treksoft:kvision:$kvisionVersion")
                 implementation("pl.treksoft:kvision-bootstrap:$kvisionVersion")
-                implementation("pl.treksoft:kvision-bootstrap-css:$kvisionVersion")
                 implementation("pl.treksoft:kvision-bootstrap-select:$kvisionVersion")
                 implementation("pl.treksoft:kvision-bootstrap-datetime:$kvisionVersion")
                 implementation("pl.treksoft:kvision-bootstrap-spinner:$kvisionVersion")

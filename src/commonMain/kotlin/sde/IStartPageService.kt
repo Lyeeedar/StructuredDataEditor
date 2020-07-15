@@ -4,16 +4,16 @@ import kotlinx.serialization.ContextualSerialization
 import kotlinx.serialization.Serializable
 import pl.treksoft.kvision.annotations.KVService
 import pl.treksoft.kvision.types.LocalDateTime
-import sde.project.Project
+import sde.project.ProjectDef
 
 @KVService
 interface IStartPageService {
 	suspend fun getRecentProjects(): List<RecentProject>
 	suspend fun removeRecentProject(path: String): Boolean
 
-	suspend fun openProject(path: String): Project
-	suspend fun browseExistingProject(): Project
-	suspend fun createNewProject(config: NewProjectConfig): Project
+	suspend fun openProject(path: String): ProjectDef
+	suspend fun browseExistingProject(): ProjectDef
+	suspend fun createNewProject(config: NewProjectConfig): ProjectDef
 
 	suspend fun browseFolder(): String
 }

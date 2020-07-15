@@ -2,16 +2,19 @@ package sde.pages
 
 import kotlinx.coroutines.launch
 import pl.treksoft.kvision.core.Component
+import pl.treksoft.kvision.core.CssSize
+import pl.treksoft.kvision.core.UNIT
 import pl.treksoft.kvision.core.onClick
 import pl.treksoft.kvision.html.*
+import pl.treksoft.kvision.panel.hPanel
 import sde.Services
-import sde.project.Project
+import sde.project.ProjectDef
 import sde.project.ProjectItem
 
-class ProjectExplorerPage(val project: Project, pageManager: PageManager) : AbstractPage(pageManager)
+class ProjectExplorerPage(val projectDef: ProjectDef, pageManager: PageManager) : AbstractPage(pageManager)
 {
 	override val name: String
-		get() = "${project.name} Project"
+		get() = "${projectDef.name} Project"
 
 	override val closeable: Boolean
 		get() = true
@@ -30,7 +33,7 @@ class ProjectExplorerPage(val project: Project, pageManager: PageManager) : Abst
 
 		scope.launch {
 			val rootItem = ProjectItem()
-			rootItem.path = project.projectRootPath.split('/', '\\').dropLast(1).joinToString("/")
+			rootItem.path = projectDef.projectRootPath.split('/', '\\').dropLast(1).joinToString("/")
 			rootItem.isDirectory = true
 
 			projectRoot = ProjectFolderView(rootItem, this@ProjectExplorerPage)
@@ -142,14 +145,40 @@ class ProjectFolderView(item: ProjectItem, page: ProjectExplorerPage) : Abstract
 class ProjectFileView(item: ProjectItem, page: ProjectExplorerPage) : AbstractProjectItemView(item, page)
 {
 	val name = item.path.split('/', '\\').last()
+	var type: String? = null
 
 	override fun getComponent(): Component
 	{
-		return Li(name) {
+		val typeSpan = Span {
+			align = Align.RIGHT
+		}
+		val li = Li {
+			hPanel {
+				span(name)
+				add(typeSpan)
+			}
+
 			onClick { e ->
 				e.stopPropagation()
 			}
 		}
+
+		if (item.path.endsWith("xml"))
+		{
+			if (type == null)
+			{
+				page.scope.launch {
+					type = Services.projectService.getFileDefType(item.path)
+					typeSpan.content = "($type)"
+				}
+			}
+			else
+			{
+				typeSpan.content = "($type)"
+			}
+		}
+
+		return li
 	}
 
 }

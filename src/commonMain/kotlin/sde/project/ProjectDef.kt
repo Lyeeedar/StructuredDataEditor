@@ -3,7 +3,7 @@ package sde.project
 import kotlinx.serialization.Serializable
 
 @Serializable
-class Project
+class ProjectDef
 {
 	var name: String = ""
 	var projectRootPath: String = ""

@@ -4,9 +4,6 @@ import kotlinx.coroutines.launch
 import pl.treksoft.kvision.core.*
 import pl.treksoft.kvision.form.*
 import pl.treksoft.kvision.form.text.Text
-import pl.treksoft.kvision.form.text.text
-import pl.treksoft.kvision.form.text.textInput
-import pl.treksoft.kvision.form.upload.uploadInput
 import pl.treksoft.kvision.html.*
 import pl.treksoft.kvision.modal.Modal
 import pl.treksoft.kvision.panel.FlexWrap
@@ -14,7 +11,7 @@ import pl.treksoft.kvision.panel.hPanel
 import pl.treksoft.kvision.panel.vPanel
 import sde.NewProjectConfig
 import sde.Services
-import sde.project.Project
+import sde.project.ProjectDef
 
 class StartPage(pageManager: PageManager) : AbstractPage(pageManager)
 {
@@ -181,8 +178,8 @@ class StartPage(pageManager: PageManager) : AbstractPage(pageManager)
 		}
 	}
 
-	private fun openProject(project: Project) {
-		val projectPage = ProjectExplorerPage(project, pageManager)
+	private fun openProject(projectDef: ProjectDef) {
+		val projectPage = ProjectExplorerPage(projectDef, pageManager)
 		pageManager.pages.remove(this)
 		pageManager.addPage(projectPage)
 		projectPage.show()

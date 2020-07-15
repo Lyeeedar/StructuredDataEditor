@@ -1,5 +1,7 @@
 package sde.project
 
+import sde.util.parseXml
+import sde.util.root
 import java.io.File
 import java.nio.file.Files
 
@@ -28,5 +30,12 @@ actual class ProjectService : IProjectService
 	{
 		val file = File(path)
 		return file.readText()
+	}
+
+	override suspend fun getFileDefType(path: String): String
+	{
+		val contents = getFileContents(path)
+		val xml = contents.parseXml()
+		return xml.root.nodeName
 	}
 }
