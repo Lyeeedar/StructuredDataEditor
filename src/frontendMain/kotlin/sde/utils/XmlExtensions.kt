@@ -1,9 +1,8 @@
 package sde.utils
 
-import org.w3c.dom.Node
-import org.w3c.dom.NodeList
-import org.w3c.dom.XMLDocument
+import org.w3c.dom.*
 import org.w3c.dom.parsing.DOMParser
+import org.w3c.dom.parsing.XMLSerializer
 
 fun String.parseXml(): XMLDocument
 {
@@ -11,54 +10,55 @@ fun String.parseXml(): XMLDocument
 	return parser.parseFromString(this, "application/xml") as XMLDocument
 }
 
-fun XMLDocument.getElement(name: String): Node?
+fun Node.serializeXml(): String
+{
+	val serializer = XMLSerializer()
+	return serializer.serializeToString(this)
+}
+
+fun XMLDocument.getElement(name: String): Element?
 {
 	return this.childNodes.elements().first().getElement(name)
 }
 
-fun Node.getElement(name: String): Node?
+fun Element.getElement(name: String): Element?
 {
 	return this.childNodes.elements().firstOrNull { it.nodeName == name }
 }
 
-fun Node.getElementValue(name: String, fallback: String): String
+fun Element.getElementValue(name: String, fallback: String): String
 {
 	return this.getElement(name)?.textContent ?: fallback
 }
 
-fun Node.getAttribute(name: String): Node?
+fun Element.getAttributeValue(name: String, fallback: String): String
 {
-	return this.childNodes.attributes().firstOrNull{ it.nodeName == name }
+	return this.getAttribute(name) ?: fallback
 }
 
-fun Node.getAttributeValue(name: String, fallback: String): String
+fun Element.getAttributeValue(name: String, fallback: Boolean): Boolean
 {
-	return this.getAttribute(name)?.textContent ?: fallback
+	return this.getAttribute(name)?.toBoolean() ?: fallback
 }
 
-fun Node.getAttributeValue(name: String, fallback: Boolean): Boolean
+fun Element.getAttributeValue(name: String, fallback: Int): Int
 {
-	return this.getAttribute(name)?.textContent?.toBoolean() ?: fallback
+	return this.getAttribute(name)?.toInt() ?: fallback
 }
 
-fun Node.getAttributeValue(name: String, fallback: Int): Int
+fun Element.getAttributeValue(name: String, fallback: Float): Float
 {
-	return this.getAttribute(name)?.textContent?.toInt() ?: fallback
+	return this.getAttribute(name)?.toFloat() ?: fallback
 }
 
-fun Node.getAttributeValue(name: String, fallback: Float): Float
+fun NodeList.elements(): Sequence<Element>
 {
-	return this.getAttribute(name)?.textContent?.toFloat() ?: fallback
+	return this.getType(Node.ELEMENT_NODE).map { it as Element }
 }
 
-fun NodeList.elements(): Sequence<Node>
+fun NodeList.attributes(): Sequence<Attr>
 {
-	return this.getType(Node.ELEMENT_NODE)
-}
-
-fun NodeList.attributes(): Sequence<Node>
-{
-	return this.getType(Node.ATTRIBUTE_NODE)
+	return this.getType(Node.ATTRIBUTE_NODE).map { it as Attr }
 }
 
 fun NodeList.getType(type: Short): Sequence<Node>

@@ -1,12 +1,13 @@
 package sde.data.definition
 
+import org.w3c.dom.Element
 import org.w3c.dom.Node
-import org.w3c.dom.XMLDocument
+import sde.data.item.AbstractDataItem
 import sde.utils.*
 
-typealias DefinitionMap = HashMap<String, AbstractDataDefinition>
+typealias DefinitionMap = HashMap<String, AbstractDataDefinition<*, *>>
 
-abstract class AbstractDataDefinition
+abstract class AbstractDataDefinition<D: AbstractDataDefinition<D, I>, I: AbstractDataItem<D>>
 {
 	val colours = mapOf(
 		"Primitive" to "181,178,156",
@@ -23,14 +24,42 @@ abstract class AbstractDataDefinition
 	var skipIfDefault: Boolean = false
 	var isGlobal = false
 
-	val attributes = ArrayList<AbstractPrimitiveDataDefinition>()
+	val attributes = ArrayList<AbstractPrimitiveDataDefinition<*, *>>()
 	var referenceMap = HashMap<String, DefinitionReference>()
 
-	abstract fun children(): List<AbstractDataDefinition>
+	abstract fun children(): List<AbstractDataDefinition<*, *>>
 
-	fun registerReference(name: String, defName: String)
+	fun registerReference(name: String, defName: String, category: String = "")
 	{
-		referenceMap[name] = DefinitionReference(name, defName)
+		referenceMap[name] = DefinitionReference(name, defName, category)
+	}
+
+	fun registerReference(name: String, defNames: List<String>, category: String = "")
+	{
+		for (i in defNames.indices)
+		{
+			referenceMap[name+i] = DefinitionReference(name, defNames[i], category)
+		}
+	}
+
+	fun getReference(name: String): DefinitionReference?
+	{
+		return referenceMap[name]
+	}
+
+	fun getReferences(name: String): List<DefinitionReference>
+	{
+		val output = ArrayList<DefinitionReference>()
+		var i = 0
+
+		while (true)
+		{
+			val ref = referenceMap[name+i] ?: break
+			output.add(ref)
+			i++
+		}
+
+		return output
 	}
 
 	var isResolved = false
@@ -69,7 +98,7 @@ abstract class AbstractDataDefinition
 
 	}
 
-	fun parse(node: Node)
+	fun parse(node: Element)
 	{
 		name = node.getAttributeValue("Name", "???")
 		textColour = node.getAttributeValue("TextColour", textColour)
@@ -85,7 +114,7 @@ abstract class AbstractDataDefinition
 			{
 				val def = load(att)
 
-				if (def !is AbstractPrimitiveDataDefinition)
+				if (def !is AbstractPrimitiveDataDefinition<*, *>)
 				{
 					throw DefinitionLoadException("Cannot put a non-primitive into attributes!")
 				}
@@ -97,20 +126,42 @@ abstract class AbstractDataDefinition
 		doParse(node)
 	}
 
-	abstract fun doParse(node: Node)
+	abstract fun doParse(node: Element)
+
+	fun createItem(undoRedoManager: UndoRedoManager): I
+	{
+		val item = createItem()
+		item.undoRedo = undoRedoManager
+		item.def = this as D
+
+		for (att in attributes)
+		{
+			val attItem = att.createItem(undoRedoManager)
+			item.attributes.add(attItem)
+		}
+
+		return item
+	}
+
+	abstract fun createItem(): I
 
 	companion object
 	{
-		fun load(contents: String): AbstractDataDefinition
+		fun load(contents: String): AbstractDataDefinition<*, *>
 		{
 			val xml = contents.parseXml()
 
-			return load(xml.childNodes.item(0)!!)
+			return load(xml.childNodes.elements().first())
 		}
 
-		fun load(xml: Node): AbstractDataDefinition
+		fun load(xml: Element): AbstractDataDefinition<*, *>
 		{
-			var type = xml.getAttributeValue("meta:RefKey", "").toUpperCase()
+			var type = xml.getAttributeValue("meta:RefKey", "???").toUpperCase()
+			if (type == "???")
+			{
+				throw DefinitionLoadException("The xml '${xml.serializeXml()}' did not contain a meta:RefKey attribute")
+			}
+
 			if (type.endsWith("DEF")) {
 				type = type.substring(0, type.length - "DEF".length)
 			}
@@ -118,7 +169,11 @@ abstract class AbstractDataDefinition
 			val def = when(type)
 			{
 				"NUMBER" -> NumberDefinition()
-				else -> throw Exception("Unknown definition type $type")
+
+				"STRUCT" -> StructDefinition()
+				"GRAPHSTRUCT" -> GraphStructDefinition()
+
+				else -> throw DefinitionLoadException("Unknown definition type $type")
 			}
 
 			def.parse(xml)
@@ -128,7 +183,7 @@ abstract class AbstractDataDefinition
 	}
 }
 
-class DefinitionReference(val name: String, val defName: String)
+class DefinitionReference(val name: String, val defName: String, val category: String)
 {
-	var definition: AbstractDataDefinition? = null
+	var definition: AbstractDataDefinition<*, *>? = null
 }
