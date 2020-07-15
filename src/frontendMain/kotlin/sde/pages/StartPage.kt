@@ -151,10 +151,6 @@ class StartPage(pageManager: PageManager) : AbstractPage(pageManager)
 							span(project.path)
 						}
 
-						div {
-							width = CssSize(100, UNIT.perc)
-						}
-
 						span(project.lastOpened.toDateString())
 						button("X", style = ButtonStyle.SECONDARY) {
 							onClick { e ->
