@@ -1,0 +1,14 @@
+name: CI
+
+on: [push, pull_request]
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@master
+
+      - name: Make gradlew executable
+        run: chmod +x ./gradlew
+
+      - name: Build and Test
+        run: ./gradlew check

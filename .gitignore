@@ -1,4 +1,6 @@
-.*/
+.git/
+.gradle/
+.idea/
 build/
 out/
 /refresh.sh
