@@ -112,7 +112,7 @@ abstract class AbstractDataDefinition<D: AbstractDataDefinition<D, I>, I: Abstra
 		{
 			for (att in attEl.childNodes.elements())
 			{
-				val def = load(att)
+				val def = load(att, srcFile)
 
 				if (def !is AbstractPrimitiveDataDefinition<*, *>)
 				{
@@ -147,14 +147,14 @@ abstract class AbstractDataDefinition<D: AbstractDataDefinition<D, I>, I: Abstra
 
 	companion object
 	{
-		fun load(contents: String): AbstractDataDefinition<*, *>
+		fun load(contents: String, srcFile: String): AbstractDataDefinition<*, *>
 		{
 			val xml = contents.parseXml()
 
-			return load(xml.childNodes.elements().first())
+			return load(xml.childNodes.elements().first(), srcFile)
 		}
 
-		fun load(xml: Element): AbstractDataDefinition<*, *>
+		fun load(xml: Element, srcFile: String): AbstractDataDefinition<*, *>
 		{
 			var type = xml.getAttributeValue("meta:RefKey", "???").toUpperCase()
 			if (type == "???")
@@ -175,6 +175,7 @@ abstract class AbstractDataDefinition<D: AbstractDataDefinition<D, I>, I: Abstra
 
 				else -> throw DefinitionLoadException("Unknown definition type $type")
 			}
+			def.srcFile = srcFile
 
 			def.parse(xml)
 

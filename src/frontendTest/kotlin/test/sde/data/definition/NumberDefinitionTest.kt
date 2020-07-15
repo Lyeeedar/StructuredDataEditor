@@ -15,7 +15,7 @@ class NumberDefinitionTest
 			<Data Name="Count" Min="2" Max="5" Default="3" Type="Int" xmlns:meta="Editor" meta:RefKey="Number" />
 		""".trimIndent()
 
-		val def = AbstractDataDefinition.load(xml)
+		val def = AbstractDataDefinition.load(xml, "")
 
 		assertTrue(def is NumberDefinition)
 		assertEquals("Count", def.name)

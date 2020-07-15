@@ -72,7 +72,7 @@ abstract class AbstractCompoundDefinition<D: AbstractCompoundDefinition<D, I>, I
 			{
 				if (child.nodeName == "Attributes" || child.nodeName == "AdditionalDefs") continue
 
-				val def = load(child as Element)
+				val def = load(child as Element, srcFile)
 				currentCategory.second.add(def)
 			}
 		}
