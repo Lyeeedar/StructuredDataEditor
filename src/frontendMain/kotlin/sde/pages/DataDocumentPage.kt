@@ -13,11 +13,11 @@ class DataDocumentPage(val data: DataDocument, pageManager: PageManager) : Abstr
 
 	override fun createComponent(): Component
 	{
-		TODO("Not yet implemented")
+		return data.getComponent()
 	}
 
 	override fun canClose(): Boolean
 	{
-		TODO("Not yet implemented")
+		return true
 	}
 }

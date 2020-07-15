@@ -22,8 +22,8 @@ class GraphStructDefinition : AbstractStructDefinition<GraphStructDefinition, Gr
 		background = node.getAttributeValue("Background", background)
 	}
 
-	override fun createItemInstance(): GraphStructItem
+	override fun createItemInstanceInternal(): GraphStructItem
 	{
-		return GraphStructItem()
+		return GraphStructItem(this)
 	}
 }

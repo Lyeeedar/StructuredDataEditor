@@ -2,19 +2,20 @@ package sde.data.definition
 
 import org.w3c.dom.Element
 import org.w3c.dom.Node
+import sde.data.item.AbstractCompoundDataItem
 import sde.data.item.AbstractDataItem
 import sde.utils.DefinitionLoadException
 import sde.utils.asSequence
 import sde.utils.getAttributeValue
 import sde.utils.serializeXml
 
-typealias CategorisedChildren = Pair<String, ArrayList<AbstractDataDefinition<*, *>>>
+typealias CategorisedChildren = Pair<String, ArrayList<DataDefinition>>
 
-abstract class AbstractCompoundDefinition<D: AbstractCompoundDefinition<D, I>, I: AbstractDataItem<D>> : AbstractDataDefinition<D, I>()
+abstract class AbstractCompoundDefinition<D: AbstractCompoundDefinition<D, I>, I: AbstractCompoundDataItem<D>> : AbstractDataDefinition<D, I>()
 {
 	val contents = ArrayList<CategorisedChildren>()
 
-	override fun children(): List<AbstractDataDefinition<*, *>>
+	override fun children(): List<DataDefinition>
 	{
 		return sequence {
 			for (category in contents)
@@ -122,7 +123,7 @@ abstract class AbstractCompoundDefinition<D: AbstractCompoundDefinition<D, I>, I
 		attributes.addAll(def.attributes)
 	}
 
-	fun addDef(def: AbstractDataDefinition<*, *>, category: String)
+	fun addDef(def: DataDefinition, category: String)
 	{
 		var dest = contents.firstOrNull { it.first == category }
 		if (dest == null)

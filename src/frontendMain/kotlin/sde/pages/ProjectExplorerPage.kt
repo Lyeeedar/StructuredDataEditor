@@ -8,8 +8,12 @@ import pl.treksoft.kvision.core.onClick
 import pl.treksoft.kvision.html.*
 import pl.treksoft.kvision.panel.hPanel
 import sde.Services
+import sde.data.DataDocument
+import sde.data.Project
+import sde.data.item.CompoundDataItem
 import sde.project.ProjectDef
 import sde.project.ProjectItem
+import sde.utils.UndoRedoManager
 
 class ProjectExplorerPage(val projectDef: ProjectDef, pageManager: PageManager) : AbstractPage(pageManager)
 {
@@ -160,6 +164,24 @@ class ProjectFileView(item: ProjectItem, page: ProjectExplorerPage) : AbstractPr
 
 			onClick { e ->
 				e.stopPropagation()
+
+				val xml = """
+					<Definitions xmlns:meta="Editor">
+						<Data Name="Block" meta:RefKey="Struct">
+							<Data Name="Count1" meta:RefKey="Number" />
+						</Data>
+					</Definitions>
+				""".trimIndent()
+				val defMap = Project.parseDefinitionsFile(xml, "")
+				val def = defMap["Block"]!!
+				val item = def.createItem()
+
+				val data = DataDocument()
+				data.root = item as CompoundDataItem
+
+				val page = DataDocumentPage(data, page.pageManager)
+				page.pageManager.addPage(page)
+				page.show()
 			}
 		}
 

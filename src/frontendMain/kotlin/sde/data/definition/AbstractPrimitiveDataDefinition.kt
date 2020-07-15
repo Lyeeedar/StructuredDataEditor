@@ -9,16 +9,8 @@ abstract class AbstractPrimitiveDataDefinition<D: AbstractPrimitiveDataDefinitio
 {
 	var default: String = ""
 
-	override fun children(): List<AbstractDataDefinition<*, *>>
+	override fun children(): List<DataDefinition>
 	{
 		return ArrayList()
 	}
-
-	override fun doParse(node: Element)
-	{
-		default = node.getAttributeValue("Default", "")
-
-		innerDoParse(node)
-	}
-	abstract fun innerDoParse(node: Element)
 }

@@ -5,7 +5,8 @@ import org.w3c.dom.Node
 import sde.data.item.AbstractDataItem
 import sde.utils.*
 
-typealias DefinitionMap = HashMap<String, AbstractDataDefinition<*, *>>
+typealias DataDefinition = AbstractDataDefinition<*, *>
+typealias DefinitionMap = HashMap<String, DataDefinition>
 
 abstract class AbstractDataDefinition<D: AbstractDataDefinition<D, I>, I: AbstractDataItem<D>>
 {
@@ -27,7 +28,7 @@ abstract class AbstractDataDefinition<D: AbstractDataDefinition<D, I>, I: Abstra
 	val attributes = ArrayList<AbstractPrimitiveDataDefinition<*, *>>()
 	var referenceMap = HashMap<String, DefinitionReference>()
 
-	abstract fun children(): List<AbstractDataDefinition<*, *>>
+	abstract fun children(): List<DataDefinition>
 
 	fun registerReference(name: String, defName: String, category: String = "")
 	{
@@ -128,33 +129,31 @@ abstract class AbstractDataDefinition<D: AbstractDataDefinition<D, I>, I: Abstra
 
 	abstract fun doParse(node: Element)
 
-	fun createItem(undoRedoManager: UndoRedoManager): I
+	fun createItem(): I
 	{
-		val item = createItem()
-		item.undoRedo = undoRedoManager
-		item.def = this as D
+		val item = createItemInstance()
 
 		for (att in attributes)
 		{
-			val attItem = att.createItem(undoRedoManager)
+			val attItem = att.createItem()
 			item.attributes.add(attItem)
 		}
 
 		return item
 	}
 
-	abstract fun createItem(): I
+	abstract fun createItemInstance(): I
 
 	companion object
 	{
-		fun load(contents: String, srcFile: String): AbstractDataDefinition<*, *>
+		fun load(contents: String, srcFile: String): DataDefinition
 		{
 			val xml = contents.parseXml()
 
 			return load(xml.childNodes.elements().first(), srcFile)
 		}
 
-		fun load(xml: Element, srcFile: String): AbstractDataDefinition<*, *>
+		fun load(xml: Element, srcFile: String): DataDefinition
 		{
 			var type = xml.getAttributeValue("meta:RefKey", "???").toUpperCase()
 			if (type == "???")
@@ -186,5 +185,5 @@ abstract class AbstractDataDefinition<D: AbstractDataDefinition<D, I>, I: Abstra
 
 class DefinitionReference(val name: String, val defName: String, val category: String)
 {
-	var definition: AbstractDataDefinition<*, *>? = null
+	var definition: DataDefinition? = null
 }

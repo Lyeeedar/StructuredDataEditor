@@ -12,16 +12,17 @@ class NumberDefinition : AbstractPrimitiveDataDefinition<NumberDefinition, Numbe
 	var maxValue = Float.MAX_VALUE
 	var useIntegers = false
 
-	override fun innerDoParse(node: Element)
+	override fun doParse(node: Element)
 	{
 		minValue = node.getAttributeValue("Min", minValue)
 		maxValue = node.getAttributeValue("Max", maxValue)
 		useIntegers = node.getAttributeValue("Type", "Float") == "Int"
+		default = node.getAttributeValue("Default", "0")
 	}
 
-	override fun createItem(): NumberItem
+	override fun createItemInstance(): NumberItem
 	{
-		val item = NumberItem()
+		val item = NumberItem(this)
 		item.rawValue = default
 
 		return item
