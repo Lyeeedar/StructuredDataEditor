@@ -28,11 +28,13 @@ abstract class AbstractStructItem<D: AbstractStructDefinition<*, *>>(def: D, doc
 
 	override var canRemove: Boolean by obs(def.nullable && children.size > 0)
 		.raise(AbstractStructItem<*>::canRemove.name)
+		.updatesDocument()
 		.updatedBy(AbstractStructItem<*>::hasContent.name) { canRemove = def.nullable && hasContent }
 		.get()
 
 	var hasContent: Boolean by obs(children.size > 0)
 		.raise(AbstractStructItem<*>::hasContent.name)
+		.updatesComponent()
 		.updatedBy(CompoundDataItem::children.name) { hasContent = children.size > 0 }
 		.get()
 

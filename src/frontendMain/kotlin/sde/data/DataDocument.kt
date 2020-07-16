@@ -16,7 +16,7 @@ class DataDocument
 	var name: String = ""
 	lateinit var root: CompoundDataItem
 
-	fun getVisibleItems(): Sequence<DataItem>
+	private fun getVisibleItems(): Sequence<DataItem>
 	{
 		return sequence {
 			root.depth = 0
@@ -32,7 +32,7 @@ class DataDocument
 		}
 	}
 
-	fun getVisibleItems(current: CompoundDataItem, depth: Int = 1): Sequence<DataItem>
+	private fun getVisibleItems(current: CompoundDataItem, depth: Int = 1): Sequence<DataItem>
 	{
 		return sequence {
 			for (child in current.children)
@@ -51,10 +51,12 @@ class DataDocument
 		}
 	}
 
-	val component = Div()
+	private val component = Div()
+	var lastRenderedID = 0
 
 	fun updateComponent()
 	{
+		lastRenderedID++
 		component.removeAll()
 
 		val visibleItems = getVisibleItems().toList()
@@ -71,6 +73,8 @@ class DataDocument
 			{
 				sensibleHeaderWidth = itemWidth
 			}
+
+			item.renderedID = lastRenderedID
 		}
 
 		component.add(VPanel {

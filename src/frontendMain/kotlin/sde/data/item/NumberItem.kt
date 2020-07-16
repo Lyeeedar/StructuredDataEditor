@@ -22,10 +22,7 @@ class NumberItem(def: NumberDefinition, document: DataDocument) : AbstractDataIt
 				this@NumberItem.value = this.value!!.toFloat()
 			}
 			registerListener(NumberItem::value.name) {
-				if (this.value != this@NumberItem.value)
-				{
-					this.value = this@NumberItem.value
-				}
+				this.value = this@NumberItem.value
 			}
 		}
 	}
