@@ -10,12 +10,17 @@ abstract class AbstractCompoundDataItem<D: AbstractCompoundDefinition<*, *>>(def
 {
 	val children = observableListOf<DataItem>()
 
-	var isExpanded by observable(false)
+	var isExpanded: Boolean by obs(false)
+		.raise(CompoundDataItem::isExpanded.name)
+		.updatesDocument()
+		.get()
 
 	init
 	{
 		children.onUpdate.add {
 			document.updateComponent()
+
+			raiseEvent(CompoundDataItem::children.name)
 		}
 	}
 }

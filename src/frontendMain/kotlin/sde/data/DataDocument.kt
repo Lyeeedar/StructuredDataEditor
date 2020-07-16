@@ -104,7 +104,6 @@ class DataDocument
 
 							onClick {e ->
 								item.isExpanded = !item.isExpanded
-								updateComponent()
 
 								e.stopPropagation()
 							}

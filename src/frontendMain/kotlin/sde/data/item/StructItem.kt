@@ -26,10 +26,15 @@ abstract class AbstractStructItem<D: AbstractStructDefinition<*, *>>(def: D, doc
 		}
 	}
 
-	override var canRemove by observable(def.nullable && children.size > 0)
-	var hasContent by observable(children.size > 0, {old, new ->
-		canRemove = def.nullable && new
-	})
+	override var canRemove: Boolean by obs(def.nullable && children.size > 0)
+		.raise(AbstractStructItem<*>::canRemove.name)
+		.updatedBy(AbstractStructItem<*>::hasContent.name) { canRemove = def.nullable && hasContent }
+		.get()
+
+	var hasContent: Boolean by obs(children.size > 0)
+		.raise(AbstractStructItem<*>::hasContent.name)
+		.updatedBy(CompoundDataItem::children.name) { hasContent = children.size > 0 }
+		.get()
 
 	override fun remove()
 	{
@@ -37,13 +42,6 @@ abstract class AbstractStructItem<D: AbstractStructDefinition<*, *>>(def: D, doc
 	}
 
 	abstract fun createContents()
-
-	init
-	{
-		children.onUpdate.add {
-			hasContent = children.size > 0
-		}
-	}
 }
 
 class StructItem(def: StructDefinition, document: DataDocument) : AbstractStructItem<StructDefinition>(def, document)
