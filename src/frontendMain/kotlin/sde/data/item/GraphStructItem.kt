@@ -1,12 +1,12 @@
 package sde.data.item
 
-import pl.treksoft.kvision.core.Component
+import sde.data.DataDocument
 import sde.data.definition.GraphStructDefinition
 
-class GraphStructItem(def: GraphStructDefinition) : AbstractCompoundDataItem<GraphStructDefinition>(def)
+class GraphStructItem(def: GraphStructDefinition, document: DataDocument) : AbstractStructItem<GraphStructDefinition>(def, document)
 {
-	override fun getComponent(): Component
+	override fun createContents()
 	{
-		TODO("Not yet implemented")
+		def.createContents(this, document)
 	}
 }

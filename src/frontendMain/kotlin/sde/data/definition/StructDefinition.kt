@@ -2,6 +2,7 @@ package sde.data.definition
 
 import org.w3c.dom.Element
 import org.w3c.dom.Node
+import sde.data.DataDocument
 import sde.data.item.AbstractCompoundDataItem
 import sde.data.item.AbstractDataItem
 import sde.data.item.StructItem
@@ -24,30 +25,38 @@ abstract class AbstractStructDefinition<D: AbstractStructDefinition<D, I>, I: Ab
 		nullable = node.getAttributeValue("Nullable", nullable)
 	}
 
-	override fun createItemInstance(): I
+	override fun createItemInstance(document: DataDocument): I
 	{
-		val item = createItemInstanceInternal()
+		val item = createItemInstanceInternal(document)
 
-		for (category in contents)
+		if (!nullable)
 		{
-			for (def in category.second)
-			{
-				val citem = def.createItem()
-				item.children.add(citem)
-			}
+			createContents(item, document)
 		}
 
 		return item
 	}
 
-	abstract fun createItemInstanceInternal(): I
+	fun createContents(item: I, document: DataDocument)
+	{
+		for (category in contents)
+		{
+			for (def in category.second)
+			{
+				val citem = def.createItem(document)
+				item.children.add(citem)
+			}
+		}
+	}
+
+	abstract fun createItemInstanceInternal(document: DataDocument): I
 }
 
 class StructDefinition : AbstractStructDefinition<StructDefinition, StructItem>()
 {
-	override fun createItemInstanceInternal(): StructItem
+	override fun createItemInstanceInternal(document: DataDocument): StructItem
 	{
-		return StructItem(this)
+		return StructItem(this, document)
 	}
 
 }

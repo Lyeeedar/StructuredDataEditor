@@ -169,14 +169,21 @@ class ProjectFileView(item: ProjectItem, page: ProjectExplorerPage) : AbstractPr
 					<Definitions xmlns:meta="Editor">
 						<Data Name="Block" meta:RefKey="Struct">
 							<Data Name="Count1" meta:RefKey="Number" />
+							<Data Name="Block" meta:RefKey="Struct">
+								<Data Name="Count1" meta:RefKey="Number" />
+								<Data Name="Count4" meta:RefKey="Number" />
+							</Data>
+							<Data Name="Count2" meta:RefKey="Number" />
 						</Data>
 					</Definitions>
 				""".trimIndent()
 				val defMap = Project.parseDefinitionsFile(xml, "")
 				val def = defMap["Block"]!!
-				val item = def.createItem()
 
 				val data = DataDocument()
+				val item = def.createItem(data)
+
+
 				data.root = item as CompoundDataItem
 
 				val page = DataDocumentPage(data, page.pageManager)

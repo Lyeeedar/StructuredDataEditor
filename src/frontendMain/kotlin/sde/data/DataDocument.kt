@@ -1,15 +1,15 @@
 package sde.data
 
 import pl.treksoft.kvision.core.*
-import pl.treksoft.kvision.html.Div
-import pl.treksoft.kvision.html.Span
-import pl.treksoft.kvision.html.div
-import pl.treksoft.kvision.html.span
+import pl.treksoft.kvision.html.*
 import pl.treksoft.kvision.panel.*
+import pl.treksoft.kvision.require
 import sde.data.item.CompoundDataItem
 import sde.data.item.DataItem
+import sde.data.item.IRemovable
 import sde.utils.afterInsert
 import sde.utils.hover
+import kotlin.browser.document
 
 class DataDocument
 {
@@ -63,7 +63,7 @@ class DataDocument
 		for (item in visibleItems)
 		{
 			val indentation = item.depth * 14
-			val nameLength = item.name.length * 20
+			val nameLength = item.name.length * 10
 
 			val itemWidth = indentation + nameLength + 16 + 50 // expander and padding
 
@@ -91,19 +91,35 @@ class DataDocument
 						width = CssSize(100, UNIT.perc)
 						height = CssSize(100, UNIT.perc)
 
-						onEvent {
-							mouseover
-						}
-
-						span(item.name)
-
-						if (item is CompoundDataItem)
+						if (item is CompoundDataItem && item.children.size > 0)
 						{
+							if (item.isExpanded)
+							{
+								image(require("images/OpenArrow.png") as? String)
+							}
+							else
+							{
+								image(require("images/RightArrow.png") as? String)
+							}
+
 							onClick {e ->
 								item.isExpanded = !item.isExpanded
 								updateComponent()
 
 								e.stopPropagation()
+							}
+						}
+
+						span(item.name)
+
+						if (item is IRemovable)
+						{
+							button("", icon = require("images/Remove.png") as? String) {
+								visible = item.canRemove
+
+								onClick {
+									item.remove()
+								}
 							}
 						}
 					}

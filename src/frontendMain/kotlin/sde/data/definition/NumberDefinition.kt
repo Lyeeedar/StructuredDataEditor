@@ -2,6 +2,7 @@ package sde.data.definition
 
 import org.w3c.dom.Element
 import org.w3c.dom.Node
+import sde.data.DataDocument
 import sde.data.item.NumberItem
 import sde.utils.UndoRedoManager
 import sde.utils.getAttributeValue
@@ -20,8 +21,8 @@ class NumberDefinition : AbstractPrimitiveDataDefinition<NumberDefinition, Numbe
 		default = node.getAttributeValue("Default", "0")
 	}
 
-	override fun createItemInstance(): NumberItem
+	override fun createItemInstance(document: DataDocument): NumberItem
 	{
-		return NumberItem(this)
+		return NumberItem(this, document)
 	}
 }

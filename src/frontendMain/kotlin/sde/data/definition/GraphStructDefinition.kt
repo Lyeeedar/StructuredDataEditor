@@ -2,6 +2,7 @@ package sde.data.definition
 
 import org.w3c.dom.Element
 import org.w3c.dom.Node
+import sde.data.DataDocument
 import sde.data.item.GraphStructItem
 import sde.utils.getAttributeValue
 
@@ -22,8 +23,8 @@ class GraphStructDefinition : AbstractStructDefinition<GraphStructDefinition, Gr
 		background = node.getAttributeValue("Background", background)
 	}
 
-	override fun createItemInstanceInternal(): GraphStructItem
+	override fun createItemInstanceInternal(document: DataDocument): GraphStructItem
 	{
-		return GraphStructItem(this)
+		return GraphStructItem(this, document)
 	}
 }

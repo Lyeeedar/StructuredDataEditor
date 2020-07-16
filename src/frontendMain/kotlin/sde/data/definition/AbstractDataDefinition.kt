@@ -2,6 +2,7 @@ package sde.data.definition
 
 import org.w3c.dom.Element
 import org.w3c.dom.Node
+import sde.data.DataDocument
 import sde.data.item.AbstractDataItem
 import sde.utils.*
 
@@ -129,20 +130,20 @@ abstract class AbstractDataDefinition<D: AbstractDataDefinition<D, I>, I: Abstra
 
 	abstract fun doParse(node: Element)
 
-	fun createItem(): I
+	fun createItem(document: DataDocument): I
 	{
-		val item = createItemInstance()
+		val item = createItemInstance(document)
 
 		for (att in attributes)
 		{
-			val attItem = att.createItem()
+			val attItem = att.createItem(document)
 			item.attributes.add(attItem)
 		}
 
 		return item
 	}
 
-	abstract fun createItemInstance(): I
+	abstract fun createItemInstance(document: DataDocument): I
 
 	companion object
 	{
