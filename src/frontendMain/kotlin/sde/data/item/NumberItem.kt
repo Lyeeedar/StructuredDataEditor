@@ -7,14 +7,10 @@ import sde.data.definition.NumberDefinition
 
 class NumberItem(def: NumberDefinition) : AbstractDataItem<NumberDefinition>(def)
 {
+	val value by obs(def.default.toFloat())
+
 	override fun getComponent(): Component
 	{
-		val value = rawValue.toString().toFloat()
-
-		return SpinnerInput(value, def.minValue, def.maxValue, forceType = if (def.useIntegers) ForceType.ROUND else ForceType.NONE).apply {
-			subscribe {
-				rawValue = it
-			}
-		}
+		return SpinnerInput(value, def.minValue, def.maxValue, forceType = if (def.useIntegers) ForceType.ROUND else ForceType.NONE)
 	}
 }

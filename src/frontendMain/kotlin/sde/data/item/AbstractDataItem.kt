@@ -13,9 +13,18 @@ abstract class AbstractDataItem<D: DataDefinition>(val def: D) : BaseDataCompone
 	var depth = 0
 
 	var name: String by obs(def.name)
-	var rawValue: Any? by obs(null)
 
 	val attributes = observableListOf<DataItem>()
 
+	private var cachedComponent: Component? = null
+	fun getComponentCached(): Component
+	{
+		if (cachedComponent == null)
+		{
+			cachedComponent = getComponent()
+		}
+
+		return cachedComponent!!
+	}
 	abstract fun getComponent(): Component
 }

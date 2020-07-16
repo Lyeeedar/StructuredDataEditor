@@ -8,6 +8,8 @@ import pl.treksoft.kvision.html.span
 import pl.treksoft.kvision.panel.*
 import sde.data.item.CompoundDataItem
 import sde.data.item.DataItem
+import sde.utils.afterInsert
+import sde.utils.hover
 
 class DataDocument
 {
@@ -71,39 +73,67 @@ class DataDocument
 			}
 		}
 
-		component.add(GridPanel(templateColumns = "5px ${sensibleHeaderWidth}px 5px 1fr") {
-			for (i in 0 until visibleItems.size)
+		component.add(VPanel {
+			for (item in visibleItems)
 			{
-				val item = visibleItems[i]
 				val depth = item.depth * 14 + 14
+				val headerWidth = sensibleHeaderWidth - depth
 
-				add(GridPanel(templateColumns = "${depth}px 1fr", templateRows = "1fr") {
+				gridPanel(templateColumns = "${headerWidth}px 5px 1fr") {
+					marginBottom = CssSize(5, UNIT.px)
+					marginLeft = CssSize(depth, UNIT.px)
 
-					add(Div {
+					val headerDiv = Div {
+						borderLeft = Border(CssSize(1, UNIT.px), BorderStyle.SOLID, Color.name(Col.DARKGRAY))
+						borderTop = Border(CssSize(1, UNIT.px), BorderStyle.SOLID, Color.name(Col.DARKGRAY))
+						borderBottom = Border(CssSize(1, UNIT.px), BorderStyle.SOLID, Color.name(Col.DARKGRAY))
 						background = Background(Color.name(Col.GRAY))
 						width = CssSize(100, UNIT.perc)
 						height = CssSize(100, UNIT.perc)
+
+						onEvent {
+							mouseover
+						}
 
 						span(item.name)
 
 						if (item is CompoundDataItem)
 						{
-							onClick {
+							onClick {e ->
 								item.isExpanded = !item.isExpanded
 								updateComponent()
+
+								e.stopPropagation()
 							}
 						}
-					}, 2, 0)
+					}
+					add(headerDiv, 1, 1)
 
-				}, 2, i)
+					val editorDiv = Div {
+						borderRight = Border(CssSize(1, UNIT.px), BorderStyle.SOLID, Color.name(Col.DARKGRAY))
+						borderTop = Border(CssSize(1, UNIT.px), BorderStyle.SOLID, Color.name(Col.DARKGRAY))
+						borderBottom = Border(CssSize(1, UNIT.px), BorderStyle.SOLID, Color.name(Col.DARKGRAY))
+						background = Background(Color.name(Col.GRAY))
+						width = CssSize(100, UNIT.perc)
+						height = CssSize(100, UNIT.perc)
 
-				add(Div {
-					background = Background(Color.name(Col.GRAY))
-					width = CssSize(100, UNIT.perc)
-					height = CssSize(100, UNIT.perc)
+						add(item.getComponentCached())
+					}
+					add(editorDiv, 3, 1)
 
-					add(item.getComponent())
-				}, 4, i)
+					afterInsertHook = {
+						val el = getElementJQuery()!!
+						el.hover(
+							{
+								headerDiv.getElementJQuery()!!.css("border-color", "green")
+								editorDiv.getElementJQuery()!!.css("border-color", "green")
+							},
+							{
+								headerDiv.getElementJQuery()!!.css("border-color", "darkgray")
+								editorDiv.getElementJQuery()!!.css("border-color", "darkgray")
+							})
+					}
+				}
 			}
 		})
 	}

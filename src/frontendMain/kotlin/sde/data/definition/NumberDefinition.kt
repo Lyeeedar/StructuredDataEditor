@@ -22,9 +22,6 @@ class NumberDefinition : AbstractPrimitiveDataDefinition<NumberDefinition, Numbe
 
 	override fun createItemInstance(): NumberItem
 	{
-		val item = NumberItem(this)
-		item.rawValue = default
-
-		return item
+		return NumberItem(this)
 	}
 }
