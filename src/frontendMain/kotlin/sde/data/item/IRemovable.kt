@@ -2,6 +2,6 @@ package sde.data.item
 
 interface IRemovable
 {
-	var canRemove: Boolean
+	val canRemove: Boolean
 	fun remove()
 }

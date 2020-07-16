@@ -11,6 +11,11 @@ class DataDocumentPage(val data: DataDocument, pageManager: PageManager) : Abstr
 	override val closeable: Boolean
 		get() = true
 
+	init
+	{
+		data.startChangeWatcher(scope)
+	}
+
 	override fun createComponent(): Component
 	{
 		return data.getComponent()

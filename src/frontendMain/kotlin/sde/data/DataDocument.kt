@@ -1,5 +1,8 @@
 package sde.data
 
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import pl.treksoft.kvision.core.*
 import pl.treksoft.kvision.html.*
 import pl.treksoft.kvision.panel.*
@@ -7,6 +10,8 @@ import pl.treksoft.kvision.require
 import sde.data.item.CompoundDataItem
 import sde.data.item.DataItem
 import sde.data.item.IRemovable
+import sde.ui.ImageButton
+import sde.ui.imageButton
 import sde.utils.afterInsert
 import sde.utils.hover
 import kotlin.browser.document
@@ -54,7 +59,30 @@ class DataDocument
 	private val component = Div()
 	var lastRenderedID = 0
 
+	var updateQueued = false
 	fun updateComponent()
+	{
+		updateQueued = true
+	}
+
+	fun startChangeWatcher(scope: CoroutineScope)
+	{
+		scope.launch {
+			while (true)
+			{
+				delay(250)
+
+				if (updateQueued)
+				{
+					updateQueued = false
+
+					doUpdateComponent()
+				}
+			}
+		}
+	}
+
+	fun doUpdateComponent()
 	{
 		lastRenderedID++
 		component.removeAll()
@@ -87,7 +115,7 @@ class DataDocument
 					marginBottom = CssSize(5, UNIT.px)
 					marginLeft = CssSize(depth, UNIT.px)
 
-					val headerDiv = Div {
+					val headerDiv = DockPanel {
 						borderLeft = Border(CssSize(1, UNIT.px), BorderStyle.SOLID, Color.name(Col.DARKGRAY))
 						borderTop = Border(CssSize(1, UNIT.px), BorderStyle.SOLID, Color.name(Col.DARKGRAY))
 						borderBottom = Border(CssSize(1, UNIT.px), BorderStyle.SOLID, Color.name(Col.DARKGRAY))
@@ -99,11 +127,11 @@ class DataDocument
 						{
 							if (item.isExpanded)
 							{
-								image(require("images/OpenArrow.png") as? String)
+								add(Image(require("images/OpenArrow.png") as? String), Side.LEFT)
 							}
 							else
 							{
-								image(require("images/RightArrow.png") as? String)
+								add(Image(require("images/RightArrow.png") as? String), Side.LEFT)
 							}
 
 							onClick {e ->
@@ -115,15 +143,13 @@ class DataDocument
 
 						span(item.name)
 
-						if (item is IRemovable)
+						if (item is IRemovable && item.canRemove)
 						{
-							button("", icon = require("images/Remove.png") as? String) {
-								visible = item.canRemove
-
+							add(ImageButton(require("images/Remove.png") as? String) {
 								onClick {
 									item.remove()
 								}
-							}
+							}, Side.RIGHT)
 						}
 					}
 					add(headerDiv, 1, 1)

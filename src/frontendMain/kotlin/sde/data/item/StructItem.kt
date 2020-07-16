@@ -1,40 +1,43 @@
 package sde.data.item
 
-import pl.treksoft.kvision.core.Component
-import pl.treksoft.kvision.html.Div
-import pl.treksoft.kvision.html.Span
-import pl.treksoft.kvision.html.button
+import pl.treksoft.kvision.core.*
+import pl.treksoft.kvision.html.*
+import pl.treksoft.kvision.panel.DockPanel
+import pl.treksoft.kvision.panel.Side
 import pl.treksoft.kvision.require
 import sde.data.DataDocument
 import sde.data.definition.AbstractCompoundDefinition
 import sde.data.definition.AbstractStructDefinition
 import sde.data.definition.StructDefinition
+import sde.ui.ImageButton
+import sde.utils.hover
 
 abstract class AbstractStructItem<D: AbstractStructDefinition<*, *>>(def: D, document: DataDocument) : AbstractCompoundDataItem<D>(def, document), IRemovable
 {
 	override fun getComponent(): Component
 	{
-		return Div {
-			button("", icon = require("images/Add.png") as? String) {
-				visible = !hasContent
-
-				onClick {
-					createContents()
-					isExpanded = true
-				}
+		return DockPanel {
+			if (!hasContent)
+			{
+				add(ImageButton(require("images/Add.png") as? String) {
+					onClick {
+						createContents()
+						isExpanded = true
+					}
+				}, Side.LEFT)
 			}
+
+			span("this is the struct")
 		}
 	}
 
-	override var canRemove: Boolean by obs(def.nullable && children.size > 0)
-		.raise(AbstractStructItem<*>::canRemove.name)
-		.updatesDocument()
-		.updatedBy(AbstractStructItem<*>::hasContent.name) { canRemove = def.nullable && hasContent }
-		.get()
+	override val canRemove: Boolean
+		get() = def.nullable && children.size > 0
 
 	var hasContent: Boolean by obs(children.size > 0)
 		.raise(AbstractStructItem<*>::hasContent.name)
 		.updatesComponent()
+		.updatesDocument()
 		.updatedBy(CompoundDataItem::children.name) { hasContent = children.size > 0 }
 		.get()
 
