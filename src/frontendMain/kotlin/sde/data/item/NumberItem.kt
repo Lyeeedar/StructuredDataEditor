@@ -12,7 +12,7 @@ class NumberItem(def: NumberDefinition, document: DataDocument) : AbstractDataIt
 		.undoable()
 		.get()
 
-	override fun getComponent(): Component
+	override fun getEditorComponent(): Component
 	{
 		return SpinnerInput(value, def.minValue, def.maxValue, forceType = if (def.useIntegers) ForceType.ROUND else ForceType.NONE).apply {
 			subscribe {

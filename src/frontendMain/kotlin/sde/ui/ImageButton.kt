@@ -2,9 +2,9 @@ package sde.ui
 
 import pl.treksoft.kvision.core.*
 import pl.treksoft.kvision.html.Div
-import pl.treksoft.kvision.html.Span
 import pl.treksoft.kvision.html.image
-import sde.utils.hover
+import sde.utils.afterInsert
+import sde.utils.disableSelection
 
 class ImageButton(src: String?, init: (ImageButton.() -> Unit)? = null) : Div()
 {
@@ -17,15 +17,18 @@ class ImageButton(src: String?, init: (ImageButton.() -> Unit)? = null) : Div()
 
 		image(src)
 
-		hover(
-			{
-				isMouseHover = true
-				updateBackground()
-			},
-			{
-				isMouseHover = false
-				updateBackground()
-			})
+		afterInsert {
+			it.disableSelection()
+			it.hover(
+					{
+						isMouseHover = true
+						updateBackground()
+					},
+					{
+						isMouseHover = false
+						updateBackground()
+					})
+		}
 
 		@Suppress("LeakingThis")
 		init?.invoke(this)

@@ -10,11 +10,12 @@ import sde.data.definition.AbstractCompoundDefinition
 import sde.data.definition.AbstractStructDefinition
 import sde.data.definition.StructDefinition
 import sde.ui.ImageButton
+import sde.ui.textBlock
 import sde.utils.hover
 
 abstract class AbstractStructItem<D: AbstractStructDefinition<*, *>>(def: D, document: DataDocument) : AbstractCompoundDataItem<D>(def, document), IRemovable
 {
-	override fun getComponent(): Component
+	override fun getEditorComponent(): Component
 	{
 		return DockPanel {
 			if (!hasContent)
@@ -33,7 +34,7 @@ abstract class AbstractStructItem<D: AbstractStructDefinition<*, *>>(def: D, doc
 				}, Side.LEFT)
 			}
 
-			span("this is the struct")
+			textBlock("this is the struct")
 		}
 	}
 

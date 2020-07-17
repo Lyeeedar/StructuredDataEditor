@@ -13,6 +13,8 @@ import sde.data.Project
 import sde.data.item.CompoundDataItem
 import sde.project.ProjectDef
 import sde.project.ProjectItem
+import sde.ui.TextBlock
+import sde.ui.textBlock
 import sde.utils.UndoRedoManager
 
 class ProjectExplorerPage(val projectDef: ProjectDef, pageManager: PageManager) : AbstractPage(pageManager)
@@ -153,12 +155,12 @@ class ProjectFileView(item: ProjectItem, page: ProjectExplorerPage) : AbstractPr
 
 	override fun getComponent(): Component
 	{
-		val typeSpan = Span {
+		val typeSpan = TextBlock {
 			align = Align.RIGHT
 		}
 		val li = Li {
 			hPanel {
-				span(name)
+				textBlock(name)
 				add(typeSpan)
 			}
 

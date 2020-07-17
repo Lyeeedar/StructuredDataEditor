@@ -12,6 +12,8 @@ import pl.treksoft.kvision.panel.vPanel
 import sde.NewProjectConfig
 import sde.Services
 import sde.project.ProjectDef
+import sde.ui.TextBlock
+import sde.ui.textBlock
 
 class StartPage(pageManager: PageManager) : AbstractPage(pageManager)
 {
@@ -135,7 +137,7 @@ class StartPage(pageManager: PageManager) : AbstractPage(pageManager)
 			recentProjectsDiv.removeAll()
 
 			if (recentProjects.isEmpty()) {
-				recentProjectsDiv.add(Span("No recent projects found"))
+				recentProjectsDiv.add(TextBlock("No recent projects found"))
 			}
 
 			for (project in recentProjects) {
@@ -148,10 +150,10 @@ class StartPage(pageManager: PageManager) : AbstractPage(pageManager)
 					hPanel {
 						vPanel {
 							h4(project.name)
-							span(project.path)
+							textBlock(project.path)
 						}
 
-						span(project.lastOpened.toDateString())
+						textBlock(project.lastOpened.toDateString())
 						button("X", style = ButtonStyle.SECONDARY) {
 							onClick { e ->
 								e.stopPropagation()
