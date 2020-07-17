@@ -1,6 +1,8 @@
 package sde.pages
 
 import pl.treksoft.kvision.core.Component
+import pl.treksoft.kvision.html.Div
+import pl.treksoft.kvision.panel.hPanel
 import sde.data.DataDocument
 
 class DataDocumentPage(val data: DataDocument, pageManager: PageManager) : AbstractPage(pageManager)
@@ -18,7 +20,13 @@ class DataDocumentPage(val data: DataDocument, pageManager: PageManager) : Abstr
 
 	override fun createComponent(): Component
 	{
-		return data.getComponent()
+		return Div {
+			hPanel {
+				add(data.undoRedoManager.undoButton)
+				add(data.undoRedoManager.redoButton)
+			}
+			add(data.getComponent())
+		}
 	}
 
 	override fun canClose(): Boolean

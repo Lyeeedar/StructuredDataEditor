@@ -12,6 +12,7 @@ import sde.data.item.DataItem
 import sde.data.item.IRemovable
 import sde.ui.ImageButton
 import sde.ui.imageButton
+import sde.utils.UndoRedoManager
 import sde.utils.afterInsert
 import sde.utils.hover
 import kotlin.browser.document
@@ -20,6 +21,8 @@ class DataDocument
 {
 	var name: String = ""
 	lateinit var root: CompoundDataItem
+
+	val undoRedoManager = UndoRedoManager()
 
 	private fun getVisibleItems(): Sequence<DataItem>
 	{

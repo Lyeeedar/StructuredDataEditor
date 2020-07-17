@@ -29,14 +29,19 @@ abstract class ObservableClass<B: ObservableClass<B>.AbstractObservableBuilder<*
 		}
 	}
 
-	abstract fun <T> obs(initialValue: T): B
+	abstract fun <T> obs(initialValue: T, name: String): B
 
-	abstract inner class AbstractObservableBuilder<T, B: AbstractObservableBuilder<T, B>>(val initialValue: T)
+	abstract inner class AbstractObservableBuilder<T, B: AbstractObservableBuilder<T, B>>(val initialValue: T, val name: String)
 	{
 		val changeEvents: ArrayList<String> = ArrayList<String>().apply { add("") }
 		var beforeChangeHandler: ((T, T) -> Boolean)? = null
 		var afterChangeHandler: ((T, T) -> Unit)? = null
 		var updateEvents = ArrayList<Pair<String, () -> Unit>>()
+
+		init
+		{
+			changeEvents.add(name)
+		}
 
 		fun raise(name: String): B
 		{
@@ -66,8 +71,8 @@ abstract class ObservableClass<B: ObservableClass<B>.AbstractObservableBuilder<*
 			return this as B
 		}
 
-		protected abstract fun beforeChange(property: KProperty<*>, oldValue: T, newValue: T): Boolean
-		protected abstract fun afterChange(property: KProperty<*>, oldValue: T, newValue: T)
+		protected abstract fun beforeChange(kPproperty: KProperty<*>, property: ObservableProperty<T>, oldValue: T, newValue: T): Boolean
+		protected abstract fun afterChange(kProperty: KProperty<*>, property: ObservableProperty<T>, oldValue: T, newValue: T)
 
 		fun get(): ReadWriteProperty<Any?, T>
 		{
@@ -92,7 +97,7 @@ abstract class ObservableClass<B: ObservableClass<B>.AbstractObservableBuilder<*
 						return false
 					}
 
-					if (!this@AbstractObservableBuilder.beforeChange(property, oldValue, newValue))
+					if (!this@AbstractObservableBuilder.beforeChange(property, this, oldValue, newValue))
 					{
 						return false
 					}
@@ -118,7 +123,7 @@ abstract class ObservableClass<B: ObservableClass<B>.AbstractObservableBuilder<*
 						raiseEvent(event)
 					}
 
-					this@AbstractObservableBuilder.afterChange(property, oldValue, newValue)
+					this@AbstractObservableBuilder.afterChange(property, this, oldValue, newValue)
 				}
 			}
 		}

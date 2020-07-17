@@ -10,8 +10,7 @@ abstract class AbstractCompoundDataItem<D: AbstractCompoundDefinition<*, *>>(def
 {
 	val children = observableListOf<DataItem>()
 
-	var isExpanded: Boolean by obs(false)
-		.raise(CompoundDataItem::isExpanded.name)
+	var isExpanded: Boolean by obs(false, CompoundDataItem::isExpanded.name)
 		.updatesDocument()
 		.get()
 

@@ -1,6 +1,11 @@
 package sde.utils
 
+import pl.treksoft.kvision.core.Component
+import pl.treksoft.kvision.core.onClick
+import pl.treksoft.kvision.require
+import sde.ui.ImageButton
 import kotlin.js.Date
+import kotlin.properties.ObservableProperty
 import kotlin.reflect.KProperty
 
 class UndoRedoDescription
@@ -132,6 +137,11 @@ class UndoRedoManager: ObservableClass<UndoRedoManager.UndoRedoManagerObservable
 		enableUndoRedo++
 	}
 
+	fun applyDoUndo(doFunc: () -> Unit, undoFunc: () -> Unit, name: String)
+	{
+		addUndoRedoAction(UndoRedoAction(name, doFunc, undoFunc))
+	}
+
 	fun addUndoRedoAction(action: IUndoRedoAction)
 	{
 		if (enableUndoRedo != 0)
@@ -218,17 +228,41 @@ class UndoRedoManager: ObservableClass<UndoRedoManager.UndoRedoManagerObservable
 		}
 	}
 
-	inner class UndoRedoManagerObservableBuilder<T>(initialValue: T) : AbstractObservableBuilder<T, UndoRedoManagerObservableBuilder<T>>(initialValue)
+	val undoButton: Component by lazy {
+		ImageButton(require("images/Undo.png") as? String) {
+			onClick {
+				undo()
+			}
+
+			registerListener("") {
+				this.setDisabled(!canUndo)
+			}
+		}
+	}
+
+	val redoButton: Component by lazy {
+		ImageButton(require("images/Redo.png") as? String) {
+			onClick {
+				redo()
+			}
+
+			registerListener("") {
+				this.setDisabled(!canRedo)
+			}
+		}
+	}
+
+	inner class UndoRedoManagerObservableBuilder<T>(initialValue: T, name: String) : AbstractObservableBuilder<T, UndoRedoManagerObservableBuilder<T>>(initialValue, name)
 	{
-		override fun beforeChange(property: KProperty<*>, oldValue: T, newValue: T): Boolean
+		override fun beforeChange(kProperty: KProperty<*>, property: ObservableProperty<T>, oldValue: T, newValue: T): Boolean
 		{
 			return true
 		}
 
-		override fun afterChange(property: KProperty<*>, oldValue: T, newValue: T)
+		override fun afterChange(kProperty: KProperty<*>, property: ObservableProperty<T>, oldValue: T, newValue: T)
 		{
 
 		}
 	}
-	override fun <T> obs(initialValue: T): UndoRedoManagerObservableBuilder<*> = UndoRedoManagerObservableBuilder(initialValue)
+	override fun <T> obs(initialValue: T, name: String): UndoRedoManagerObservableBuilder<*> = UndoRedoManagerObservableBuilder(initialValue, name)
 }

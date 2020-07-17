@@ -1,8 +1,5 @@
 package sde.data.item
 
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import pl.treksoft.kvision.core.Component
 import pl.treksoft.kvision.form.spinner.ForceType
 import pl.treksoft.kvision.form.spinner.SpinnerInput
@@ -11,8 +8,8 @@ import sde.data.definition.NumberDefinition
 
 class NumberItem(def: NumberDefinition, document: DataDocument) : AbstractDataItem<NumberDefinition>(def, document)
 {
-	var value: Float by obs(def.default.toFloat())
-		.raise(NumberItem::value.name)
+	var value: Float by obs(def.default.toFloat(), NumberItem::value.name)
+		.undoable()
 		.get()
 
 	override fun getComponent(): Component
@@ -23,21 +20,6 @@ class NumberItem(def: NumberDefinition, document: DataDocument) : AbstractDataIt
 			}
 			registerListener(NumberItem::value.name) {
 				this.value = this@NumberItem.value
-			}
-		}
-	}
-
-	init
-	{
-		GlobalScope.launch {
-			while (true)
-			{
-				var current = value
-				current += 1
-
-				value = current
-
-				delay(4000)
 			}
 		}
 	}

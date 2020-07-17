@@ -17,8 +17,7 @@ abstract class AbstractDataItem<D: DataDefinition>(val def: D, val document: Dat
 	var renderedID = -1
 	var depth = 0
 
-	var name: String by obs(def.name)
-		.raise(DataItem::name.name)
+	var name: String by obs(def.name, DataItem::name.name)
 		.updatesDocument()
 		.get()
 
@@ -44,12 +43,13 @@ abstract class AbstractDataItem<D: DataDefinition>(val def: D, val document: Dat
 	}
 	abstract fun getComponent(): Component
 
-	override fun <T> obs(initialValue: T) = DataItemObservableBuilder<T>(initialValue)
+	final override fun <T> obs(initialValue: T, name: String) = DataItemObservableBuilder<T>(initialValue, name)
 
-	inner class DataItemObservableBuilder<T>(initialValue: T): AbstractObservableBuilder<T, DataItemObservableBuilder<T>>(initialValue)
+	inner class DataItemObservableBuilder<T>(initialValue: T, name: String): AbstractObservableBuilder<T, DataItemObservableBuilder<T>>(initialValue, name)
 	{
 		var doesUpdateComponent = false
 		var doesUpdateDocument = false
+		var isUndoable = false
 
 		fun updatesComponent(): DataItemObservableBuilder<T>
 		{
@@ -65,8 +65,15 @@ abstract class AbstractDataItem<D: DataDefinition>(val def: D, val document: Dat
 			return this
 		}
 
-		override fun beforeChange(property: KProperty<*>, oldValue: T, newValue: T): Boolean = true
-		override fun afterChange(property: KProperty<*>, oldValue: T, newValue: T)
+		fun undoable(): DataItemObservableBuilder<T>
+		{
+			isUndoable = true
+
+			return this
+		}
+
+		override fun beforeChange(kProperty: KProperty<*>, property: ObservableProperty<T>, oldValue: T, newValue: T): Boolean = true
+		override fun afterChange(kProperty: KProperty<*>, property: ObservableProperty<T>, oldValue: T, newValue: T)
 		{
 			if (doesUpdateComponent) {
 				cachedComponent = null
@@ -79,6 +86,17 @@ abstract class AbstractDataItem<D: DataDefinition>(val def: D, val document: Dat
 
 			if (doesUpdateDocument && isVisible()) {
 				document.updateComponent()
+			}
+
+			if (isUndoable)
+			{
+				document.undoRedoManager.doValueChange(this@AbstractDataItem,
+				                                       oldValue, null,
+				                                       newValue, null, {
+						value, data -> document.undoRedoManager.disableUndoScope {
+						property.setValue(property, kProperty, value)
+					}
+				}, name)
 			}
 		}
 	}

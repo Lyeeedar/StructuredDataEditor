@@ -22,6 +22,12 @@ abstract class AbstractStructItem<D: AbstractStructDefinition<*, *>>(def: D, doc
 				add(ImageButton(require("images/Add.png") as? String) {
 					onClick {
 						createContents()
+
+						val contents = children.toList()
+						children.clear()
+
+						document.undoRedoManager.applyDoUndo({ children.addAll(contents) }, { children.clear() }, "Create $name")
+
 						isExpanded = true
 					}
 				}, Side.LEFT)
@@ -34,8 +40,7 @@ abstract class AbstractStructItem<D: AbstractStructDefinition<*, *>>(def: D, doc
 	override val canRemove: Boolean
 		get() = def.nullable && children.size > 0
 
-	var hasContent: Boolean by obs(children.size > 0)
-		.raise(AbstractStructItem<*>::hasContent.name)
+	var hasContent: Boolean by obs(children.size > 0, AbstractStructItem<*>::hasContent.name)
 		.updatesComponent()
 		.updatesDocument()
 		.updatedBy(CompoundDataItem::children.name) { hasContent = children.size > 0 }
@@ -43,7 +48,8 @@ abstract class AbstractStructItem<D: AbstractStructDefinition<*, *>>(def: D, doc
 
 	override fun remove()
 	{
-		children.clear()
+		val contents = children.toList()
+		document.undoRedoManager.applyDoUndo({ children.clear() }, { children.addAll(contents) }, "Remove $name")
 	}
 
 	abstract fun createContents()
