@@ -1,13 +1,14 @@
 package sde
 
-import javafx.stage.DirectoryChooser
-import javafx.stage.FileChooser
 import pl.treksoft.kvision.remote.ServiceException
 import sde.project.ProjectDef
 import sde.project.ProjectUtils
-import sde.util.JavaFXApplication
 import java.io.File
 import java.time.LocalDateTime
+import javax.swing.JFileChooser
+import javax.swing.JFrame
+import javax.swing.JPanel
+
 
 actual class StartPageService : IStartPageService
 {
@@ -44,10 +45,7 @@ actual class StartPageService : IStartPageService
 
 	override suspend fun browseExistingProject(): ProjectDef
 	{
-		val chosenFile = JavaFXApplication.execute {
-			val browser = FileChooser()
-			browser.showOpenDialog(null)
-		}
+		val chosenFile = chooseFile()
 
 		if (chosenFile == null || chosenFile.name != "ProjectRoot.xml") {
 			throw ServiceException("Invalid project root")
@@ -87,9 +85,29 @@ actual class StartPageService : IStartPageService
 
 	override suspend fun browseFolder(): String
 	{
-		return JavaFXApplication.execute {
-			val browser = DirectoryChooser()
-			browser.showDialog(null).canonicalPath.replace('\\', '/')
-		}
+		return chooseFile {
+			it.fileSelectionMode = JFileChooser.DIRECTORIES_ONLY
+		}!!.canonicalPath.replace('\\', '/')
 	}
+}
+
+fun chooseFile(init: ((JFileChooser)->Unit)? = null): File?
+{
+	val frame = JFrame()
+	frame.isVisible = true
+	frame.extendedState = JFrame.ICONIFIED
+	frame.extendedState = JFrame.NORMAL
+
+	val fc = JFileChooser()
+
+	init?.invoke(fc)
+
+	if (JFileChooser.APPROVE_OPTION == fc.showOpenDialog(null)) {
+		frame.isVisible = false
+		frame.dispose()
+		return fc.selectedFile
+	}
+	frame.isVisible = false
+	frame.dispose()
+	return null
 }
