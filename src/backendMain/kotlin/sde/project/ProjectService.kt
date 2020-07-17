@@ -1,7 +1,8 @@
 package sde.project
 
+import sde.util.XDocument
 import sde.util.parseXml
-import sde.util.root
+import sde.util.toXDocument
 import java.io.File
 import java.nio.file.Files
 
@@ -26,16 +27,15 @@ actual class ProjectService : IProjectService
 		return output
 	}
 
-	override suspend fun getFileContents(path: String): String
+	override suspend fun getFileContentsXDocument(path: String): XDocument
 	{
 		val file = File(path)
-		return file.readText()
+		return file.readText().parseXml().toXDocument()
 	}
 
 	override suspend fun getFileDefType(path: String): String
 	{
-		val contents = getFileContents(path)
-		val xml = contents.parseXml()
-		return xml.root.nodeName
+		val xml = getFileContentsXDocument(path)
+		return xml.root.name
 	}
 }

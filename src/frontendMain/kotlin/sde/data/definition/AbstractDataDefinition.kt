@@ -4,6 +4,8 @@ import org.w3c.dom.Element
 import org.w3c.dom.Node
 import sde.data.DataDocument
 import sde.data.item.AbstractDataItem
+import sde.util.XDocument
+import sde.util.XElement
 import sde.utils.*
 
 typealias DataDefinition = AbstractDataDefinition<*, *>
@@ -100,7 +102,7 @@ abstract class AbstractDataDefinition<D: AbstractDataDefinition<D, I>, I: Abstra
 
 	}
 
-	fun parse(node: Element)
+	fun parse(node: XElement)
 	{
 		name = node.getAttributeValue("Name", "???")
 		textColour = node.getAttributeValue("TextColour", textColour)
@@ -112,8 +114,10 @@ abstract class AbstractDataDefinition<D: AbstractDataDefinition<D, I>, I: Abstra
 		val attEl = node.getElement("Attributes")
 		if (attEl != null)
 		{
-			for (att in attEl.childNodes.elements())
+			for (att in attEl.children)
 			{
+				if (att !is XElement) continue
+
 				val def = load(att, srcFile)
 
 				if (def !is AbstractPrimitiveDataDefinition<*, *>)
@@ -128,7 +132,7 @@ abstract class AbstractDataDefinition<D: AbstractDataDefinition<D, I>, I: Abstra
 		doParse(node)
 	}
 
-	abstract fun doParse(node: Element)
+	abstract fun doParse(node: XElement)
 
 	fun createItem(document: DataDocument): I
 	{
@@ -147,19 +151,17 @@ abstract class AbstractDataDefinition<D: AbstractDataDefinition<D, I>, I: Abstra
 
 	companion object
 	{
-		fun load(contents: String, srcFile: String): DataDefinition
+		fun load(contents: XDocument, srcFile: String): DataDefinition
 		{
-			val xml = contents.parseXml()
-
-			return load(xml.childNodes.elements().first(), srcFile)
+			return load(contents.root, srcFile)
 		}
 
-		fun load(xml: Element, srcFile: String): DataDefinition
+		fun load(xml: XElement, srcFile: String): DataDefinition
 		{
 			var type = xml.getAttributeValue("meta:RefKey", "???").toUpperCase()
 			if (type == "???")
 			{
-				throw DefinitionLoadException("The xml '${xml.serializeXml()}' did not contain a meta:RefKey attribute")
+				throw DefinitionLoadException("The xml '${xml.toString(0)}' did not contain a meta:RefKey attribute")
 			}
 
 			if (type.endsWith("DEF")) {

@@ -5,6 +5,8 @@ import sde.data.definition.AbstractDataDefinition
 import sde.data.definition.DefinitionMap
 import sde.data.definition.NumberDefinition
 import sde.data.definition.StructDefinition
+import sde.utils.parseXml
+import sde.utils.toXDocument
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
@@ -20,7 +22,7 @@ class StructDefinitionTest
 				<Data Name="Count1" meta:RefKey="Number" />
 				<Data Name="Count2" meta:RefKey="Number" />
 			</Data>
-		""".trimIndent()
+		""".trimIndent().parseXml().toXDocument()
 
 		val def = AbstractDataDefinition.load(xml, "")
 

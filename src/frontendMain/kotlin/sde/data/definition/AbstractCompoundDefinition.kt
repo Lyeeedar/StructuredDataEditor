@@ -4,10 +4,9 @@ import org.w3c.dom.Element
 import org.w3c.dom.Node
 import sde.data.item.AbstractCompoundDataItem
 import sde.data.item.AbstractDataItem
+import sde.util.XComment
+import sde.util.XElement
 import sde.utils.DefinitionLoadException
-import sde.utils.asSequence
-import sde.utils.getAttributeValue
-import sde.utils.serializeXml
 
 typealias CategorisedChildren = Pair<String, ArrayList<DataDefinition>>
 
@@ -28,7 +27,7 @@ abstract class AbstractCompoundDefinition<D: AbstractCompoundDefinition<D, I>, I
 		}.toList()
 	}
 
-	override fun doParse(node: Element)
+	override fun doParse(node: XElement)
 	{
 		val extends = node.getAttributeValue("Extends", "")
 		if (extends.isNotBlank())
@@ -62,18 +61,18 @@ abstract class AbstractCompoundDefinition<D: AbstractCompoundDefinition<D, I>, I
 		var currentCategory = CategorisedChildren("", ArrayList())
 		contents.add(currentCategory)
 
-		for (child in node.childNodes.asSequence())
+		for (child in node.children)
 		{
-			if (child.nodeType == Node.COMMENT_NODE)
+			if (child is XComment)
 			{
-				currentCategory = CategorisedChildren(node.textContent!!, ArrayList())
+				currentCategory = CategorisedChildren(node.value, ArrayList())
 				contents.add(currentCategory)
 			}
-			else if (child.nodeType == Node.ELEMENT_NODE)
+			else if (child is XElement)
 			{
-				if (child.nodeName == "Attributes" || child.nodeName == "AdditionalDefs") continue
+				if (child.name == "Attributes" || child.name == "AdditionalDefs") continue
 
-				val def = load(child as Element, srcFile)
+				val def = load(child, srcFile)
 				currentCategory.second.add(def)
 			}
 		}
@@ -81,7 +80,7 @@ abstract class AbstractCompoundDefinition<D: AbstractCompoundDefinition<D, I>, I
 		doParseInstance(node)
 	}
 
-	abstract fun doParseInstance(node: Element)
+	abstract fun doParseInstance(node: XElement)
 
 	override fun postResolve()
 	{

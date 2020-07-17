@@ -13,27 +13,53 @@ fun String.parseXml(): Document {
 	return dBuilder.parse(xmlInput)
 }
 
-fun Node.getElement(name: String): Node? {
-	for (i in 0 until this.childNodes.length) {
-		val child = this.childNodes.item(i)
+fun Document.toXDocument(): XDocument
+{
+	val root = this.childNodes.item(0)
+	val xroot = root.toXData() as XElement
 
-		if (child.nodeName == name) {
-			return child
+	val doc = XDocument()
+	doc.root = xroot
+
+	return doc
+}
+
+fun Node.toXData(): XData?
+{
+	val node = this
+	return when (this.nodeType)
+	{
+		Node.ELEMENT_NODE -> {
+			XElement().apply {
+				this.name = node.nodeName
+
+				for (i in 0 until node.childNodes.length)
+				{
+					val childNode = node.childNodes.item(i)
+					val xdata = childNode.toXData()
+
+					if (xdata == null) continue
+					else if (xdata is XAttribute) this.attributes.add(xdata)
+					else this.children.add(xdata)
+				}
+
+				if (this.children.size == 0)
+				{
+					this.value = node.textContent
+				}
+			}
 		}
+		Node.ATTRIBUTE_NODE -> {
+			XAttribute().apply {
+				this.name = node.nodeName
+				this.value = node.textContent
+			}
+		}
+		Node.COMMENT_NODE -> {
+			XComment().apply {
+				this.text = node.textContent
+			}
+		}
+		else -> null
 	}
-
-	return null
 }
-
-val Document.root: Node
-	get() = this.childNodes.item(0)
-
-fun Document.getElement(name: String): Node? {
-	return this.root.getElement(name)
-}
-
-var Node.value: String
-	get() = this.textContent
-	set(value) {
-		this.textContent = value
-	}

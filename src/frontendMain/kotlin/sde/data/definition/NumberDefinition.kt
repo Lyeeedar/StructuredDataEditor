@@ -4,8 +4,8 @@ import org.w3c.dom.Element
 import org.w3c.dom.Node
 import sde.data.DataDocument
 import sde.data.item.NumberItem
+import sde.util.XElement
 import sde.utils.UndoRedoManager
-import sde.utils.getAttributeValue
 
 class NumberDefinition : AbstractPrimitiveDataDefinition<NumberDefinition, NumberItem>()
 {
@@ -13,7 +13,7 @@ class NumberDefinition : AbstractPrimitiveDataDefinition<NumberDefinition, Numbe
 	var maxValue = Float.MAX_VALUE
 	var useIntegers = false
 
-	override fun doParse(node: Element)
+	override fun doParse(node: XElement)
 	{
 		minValue = node.getAttributeValue("Min", minValue)
 		maxValue = node.getAttributeValue("Max", maxValue)

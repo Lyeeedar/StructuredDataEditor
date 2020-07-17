@@ -6,8 +6,8 @@ import sde.data.DataDocument
 import sde.data.item.AbstractCompoundDataItem
 import sde.data.item.AbstractDataItem
 import sde.data.item.StructItem
+import sde.util.XElement
 import sde.utils.DefinitionLoadException
-import sde.utils.getAttributeValue
 
 abstract class AbstractStructDefinition<D: AbstractStructDefinition<D, I>, I: AbstractCompoundDataItem<D>> : AbstractCompoundDefinition<D, I>()
 {
@@ -19,7 +19,7 @@ abstract class AbstractStructDefinition<D: AbstractStructDefinition<D, I>, I: Ab
 		textColour = colours["Struct"]!!
 	}
 
-	override fun doParseInstance(node: Element)
+	override fun doParseInstance(node: XElement)
 	{
 		description = node.getAttributeValue("Description", description)
 		nullable = node.getAttributeValue("Nullable", nullable)

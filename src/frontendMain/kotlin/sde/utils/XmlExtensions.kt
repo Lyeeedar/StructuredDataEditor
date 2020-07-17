@@ -3,6 +3,7 @@ package sde.utils
 import org.w3c.dom.*
 import org.w3c.dom.parsing.DOMParser
 import org.w3c.dom.parsing.XMLSerializer
+import sde.util.*
 
 fun String.parseXml(): XMLDocument
 {
@@ -10,69 +11,67 @@ fun String.parseXml(): XMLDocument
 	return parser.parseFromString(this, "application/xml") as XMLDocument
 }
 
-fun Node.serializeXml(): String
+fun XMLDocument.toXDocument(): XDocument
 {
-	val serializer = XMLSerializer()
-	return serializer.serializeToString(this)
+	val root = this.childNodes.item(0)!!
+	val xroot = root.toXData() as XElement
+
+	val doc = XDocument()
+	doc.root = xroot
+
+	return doc
 }
 
-fun XMLDocument.getElement(name: String): Element?
+fun Node.toXData(): XData?
 {
-	return this.childNodes.elements().first().getElement(name)
-}
+	println(this)
 
-fun Element.getElement(name: String): Element?
-{
-	return this.childNodes.elements().firstOrNull { it.nodeName == name }
-}
+	val node = this
+	return when (this.nodeType)
+	{
+		Node.ELEMENT_NODE -> {
+			XElement().apply {
+				val el = node as Element
+				this.name = node.nodeName
 
-fun Element.getElementValue(name: String, fallback: String): String
-{
-	return this.getElement(name)?.textContent ?: fallback
-}
+				for (i in 0 until node.childNodes.length)
+				{
+					val childNode = node.childNodes.item(i)!!
 
-fun Element.getAttributeValue(name: String, fallback: String): String
-{
-	return this.getAttribute(name) ?: fallback
-}
+					val xdata = childNode.toXData()
 
-fun Element.getAttributeValue(name: String, fallback: Boolean): Boolean
-{
-	return this.getAttribute(name)?.toBoolean() ?: fallback
-}
+					if (xdata == null) continue
+					else if (xdata is XAttribute) this.attributes.add(xdata)
+					else this.children.add(xdata)
+				}
 
-fun Element.getAttributeValue(name: String, fallback: Int): Int
-{
-	return this.getAttribute(name)?.toInt() ?: fallback
-}
+				val attNames = el.getAttributeNames()
+				for (att in attNames)
+				{
+					val value = el.getAttribute(att)!!
+					this.attributes.add(XAttribute().apply {
+						this.name = att
+						this.value = value
+					})
+				}
 
-fun Element.getAttributeValue(name: String, fallback: Float): Float
-{
-	return this.getAttribute(name)?.toFloat() ?: fallback
-}
-
-fun NodeList.elements(): Sequence<Element>
-{
-	return this.getType(Node.ELEMENT_NODE).map { it as Element }
-}
-
-fun NodeList.attributes(): Sequence<Attr>
-{
-	return this.getType(Node.ATTRIBUTE_NODE).map { it as Attr }
-}
-
-fun NodeList.getType(type: Short): Sequence<Node>
-{
-	return this.asSequence().filter { it.nodeType == type }
-}
-
-fun NodeList.asSequence(): Sequence<Node>
-{
-	val list = this
-	return sequence {
-		for (i in 0 until list.length) {
-			val child = list.item(i) ?: continue
-			yield(child)
+				if (this.children.size == 0)
+				{
+					this.value = node.textContent!!
+				}
+			}
 		}
+		Node.ATTRIBUTE_NODE -> {
+			XAttribute().apply {
+				this.name = node.nodeName
+				this.value = node.textContent!!
+			}
+		}
+		Node.COMMENT_NODE -> {
+			XComment().apply {
+				this.text = node.textContent!!
+			}
+		}
+		else -> null
 	}
 }

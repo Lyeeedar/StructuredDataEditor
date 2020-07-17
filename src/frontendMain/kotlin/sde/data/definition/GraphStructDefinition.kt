@@ -4,7 +4,7 @@ import org.w3c.dom.Element
 import org.w3c.dom.Node
 import sde.data.DataDocument
 import sde.data.item.GraphStructItem
-import sde.utils.getAttributeValue
+import sde.util.XElement
 
 class GraphStructDefinition : AbstractStructDefinition<GraphStructDefinition, GraphStructItem>(), IGraphNodeDefinition
 {
@@ -14,7 +14,7 @@ class GraphStructDefinition : AbstractStructDefinition<GraphStructDefinition, Gr
 	override var nodeStoreName: String = "Nodes"
 	override var background: String = colours["Struct"]!!
 
-	override fun doParseInstance(node: Element)
+	override fun doParseInstance(node: XElement)
 	{
 		allowReferenceLinks = node.getAttributeValue("AllowReferenceLinks", allowReferenceLinks)
 		allowCircularLinks = node.getAttributeValue("AllowCircularLinks", allowCircularLinks)
