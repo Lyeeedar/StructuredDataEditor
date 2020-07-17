@@ -13,8 +13,7 @@ class ImageButton(src: String?, init: (ImageButton.() -> Unit)? = null) : Div()
 
 	init
 	{
-		border = Border(CssSize(1, UNIT.px), BorderStyle.SOLID, Color.name(Col.LIGHTGRAY))
-		background = Background(Color.name(Col.DARKGRAY))
+		updateBackground()
 
 		image(src)
 
@@ -34,11 +33,16 @@ class ImageButton(src: String?, init: (ImageButton.() -> Unit)? = null) : Div()
 
 	fun updateBackground()
 	{
+		opacity = if (disabled) 0.6 else 1.0
 		background = when
 		{
-			disabled -> Background(Color.name(Col.BLACK))
-			isMouseHover -> Background(Color.name(Col.GREEN))
-			else -> Background(Color.name(Col.DARKGRAY))
+			isMouseHover && !disabled -> Background(mouseOverBackgroundColour)
+			else -> Background(backgroundLightColour)
+		}
+		border = when
+		{
+			isMouseHover && !disabled -> Border(CssSize(1, UNIT.px), BorderStyle.SOLID, mouseOverBorderColour)
+			else -> Border(CssSize(1, UNIT.px), BorderStyle.SOLID, borderLightColour)
 		}
 	}
 

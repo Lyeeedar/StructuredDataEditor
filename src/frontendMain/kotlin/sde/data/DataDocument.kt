@@ -10,8 +10,7 @@ import pl.treksoft.kvision.require
 import sde.data.item.CompoundDataItem
 import sde.data.item.DataItem
 import sde.data.item.IRemovable
-import sde.ui.ImageButton
-import sde.ui.imageButton
+import sde.ui.*
 import sde.utils.UndoRedoManager
 import sde.utils.afterInsert
 import sde.utils.hover
@@ -114,15 +113,18 @@ class DataDocument
 				val depth = item.depth * 14 + 14
 				val headerWidth = sensibleHeaderWidth - depth
 
+				val borderCol = borderNormalColour
+				val backgroundCol = backgroundNormalColour
+
 				gridPanel(templateColumns = "${headerWidth}px 5px 1fr") {
 					marginBottom = CssSize(5, UNIT.px)
 					marginLeft = CssSize(depth, UNIT.px)
 
 					val headerDiv = DockPanel {
-						borderLeft = Border(CssSize(1, UNIT.px), BorderStyle.SOLID, Color.name(Col.DARKGRAY))
-						borderTop = Border(CssSize(1, UNIT.px), BorderStyle.SOLID, Color.name(Col.DARKGRAY))
-						borderBottom = Border(CssSize(1, UNIT.px), BorderStyle.SOLID, Color.name(Col.DARKGRAY))
-						background = Background(Color.name(Col.GRAY))
+						borderLeft = Border(CssSize(1, UNIT.px), BorderStyle.SOLID, borderCol)
+						borderTop = Border(CssSize(1, UNIT.px), BorderStyle.SOLID, borderCol)
+						borderBottom = Border(CssSize(1, UNIT.px), BorderStyle.SOLID, borderCol)
+						background = Background(backgroundCol)
 						width = CssSize(100, UNIT.perc)
 						height = CssSize(100, UNIT.perc)
 
@@ -158,10 +160,10 @@ class DataDocument
 					add(headerDiv, 1, 1)
 
 					val editorDiv = Div {
-						borderRight = Border(CssSize(1, UNIT.px), BorderStyle.SOLID, Color.name(Col.DARKGRAY))
-						borderTop = Border(CssSize(1, UNIT.px), BorderStyle.SOLID, Color.name(Col.DARKGRAY))
-						borderBottom = Border(CssSize(1, UNIT.px), BorderStyle.SOLID, Color.name(Col.DARKGRAY))
-						background = Background(Color.name(Col.GRAY))
+						borderRight = Border(CssSize(1, UNIT.px), BorderStyle.SOLID, borderCol)
+						borderTop = Border(CssSize(1, UNIT.px), BorderStyle.SOLID, borderCol)
+						borderBottom = Border(CssSize(1, UNIT.px), BorderStyle.SOLID, borderCol)
+						background = Background(backgroundCol)
 						width = CssSize(100, UNIT.perc)
 						height = CssSize(100, UNIT.perc)
 
@@ -173,12 +175,12 @@ class DataDocument
 						val el = getElementJQuery()!!
 						el.hover(
 							{
-								headerDiv.getElementJQuery()!!.css("border-color", "green")
-								editorDiv.getElementJQuery()!!.css("border-color", "green")
+								headerDiv.getElementJQuery()!!.css("border-color", mouseOverBorderColour.asString())
+								editorDiv.getElementJQuery()!!.css("border-color", mouseOverBorderColour.asString())
 							},
 							{
-								headerDiv.getElementJQuery()!!.css("border-color", "darkgray")
-								editorDiv.getElementJQuery()!!.css("border-color", "darkgray")
+								headerDiv.getElementJQuery()!!.css("border-color", borderCol.asString())
+								editorDiv.getElementJQuery()!!.css("border-color", borderCol.asString())
 							})
 					}
 				}
