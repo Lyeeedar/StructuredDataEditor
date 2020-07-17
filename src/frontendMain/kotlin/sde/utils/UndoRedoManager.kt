@@ -3,6 +3,7 @@ package sde.utils
 import pl.treksoft.kvision.core.Component
 import pl.treksoft.kvision.core.onClick
 import pl.treksoft.kvision.require
+import pl.treksoft.kvision.state.observableListOf
 import sde.ui.ImageButton
 import kotlin.js.Date
 import kotlin.properties.ObservableProperty
@@ -79,8 +80,8 @@ class UndoRedoManager: ObservableClass<UndoRedoManager.UndoRedoManagerObservable
 {
 	val groupingTime = 500
 
-	private val undoStack = ArrayList<UndoRedoGroup>()
-	private val redoStack = ArrayList<UndoRedoGroup>()
+	private val undoStack = observableListOf<UndoRedoGroup>()
+	private val redoStack = observableListOf<UndoRedoGroup>()
 
 	val canUndo: Boolean
 		get() = undoStack.size > 0
@@ -234,11 +235,13 @@ class UndoRedoManager: ObservableClass<UndoRedoManager.UndoRedoManagerObservable
 				undo()
 			}
 
-			registerListener("") {
+			this.setDisabled(!canUndo)
+			undoStack.onUpdate.add {
 				this.setDisabled(!canUndo)
 			}
 		}
 	}
+
 
 	val redoButton: Component by lazy {
 		ImageButton(require("images/Redo.png") as? String) {
@@ -246,7 +249,8 @@ class UndoRedoManager: ObservableClass<UndoRedoManager.UndoRedoManagerObservable
 				redo()
 			}
 
-			registerListener("") {
+			this.setDisabled(!canRedo)
+			redoStack.onUpdate.add {
 				this.setDisabled(!canRedo)
 			}
 		}
