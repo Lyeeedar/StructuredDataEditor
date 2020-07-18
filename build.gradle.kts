@@ -119,7 +119,7 @@ kotlin {
                                 "/kv/*" to "http://localhost:8080",
                                 "/kvws/*" to mapOf("target" to "ws://localhost:8080", "ws" to true)
                         ),
-                        contentBase = listOf("$buildDir/processedResources/frontend/main")
+                        contentBase = listOf("$buildDir/processedResources/electron/main")
                 )
             }
             testTask {
