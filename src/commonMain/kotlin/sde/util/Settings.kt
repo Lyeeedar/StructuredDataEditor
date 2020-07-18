@@ -1,13 +1,6 @@
 package sde.util
 
 import kotlinx.serialization.Serializable
-import pl.treksoft.kvision.annotations.KVService
-
-@KVService
-interface ISettingsService {
-    suspend fun loadSettings(): Settings
-    suspend fun saveSettings(settings: Settings): Boolean
-}
 
 @Serializable
 class Settings
