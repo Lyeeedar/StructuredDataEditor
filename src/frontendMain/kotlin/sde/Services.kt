@@ -1,9 +1,10 @@
 package sde
 
-import sde.project.ProjectService
+import sde.util.DiskService
+import sde.util.SettingsService
 
 object Services
 {
-	val startPageService = StartPageService()
-	val projectService = ProjectService()
+	val settings = SettingsService()
+	val disk = DiskService()
 }

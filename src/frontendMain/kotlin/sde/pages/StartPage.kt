@@ -9,11 +9,16 @@ import pl.treksoft.kvision.modal.Modal
 import pl.treksoft.kvision.panel.FlexWrap
 import pl.treksoft.kvision.panel.hPanel
 import pl.treksoft.kvision.panel.vPanel
-import sde.NewProjectConfig
 import sde.Services
 import sde.project.ProjectDef
+import sde.project.ProjectExplorerPage
+import sde.project.addRecentProject
+import sde.project.removeRecentProject
 import sde.ui.TextBlock
 import sde.ui.textBlock
+import sde.utils.getProjectName
+import sde.utils.updateSettings
+import kotlin.js.Date
 
 class StartPage(pageManager: PageManager) : AbstractPage(pageManager)
 {
@@ -44,7 +49,8 @@ class StartPage(pageManager: PageManager) : AbstractPage(pageManager)
 
 						onClick {
 							scope.launch {
-								val project = Services.startPageService.browseExistingProject()
+								val file = Services.disk.browseFile()
+								val project = ProjectDef.load(file)
 								openProject(project)
 							}
 						}
@@ -72,7 +78,7 @@ class StartPage(pageManager: PageManager) : AbstractPage(pageManager)
 									button("Browse", style = ButtonStyle.SECONDARY) {
 										onClick {
 											scope.launch {
-												val folder = Services.startPageService.browseFolder()
+												val folder = Services.disk.browseFolder()
 
 												val name = form[NewProjectConfig::name] as String? ?: ""
 												val currentData = NewProjectConfig(folder, "$folder/Definitions", name)
@@ -86,7 +92,13 @@ class StartPage(pageManager: PageManager) : AbstractPage(pageManager)
 										onClick {
 											if (form.validate(true)) {
 												scope.launch {
-													val project = Services.startPageService.createNewProject(form.getData())
+													val data = form.getData()
+													val contents = data.toString()
+													val path = data.rootFolder + "/ProjectRoot.xml"
+
+													Services.disk.saveFileString(path, contents)
+
+													val project = ProjectDef.load(path)
 													openProject(project)
 
 													modal.hide()
@@ -132,7 +144,8 @@ class StartPage(pageManager: PageManager) : AbstractPage(pageManager)
 
 	private fun updateRecentProjects() {
 		scope.launch {
-			val recentProjects = Services.startPageService.getRecentProjects()
+			val settings = Services.settings.loadSettings()
+			val recentProjects = settings.recentProjects
 
 			recentProjectsDiv.removeAll()
 
@@ -141,6 +154,8 @@ class StartPage(pageManager: PageManager) : AbstractPage(pageManager)
 			}
 
 			for (project in recentProjects) {
+				val projName = project.getProjectName()
+
 				recentProjectsDiv.add(Div {
 					addCssClass("jumbotron")
 					padding = CssSize(1, UNIT.rem)
@@ -149,16 +164,18 @@ class StartPage(pageManager: PageManager) : AbstractPage(pageManager)
 
 					hPanel {
 						vPanel {
-							h4(project.name)
+							h4(projName)
 							textBlock(project.path)
 						}
 
-						textBlock(project.lastOpened.toDateString())
+						textBlock(Date(project.lastOpened).toLocaleDateString())
 						button("X", style = ButtonStyle.SECONDARY) {
 							onClick { e ->
 								e.stopPropagation()
 								scope.launch {
-									Services.startPageService.removeRecentProject(project.path)
+									updateSettings {
+										it.removeRecentProject(project.path)
+									}
 									updateRecentProjects()
 								}
 							}
@@ -167,7 +184,7 @@ class StartPage(pageManager: PageManager) : AbstractPage(pageManager)
 
 					onClick {
 						scope.launch {
-							val project = Services.startPageService.openProject(project.path)
+							val project = ProjectDef.load(project.path)
 							openProject(project)
 						}
 					}
@@ -177,9 +194,27 @@ class StartPage(pageManager: PageManager) : AbstractPage(pageManager)
 	}
 
 	private fun openProject(projectDef: ProjectDef) {
+		scope.launch {
+			updateSettings {
+				it.addRecentProject(projectDef.projectRootPath)
+			}
+		}
+
 		val projectPage = ProjectExplorerPage(projectDef, pageManager)
 		pageManager.pages.remove(this)
 		pageManager.addPage(projectPage)
 		projectPage.show()
+	}
+}
+
+class NewProjectConfig(var rootFolder: String, var defsFolder: String, var name: String)
+{
+	override fun toString(): String {
+		return """
+			<Project>
+				<Name>$name</Name>
+				<Definitions>$defsFolder</Definitions>
+			</Project>
+		""".trimIndent()
 	}
 }
