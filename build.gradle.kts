@@ -53,6 +53,7 @@ val jdbcNamedParametersVersion: String by project
 
 // Custom Properties
 val webDir = file("src/frontendMain/web")
+val electronDir = file("src/electronMain/electron")
 val isProductionBuild = project.extra.get("production") as Boolean
 val mainClassName = "io.ktor.server.netty.EngineMain"
 
@@ -90,6 +91,36 @@ kotlin {
             }
             webpackTask {
                 outputFileName = "${project.name}-frontend.js"
+            }
+            testTask {
+                useKarma {
+                    useChromeHeadless()
+                }
+            }
+        }
+    }
+    js("electron") {
+        compilations.all {
+            kotlinOptions {
+                moduleKind = "umd"
+                sourceMap = !isProductionBuild
+                if (!isProductionBuild) {
+                    sourceMapEmbedSources = "always"
+                }
+            }
+        }
+        browser {
+            runTask {
+                outputFileName = "main.bundle.js"
+                devServer = KotlinWebpackConfig.DevServer(
+                        open = false,
+                        port = 3000,
+                        proxy = mapOf(
+                                "/kv/*" to "http://localhost:8080",
+                                "/kvws/*" to mapOf("target" to "ws://localhost:8080", "ws" to true)
+                        ),
+                        contentBase = listOf("$buildDir/processedResources/frontend/main")
+                )
             }
             testTask {
                 useKarma {
@@ -166,6 +197,38 @@ kotlin {
             dependencies {
                 implementation(kotlin("test-js"))
                 implementation("pl.treksoft:kvision-testutils:$kvisionVersion:tests")
+            }
+        }
+        val electronMain by getting {
+            resources.srcDir(webDir)
+            dependencies {
+                implementation(kotlin("stdlib-js"))
+                implementation(npm("po2json"))
+                implementation(npm("grunt"))
+                implementation(npm("grunt-pot"))
+
+                implementation(npm("electron", "7.1.9"))
+                implementation(npm("electron-builder", "21.2.0"))
+
+                implementation("pl.treksoft:kvision:$kvisionVersion")
+                implementation("pl.treksoft:kvision-bootstrap:$kvisionVersion")
+                implementation("pl.treksoft:kvision-bootstrap-css:$kvisionVersion")
+                implementation("pl.treksoft:kvision-bootstrap-datetime:$kvisionVersion")
+                implementation("pl.treksoft:kvision-bootstrap-select:$kvisionVersion")
+                implementation("pl.treksoft:kvision-bootstrap-spinner:$kvisionVersion")
+                implementation("pl.treksoft:kvision-bootstrap-upload:$kvisionVersion")
+                implementation("pl.treksoft:kvision-bootstrap-dialog:$kvisionVersion")
+                implementation("pl.treksoft:kvision-fontawesome:$kvisionVersion")
+                implementation("pl.treksoft:kvision-i18n:$kvisionVersion")
+                implementation("pl.treksoft:kvision-richtext:$kvisionVersion")
+                implementation("pl.treksoft:kvision-handlebars:$kvisionVersion")
+                implementation("pl.treksoft:kvision-datacontainer:$kvisionVersion")
+                implementation("pl.treksoft:kvision-redux:$kvisionVersion")
+                implementation("pl.treksoft:kvision-chart:$kvisionVersion")
+                implementation("pl.treksoft:kvision-tabulator:$kvisionVersion")
+                implementation("pl.treksoft:kvision-pace:$kvisionVersion")
+                implementation("pl.treksoft:kvision-moment:$kvisionVersion")
+                implementation("pl.treksoft:kvision-electron:$kvisionVersion")
             }
         }
     }
@@ -330,6 +393,7 @@ afterEvaluate {
             outputs.file(archiveFile)
             duplicatesStrategy = DuplicatesStrategy.EXCLUDE
         }
+        getByName("frontendRun").group = "run"
         create("backendRun", JavaExec::class) {
             dependsOn("compileKotlinBackend")
             group = "run"
@@ -344,6 +408,90 @@ afterEvaluate {
         }
         getByName("compileKotlinFrontend") {
             dependsOn("compileKotlinMetadata")
+        }
+        getByName("electronProcessResources", Copy::class) {
+            dependsOn("compileKotlinElectron")
+            exclude("**/*.pot")
+            doLast("Convert PO to JSON") {
+                destinationDir.walkTopDown().filter {
+                    it.isFile && it.extension == "po"
+                }.forEach {
+                    exec {
+                        executable = getNodeJsBinaryExecutable()
+                        args(
+                                "$buildDir/js/node_modules/po2json/bin/po2json",
+                                it.absolutePath,
+                                "${it.parent}/${it.nameWithoutExtension}.json",
+                                "-f",
+                                "jed1.x"
+                        )
+                        println("Converted ${it.name} to ${it.nameWithoutExtension}.json")
+                    }
+                    it.delete()
+                }
+                copy {
+                    file("$buildDir/tmp/expandedArchives/").listFiles()?.forEach {
+                        if (it.isDirectory && it.name.startsWith("kvision")) {
+                            val kvmodule = it.name.split("-$kvisionVersion").first()
+                            from(it) {
+                                include("css/**")
+                                include("img/**")
+                                include("js/**")
+                                if (kvmodule == "kvision") {
+                                    into("kvision/$kvisionVersion")
+                                } else {
+                                    into("kvision-$kvmodule/$kvisionVersion")
+                                }
+                            }
+                        }
+                    }
+                    into(file(buildDir.path + "/js/packages_imported"))
+                }
+            }
+        }
+        create("zip", Zip::class) {
+            dependsOn("electronBrowserProductionWebpack")
+            group = "package"
+            destinationDirectory.set(file("$buildDir/libs"))
+            val distribution =
+                    project.tasks.getByName("electronBrowserProductionWebpack", KotlinWebpack::class).destinationDirectory!!
+            from(distribution) {
+                include("*.*")
+            }
+            from(webDir)
+            duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+            inputs.files(distribution, webDir)
+            outputs.file(archiveFile)
+        }
+        create("buildApp", Copy::class) {
+            dependsOn("electronBrowserProductionWebpack")
+            group = "build"
+            val distribution =
+                    project.tasks.getByName("electronBrowserProductionWebpack", KotlinWebpack::class).destinationDirectory
+            from(distribution, webDir, electronDir)
+            inputs.files(distribution, webDir, electronDir)
+            into("$buildDir/dist")
+        }
+        create("runApp", Exec::class) {
+            dependsOn("buildApp")
+            group = "run"
+            workingDir = file("$buildDir/dist")
+            executable = getNodeJsBinaryExecutable()
+            args("$buildDir/js/node_modules/electron/cli.js", ".")
+        }
+        create("bundleApp", Exec::class) {
+            dependsOn("buildApp")
+            group = "package"
+            doFirst {
+                val targetDir = file("$buildDir/electron")
+                if (targetDir.exists()) {
+                    targetDir.deleteRecursively()
+                }
+                targetDir.mkdirs()
+            }
+            workingDir = file("$buildDir/dist")
+            executable = getNodeJsBinaryExecutable()
+            args("$buildDir/js/node_modules/electron-builder/out/cli/cli.js", "--config")
         }
     }
 }
