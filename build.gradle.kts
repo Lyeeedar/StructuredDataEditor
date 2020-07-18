@@ -200,7 +200,8 @@ kotlin {
             }
         }
         val electronMain by getting {
-            resources.srcDir(webDir)
+            resources.srcDirs(sourceSets["frontendMain"].resources.srcDirs)
+            kotlin.srcDir("src/frontendMain/kotlin")
             dependencies {
                 implementation(kotlin("stdlib-js"))
                 implementation(npm("po2json"))
@@ -212,7 +213,6 @@ kotlin {
 
                 implementation("pl.treksoft:kvision:$kvisionVersion")
                 implementation("pl.treksoft:kvision-bootstrap:$kvisionVersion")
-                implementation("pl.treksoft:kvision-bootstrap-css:$kvisionVersion")
                 implementation("pl.treksoft:kvision-bootstrap-datetime:$kvisionVersion")
                 implementation("pl.treksoft:kvision-bootstrap-select:$kvisionVersion")
                 implementation("pl.treksoft:kvision-bootstrap-spinner:$kvisionVersion")
@@ -257,6 +257,22 @@ tasks {
                     }
                 }
                 into(file("${buildDir.path}/js/packages/${project.name}-frontend/kotlin-dce"))
+            }
+        }
+    }
+    withType<KotlinJsDce> {
+        doLast {
+            copy {
+                file("$buildDir/tmp/expandedArchives/").listFiles()?.forEach {
+                    if (it.isDirectory && it.name.startsWith("kvision")) {
+                        from(it) {
+                            include("css/**")
+                            include("img/**")
+                            include("js/**")
+                        }
+                    }
+                }
+                into(file("${buildDir.path}/js/packages/${project.name}-electron/kotlin-dce"))
             }
         }
     }
