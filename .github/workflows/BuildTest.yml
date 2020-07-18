@@ -14,4 +14,10 @@ jobs:
         run: chmod +x ./gradlew
 
       - name: Build and Test
+        run: |
+          ./gradlew compileKotlinBackend
+          ./gradlew compileKotlinFrontend
+          ./gradlew buildApp
+
+      - name: Test
         run: ./gradlew check
