@@ -480,6 +480,7 @@ afterEvaluate {
             outputs.file(archiveFile)
         }
         create("buildApp", Copy::class) {
+            dependsOn("compileKotlinFrontend")
             dependsOn("electronBrowserProductionWebpack")
             group = "build"
             val distribution =
