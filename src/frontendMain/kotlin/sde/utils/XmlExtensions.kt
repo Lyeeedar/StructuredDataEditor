@@ -3,7 +3,19 @@ package sde.utils
 import org.w3c.dom.*
 import org.w3c.dom.parsing.DOMParser
 import org.w3c.dom.parsing.XMLSerializer
+import sde.Services
 import sde.util.*
+
+suspend fun String.getFileDefType(): String?
+{
+	try {
+		val fileContents = Services.disk.loadFileString(this)
+		val xml = fileContents.parseXml()
+		return xml.childNodes.item(0)!!.nodeName
+	} catch(ex: Exception) {
+		return null
+	}
+}
 
 fun String.parseXml(): XMLDocument
 {

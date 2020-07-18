@@ -1,21 +1,22 @@
-package sde.pages
+package sde.project
 
 import kotlinx.coroutines.launch
 import pl.treksoft.kvision.core.Component
-import pl.treksoft.kvision.core.CssSize
-import pl.treksoft.kvision.core.UNIT
 import pl.treksoft.kvision.core.onClick
 import pl.treksoft.kvision.html.*
 import pl.treksoft.kvision.panel.hPanel
 import sde.Services
 import sde.data.DataDocument
+import sde.data.DataDocumentPage
 import sde.data.Project
 import sde.data.item.CompoundDataItem
-import sde.project.ProjectDef
-import sde.project.ProjectItem
+import sde.pages.AbstractPage
+import sde.pages.PageManager
+import sde.pages.StartPage
 import sde.ui.TextBlock
 import sde.ui.textBlock
-import sde.utils.UndoRedoManager
+import sde.util.ProjectItem
+import sde.utils.getFileDefType
 
 class ProjectExplorerPage(val projectDef: ProjectDef, pageManager: PageManager) : AbstractPage(pageManager)
 {
@@ -121,7 +122,7 @@ class ProjectFolderView(item: ProjectItem, page: ProjectExplorerPage) : Abstract
 
 	private suspend fun loadChildren() {
 		if (children == null) {
-			val items = Services.projectService.getFolderContents(item.path)
+			val items = Services.disk.getFolderContents(item.path)
 			children = items.map { getItemView(it, page) }.toList()
 		}
 	}
@@ -199,7 +200,7 @@ class ProjectFileView(item: ProjectItem, page: ProjectExplorerPage) : AbstractPr
 			if (type == null)
 			{
 				page.scope.launch {
-					type = Services.projectService.getFileDefType(item.path)
+					type = item.path.getFileDefType()
 					typeSpan.content = "($type)"
 				}
 			}

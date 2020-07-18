@@ -1,9 +1,10 @@
-package sde.pages
+package sde.data
 
 import pl.treksoft.kvision.core.Component
 import pl.treksoft.kvision.html.Div
 import pl.treksoft.kvision.panel.hPanel
-import sde.data.DataDocument
+import sde.pages.AbstractPage
+import sde.pages.PageManager
 
 class DataDocumentPage(val data: DataDocument, pageManager: PageManager) : AbstractPage(pageManager)
 {
