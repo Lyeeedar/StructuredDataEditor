@@ -315,6 +315,19 @@ tasks {
 }
 afterEvaluate {
     tasks {
+        create("cleanWebpackConfig", Delete::class) {
+            delete("webpack.config.d")
+            group = "build"
+        }
+        create("copyFrontendWebpackConfig", Copy::class) {
+            dependsOn("cleanWebpackConfig")
+            group = "build"
+            from("frontend.webpack.config.d")
+            into("webpack.config.d")
+        }
+        getByName("frontendBrowserProductionWebpack", KotlinWebpack::class) {
+            dependsOn("copyFrontendWebpackConfig")
+        }
         getByName("frontendProcessResources", Copy::class) {
             dependsOn("compileKotlinFrontend")
             exclude("**/*.pot")
@@ -424,6 +437,7 @@ afterEvaluate {
         }
         getByName("compileKotlinFrontend") {
             dependsOn("compileKotlinMetadata")
+            dependsOn("copyFrontendWebpackConfig")
         }
         getByName("electronProcessResources", Copy::class) {
             dependsOn("compileKotlinElectron")
@@ -478,6 +492,15 @@ afterEvaluate {
             duplicatesStrategy = DuplicatesStrategy.EXCLUDE
             inputs.files(distribution, webDir)
             outputs.file(archiveFile)
+        }
+        create("copyElectronWebpackConfig", Copy::class) {
+            dependsOn("cleanWebpackConfig")
+            group = "build"
+            from("electron.webpack.config.d")
+            into("webpack.config.d")
+        }
+        getByName("electronBrowserProductionWebpack", KotlinWebpack::class) {
+            dependsOn("copyElectronWebpackConfig")
         }
         create("buildApp", Copy::class) {
             dependsOn("compileKotlinFrontend")

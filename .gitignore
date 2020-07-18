@@ -8,3 +8,5 @@ out/
 *.ipr
 *.iws
 *.idea
+
+webpack.config.d/
