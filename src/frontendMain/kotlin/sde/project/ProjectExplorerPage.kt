@@ -3,9 +3,12 @@ package sde.project
 import kotlinx.coroutines.launch
 import pl.treksoft.kvision.core.*
 import pl.treksoft.kvision.html.*
+import pl.treksoft.kvision.panel.DockPanel
 import pl.treksoft.kvision.panel.Side
 import pl.treksoft.kvision.panel.VPanel
 import pl.treksoft.kvision.panel.dockPanel
+import pl.treksoft.kvision.toast.Toast
+import pl.treksoft.kvision.toast.ToastOptions
 import sde.Services
 import sde.data.DataDocument
 import sde.data.DataDocumentPage
@@ -18,6 +21,7 @@ import sde.ui.TextBlock
 import sde.ui.mouseOverBackgroundColour
 import sde.util.ProjectItem
 import sde.utils.afterInsert
+import sde.utils.disableSelection
 import sde.utils.getFileDefType
 
 
@@ -39,6 +43,19 @@ class ProjectExplorerPage(val projectDef: ProjectDef, pageManager: PageManager) 
 		rootItem.isDirectory = true
 
 		projectRoot = ProjectFolderView(rootItem, this@ProjectExplorerPage)
+
+		scope.launch {
+			project.loadJob?.join()
+
+			if (project.definitionLoadErrors.size > 0) {
+				var message = ""
+				for (error in project.definitionLoadErrors.groupBy { it.first }) {
+					message += error.key.split(projectDef.defsFolder)[1] + ":\n" + error.value.joinToString("\n") { it.second } + "\n"
+				}
+
+				Toast.error(message,"Some definitions failed to load", ToastOptions(timeOut = 100000))
+			}
+		}
 	}
 
 	private fun getVisibleItems(current: ProjectFolderView = projectRoot, depth: Int = 1): Sequence<AbstractProjectItemView>
@@ -170,8 +187,8 @@ class ProjectFolderView(item: ProjectItem, page: ProjectExplorerPage) : Abstract
 
 	fun getChildrenIfVisible(): List<AbstractProjectItemView>?
 	{
-		if (isExpanded && children != null) {
-			return children!!
+		if (isExpanded) {
+			return children ?: listOf(LoadingView(item, page))
 		}
 
 		return null
@@ -203,6 +220,10 @@ class ProjectFolderView(item: ProjectItem, page: ProjectExplorerPage) : Abstract
 
 				add(Bold(name) {
 					opacity = 0.7
+
+					afterInsert {
+						it.disableSelection()
+					}
 				})
 			}
 
@@ -259,6 +280,10 @@ class ProjectFileView(item: ProjectItem, page: ProjectExplorerPage) : AbstractPr
 			maxWidth = CssSize(16, UNIT.px)
 			maxHeight = CssSize(16, UNIT.px)
 
+			afterInsert {
+				it.disableSelection()
+			}
+
 			image(pl.treksoft.kvision.require("images/File.png") as? String)
 		}
 		val name = TextBlock(name)
@@ -267,6 +292,8 @@ class ProjectFileView(item: ProjectItem, page: ProjectExplorerPage) : AbstractPr
 			if (type == null)
 			{
 				page.scope.launch {
+					page.project.loadJob?.join()
+
 					type = item.path.getFileDefType()
 					typeSpan.content = "($type)"
 
@@ -287,14 +314,12 @@ class ProjectFileView(item: ProjectItem, page: ProjectExplorerPage) : AbstractPr
 			}
 		}
 
-		return Div {
-			dockPanel {
-				marginLeft = CssSize(depth * 20 + 10, UNIT.px)
+		return DockPanel {
+			marginLeft = CssSize(depth * 20 + 10, UNIT.px)
 
-				add(typeSpan, Side.RIGHT)
-				add(icon, Side.LEFT)
-				add(name)
-			}
+			add(typeSpan, Side.RIGHT)
+			add(icon, Side.LEFT)
+			add(name)
 
 			afterInsert {
 				it.dblclick {
@@ -304,4 +329,13 @@ class ProjectFileView(item: ProjectItem, page: ProjectExplorerPage) : AbstractPr
 		}
 	}
 
+}
+
+class LoadingView(item: ProjectItem, page: ProjectExplorerPage) : AbstractProjectItemView(item, page) {
+	override fun getComponent(): Component {
+		return TextBlock("... Loading ...") {
+			marginLeft = CssSize(depth * 20 + 10, UNIT.px)
+			opacity = 0.5
+		}
+	}
 }

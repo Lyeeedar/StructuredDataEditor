@@ -190,6 +190,7 @@ kotlin {
                 implementation("pl.treksoft:kvision-tabulator:$kvisionVersion")
                 implementation("pl.treksoft:kvision-pace:$kvisionVersion")
                 implementation("pl.treksoft:kvision-moment:$kvisionVersion")
+                implementation("pl.treksoft:kvision-toast:$kvisionVersion")
             }
             kotlin.srcDir("build/generated-src/frontend")
         }
@@ -229,6 +230,7 @@ kotlin {
                 implementation("pl.treksoft:kvision-pace:$kvisionVersion")
                 implementation("pl.treksoft:kvision-moment:$kvisionVersion")
                 implementation("pl.treksoft:kvision-electron:$kvisionVersion")
+                implementation("pl.treksoft:kvision-toast:$kvisionVersion")
             }
         }
     }

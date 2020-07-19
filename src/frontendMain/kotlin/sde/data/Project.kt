@@ -1,6 +1,8 @@
 package sde.data
 
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
+import pl.treksoft.kvision.toast.Toast
 import sde.Services
 import sde.data.definition.AbstractDataDefinition
 import sde.data.definition.DataDefinition
@@ -20,14 +22,30 @@ class Project(val def: ProjectDef, val page: ProjectExplorerPage)
 	val definitions = HashMap<String, DefinitionMap>()
 	val rootDefinitions = HashMap<String, DataDefinition>()
 
+	val definitionLoadErrors = ArrayList<Pair<String, String>>()
+
+	var loadJob: Job? = null
+
 	init {
-		page.scope.launch {
-			loadDefinitions(def.defsFolder)
-			for (defMap in definitions.values) {
-				for (def in defMap.values) {
-					def.resolve(globalDefs, definitions)
+		loadJob = page.scope.launch {
+			try {
+				loadDefinitions(def.projectRootPath.replace("ProjectRoot.xml", def.defsFolder))
+				for (defMap in definitions.values) {
+					for (def in defMap.values) {
+						try {
+							def.resolve(globalDefs, definitions)
+						} catch (ex: Throwable) {
+							definitionLoadErrors.add(Pair(def.srcFile, ex.message ?: ""))
+						}
+					}
 				}
+
+				Toast.success("Loaded ${rootDefinitions.size} resource types", "Definition load complete")
+			} catch (ex: Throwable) {
+				Toast.error(ex.message ?: ex.toString(), "Definition load failed")
 			}
+
+			loadJob = null
 		}
 	}
 
@@ -38,22 +56,26 @@ class Project(val def: ProjectDef, val page: ProjectExplorerPage)
 			if (item.isDirectory) {
 				loadDefinitions(item.path)
 			} else if (item.path.endsWith(".xmldef")) {
-				val contents = Services.disk.loadFileString(item.path)
-				val defMap = parseDefinitionsFile(contents, item.path)
+				try {
+					val fileContents = Services.disk.loadFileString(item.path)
+					val defMap = parseDefinitionsFile(fileContents, item.path)
 
-				definitions[item.path] = defMap
+					definitions[item.path] = defMap
 
-				for (def in defMap.values) {
-					if (def.isGlobal || !def.isDef) {
-						if (globalDefs.containsKey(def.name)) {
-							throw DefinitionLoadException("Duplicate definition with name ${def.name}")
+					for (def in defMap.values) {
+						if (def.isGlobal || !def.isDef) {
+							if (globalDefs.containsKey(def.name)) {
+								throw DefinitionLoadException("Duplicate definition with name ${def.name}")
+							}
+
+							globalDefs[def.name] = def
 						}
-
-						globalDefs[def.name] = def
+						if (!def.isDef) {
+							rootDefinitions[def.name] = def
+						}
 					}
-					if (!def.isDef) {
-						rootDefinitions[def.name] = def
-					}
+				} catch (ex: Throwable) {
+					definitionLoadErrors.add(Pair(item.path, ex.message ?: ""))
 				}
 			}
 		}
