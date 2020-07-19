@@ -1,6 +1,7 @@
 package sde.pages
 
 import kotlinx.coroutines.launch
+import kotlinx.serialization.Serializable
 import pl.treksoft.kvision.core.*
 import pl.treksoft.kvision.form.*
 import pl.treksoft.kvision.form.text.Text
@@ -207,7 +208,8 @@ class StartPage(pageManager: PageManager) : AbstractPage(pageManager)
 	}
 }
 
-class NewProjectConfig(var rootFolder: String, var defsFolder: String, var name: String)
+@Serializable
+class NewProjectConfig(var rootFolder: String = "", var defsFolder: String = "", var name: String = "")
 {
 	override fun toString(): String {
 		return """
