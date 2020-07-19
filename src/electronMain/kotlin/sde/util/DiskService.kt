@@ -1,11 +1,11 @@
 package sde.util
 
 import node.fs.fs
+import org.khronos.webgl.get
 import pl.treksoft.kvision.electron.OpenDialogOptions
 import pl.treksoft.kvision.electron.Remote
 import pl.treksoft.kvision.electron.nodejs.Process
 import pl.treksoft.kvision.require
-import pl.treksoft.kvision.utils.obj
 
 external val process: Process
 
@@ -17,8 +17,18 @@ actual class DiskService : IDiskService {
         return fs.readFileStringSync(path, "utf8")
     }
 
+    override suspend fun loadFileBytes(path: String): List<Byte> {
+        val buffer = fs.readFileBufferSync(path)
+        return ByteArray(buffer.length) { i -> buffer[i] }.toList()
+    }
+
     override suspend fun saveFileString(path: String, contents: String): Boolean {
         fs.writeFileSync(path, contents)
+        return true
+    }
+
+    override suspend fun saveFileBytes(path: String, data: List<Byte>): Boolean {
+        fs.writeFileSync(path, data.toByteArray())
         return true
     }
 

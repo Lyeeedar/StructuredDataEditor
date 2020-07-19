@@ -4,6 +4,7 @@ import com.github.snabbdom.VNode
 import pl.treksoft.jquery.JQuery
 import pl.treksoft.kvision.core.Widget
 import pl.treksoft.kvision.core.onEvent
+import pl.treksoft.kvision.html.Image
 
 fun JQuery.hover(funcIn: (JQuery)->Unit, funcOut: (JQuery)->Unit)
 {
@@ -22,4 +23,12 @@ fun Widget.afterInsert(actionFunc: (JQuery)->Unit)
 		val el = getElementJQuery()
 		if (el != null) actionFunc(el)
 	}
+}
+
+fun imageFromBytes(bytes: List<Byte>, originalFileType: String): Image
+{
+	val asBase64 = bytes.joinToString("") { it.toChar().toString() }
+	val dataUrl = "data:image/$originalFileType;base64,$asBase64"
+
+	return Image(dataUrl)
 }

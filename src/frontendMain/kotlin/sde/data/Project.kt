@@ -16,6 +16,8 @@ import sde.utils.toXDocument
 
 class Project(val def: ProjectDef, val page: ProjectExplorerPage)
 {
+	val projectRootFolder = def.projectRootPath.replace('\\', '/').replace("/ProjectRoot.xml", "")
+
 	var recentItems: List<String> = ArrayList()
 
 	val globalDefs = HashMap<String, DataDefinition>()
@@ -27,9 +29,9 @@ class Project(val def: ProjectDef, val page: ProjectExplorerPage)
 	var loadJob: Job? = null
 
 	init {
-		loadJob = page.scope.launch {
+		loadJob = page.launch {
 			try {
-				loadDefinitions(def.projectRootPath.replace("ProjectRoot.xml", def.defsFolder))
+				loadDefinitions(projectRootFolder + "/" + def.defsFolder)
 				for (defMap in definitions.values) {
 					for (def in defMap.values) {
 						try {

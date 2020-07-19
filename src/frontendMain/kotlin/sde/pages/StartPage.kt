@@ -49,7 +49,7 @@ class StartPage(pageManager: PageManager) : AbstractPage(pageManager)
 						align = Align.RIGHT
 
 						onClick {
-							scope.launch {
+							launch {
 								val file = Services.disk.browseFile()
 								val project = ProjectDef.load(file)
 								openProject(project)
@@ -78,7 +78,7 @@ class StartPage(pageManager: PageManager) : AbstractPage(pageManager)
 									this.add(NewProjectConfig::rootFolder, Text(label = "Root folder"), required = true, validator = { !it.value.isNullOrBlank() }, validatorMessage = { "Root folder must not be empty" })
 									button("Browse", style = ButtonStyle.SECONDARY) {
 										onClick {
-											scope.launch {
+											launch {
 												val folder = Services.disk.browseFolder()
 
 												val name = form[NewProjectConfig::name] as String? ?: ""
@@ -92,7 +92,7 @@ class StartPage(pageManager: PageManager) : AbstractPage(pageManager)
 									button("Create") {
 										onClick {
 											if (form.validate(true)) {
-												scope.launch {
+												launch {
 													val data = form.getData()
 													val contents = data.toString()
 													val path = data.rootFolder + "/ProjectRoot.xml"
@@ -144,7 +144,7 @@ class StartPage(pageManager: PageManager) : AbstractPage(pageManager)
 	}
 
 	private fun updateRecentProjects() {
-		scope.launch {
+		launch {
 			val settings = Services.settings.loadSettings()
 			val recentProjects = settings.recentProjects
 
@@ -173,7 +173,7 @@ class StartPage(pageManager: PageManager) : AbstractPage(pageManager)
 						button("X", style = ButtonStyle.SECONDARY) {
 							onClick { e ->
 								e.stopPropagation()
-								scope.launch {
+								launch {
 									updateSettings {
 										it.removeRecentProject(project.path)
 									}
@@ -184,7 +184,7 @@ class StartPage(pageManager: PageManager) : AbstractPage(pageManager)
 					}
 
 					onClick {
-						scope.launch {
+						launch {
 							val project = ProjectDef.load(project.path)
 							openProject(project)
 						}
@@ -195,7 +195,7 @@ class StartPage(pageManager: PageManager) : AbstractPage(pageManager)
 	}
 
 	private fun openProject(projectDef: ProjectDef) {
-		scope.launch {
+		launch {
 			updateSettings {
 				it.addRecentProject(projectDef.projectRootPath)
 			}

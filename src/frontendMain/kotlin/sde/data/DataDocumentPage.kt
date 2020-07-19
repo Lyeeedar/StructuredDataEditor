@@ -16,7 +16,7 @@ class DataDocumentPage(val data: DataDocument, pageManager: PageManager) : Abstr
 
 	init
 	{
-		data.startChangeWatcher(scope)
+		data.startChangeWatcher(getPageScope())
 	}
 
 	override fun createComponent(): Component

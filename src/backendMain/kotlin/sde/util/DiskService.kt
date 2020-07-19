@@ -10,6 +10,10 @@ actual class DiskService : IDiskService {
         return File(path).readText()
     }
 
+    override suspend fun loadFileBytes(path: String): List<Byte> {
+        return File(path).readBytes().toList()
+    }
+
     override suspend fun saveFileString(path: String, contents: String): Boolean {
         val file = File(path)
 
@@ -20,6 +24,19 @@ actual class DiskService : IDiskService {
         }
 
         File(path).writeText(contents)
+        return true
+    }
+
+    override suspend fun saveFileBytes(path: String, data: List<Byte>): Boolean {
+        val file = File(path)
+
+        val parent = file.parentFile
+        if (!parent.exists())
+        {
+            parent.mkdirs()
+        }
+
+        File(path).writeBytes(data.toByteArray())
         return true
     }
 
