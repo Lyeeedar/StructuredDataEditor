@@ -33,7 +33,7 @@ actual class DiskService : IDiskService {
 
         for (child in rawContents) {
             val projItem = ProjectItem()
-            projItem.path = child.name
+            projItem.path = path + "/" + child.name
             projItem.isDirectory = child.isDirectory()
 
             output.add(projItem)
