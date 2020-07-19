@@ -1,10 +1,11 @@
 package sde.project
 
 import kotlinx.coroutines.launch
-import pl.treksoft.kvision.core.Component
-import pl.treksoft.kvision.core.onClick
+import pl.treksoft.kvision.core.*
 import pl.treksoft.kvision.html.*
-import pl.treksoft.kvision.panel.hPanel
+import pl.treksoft.kvision.panel.Side
+import pl.treksoft.kvision.panel.VPanel
+import pl.treksoft.kvision.panel.dockPanel
 import sde.Services
 import sde.data.DataDocument
 import sde.data.DataDocumentPage
@@ -14,9 +15,11 @@ import sde.pages.AbstractPage
 import sde.pages.PageManager
 import sde.pages.StartPage
 import sde.ui.TextBlock
-import sde.ui.textBlock
+import sde.ui.mouseOverBackgroundColour
 import sde.util.ProjectItem
+import sde.utils.afterInsert
 import sde.utils.getFileDefType
+
 
 class ProjectExplorerPage(val projectDef: ProjectDef, pageManager: PageManager) : AbstractPage(pageManager)
 {
@@ -26,29 +29,55 @@ class ProjectExplorerPage(val projectDef: ProjectDef, pageManager: PageManager) 
 	override val closeable: Boolean
 		get() = true
 
-	lateinit var projectRoot: ProjectFolderView
+	val project = Project(projectDef, this)
+
+	val projectRoot: ProjectFolderView
+
+	init {
+		val rootItem = ProjectItem()
+		rootItem.path = projectDef.projectRootPath.split('/', '\\').dropLast(1).joinToString("/")
+		rootItem.isDirectory = true
+
+		projectRoot = ProjectFolderView(rootItem, this@ProjectExplorerPage)
+	}
+
+	private fun getVisibleItems(current: ProjectFolderView = projectRoot, depth: Int = 1): Sequence<AbstractProjectItemView>
+	{
+		return sequence {
+			yield(current)
+
+			val children = current.getChildrenIfVisible()
+			if (children != null) {
+				for (child in children) {
+					child.depth = depth
+
+					if (child is ProjectFolderView) {
+						for (item in getVisibleItems(child, depth+1)) {
+							yield(item)
+						}
+					} else {
+						yield(child)
+					}
+				}
+			}
+		}
+	}
+
+	private val component = Div()
+	fun updateComponent() {
+		component.removeAll()
+
+		component.add(VPanel {
+			for (item in getVisibleItems()) {
+				val component = item.getComponentCached()
+				add(component)
+			}
+		})
+	}
 
 	override fun createComponent(): Component
 	{
-		val projectTreeDiv = Div {
-
-		}
-
-		val component = Div {
-			add(projectTreeDiv)
-		}
-
-		scope.launch {
-			val rootItem = ProjectItem()
-			rootItem.path = projectDef.projectRootPath.split('/', '\\').dropLast(1).joinToString("/")
-			rootItem.isDirectory = true
-
-			projectRoot = ProjectFolderView(rootItem, this@ProjectExplorerPage)
-			val comp = projectRoot.getComponent()
-
-			projectTreeDiv.add(comp)
-		}
-
+		updateComponent()
 		return component
 	}
 
@@ -80,7 +109,34 @@ class ProjectExplorerPage(val projectDef: ProjectDef, pageManager: PageManager) 
 
 abstract class AbstractProjectItemView(val item: ProjectItem, val page: ProjectExplorerPage)
 {
-	abstract fun getComponent(): Component
+	var depth = 0
+
+	var wrapperDiv = Div()
+	init {
+	    wrapperDiv.afterInsert {
+			val el = it
+			it.hover({
+				el.css("background-color", mouseOverBackgroundColour.asString())
+			}, {
+				el.css("background-color", "transparent")
+			})
+		}
+	}
+
+	protected var component: Component? = null
+	fun getComponentCached(): Component
+	{
+		if (component == null) {
+			wrapperDiv.removeAll()
+			wrapperDiv.add(getComponent())
+
+			component = wrapperDiv
+		}
+
+		return component!!
+	}
+
+	protected abstract fun getComponent(): Component
 
 	companion object
 	{
@@ -99,52 +155,62 @@ class ProjectFolderView(item: ProjectItem, page: ProjectExplorerPage) : Abstract
 {
 	val name = item.path.split('/', '\\').last().split('.').first()
 
-	private val li: Li = Li()
 	private var children: List<AbstractProjectItemView>? = null
 
 	var isExpanded: Boolean = false
 		set(value) {
 			field = value
+			component = null
+			page.updateComponent()
 
 			page.scope.launch {
 				loadChildren()
-				updateComponent()
 			}
 		}
 
-	init
+	fun getChildrenIfVisible(): List<AbstractProjectItemView>?
 	{
-		li.onClick { e ->
-			isExpanded = !isExpanded
-			e.stopPropagation()
+		if (isExpanded && children != null) {
+			return children!!
 		}
+
+		return null
 	}
 
 	private suspend fun loadChildren() {
 		if (children == null) {
 			val items = Services.disk.getFolderContents(item.path)
 			children = items.map { getItemView(it, page) }.toList()
-		}
-	}
 
-	private fun updateComponent() {
-		li.removeAll()
-		li.add(Bold(name))
-
-		val children = children
-		if (isExpanded && children != null) {
-			li.add(Ul {
-				for (item in children) {
-					add(item.getComponent())
-				}
-			})
+			page.updateComponent()
 		}
 	}
 
 	override fun getComponent(): Component
 	{
-		updateComponent()
-		return li
+		return Div {
+			dockPanel {
+				marginLeft = CssSize(depth * 20, UNIT.px)
+
+				if (isExpanded)
+				{
+					add(Image(pl.treksoft.kvision.require("images/OpenArrow.png") as? String), Side.LEFT)
+				}
+				else
+				{
+					add(Image(pl.treksoft.kvision.require("images/RightArrow.png") as? String), Side.LEFT)
+				}
+
+				add(Bold(name) {
+					opacity = 0.7
+				})
+			}
+
+			onClick { e ->
+				isExpanded = !isExpanded
+				e.stopPropagation()
+			}
+		}
 	}
 
 }
@@ -154,21 +220,8 @@ class ProjectFileView(item: ProjectItem, page: ProjectExplorerPage) : AbstractPr
 	val name = item.path.split('/', '\\').last()
 	var type: String? = null
 
-	override fun getComponent(): Component
-	{
-		val typeSpan = TextBlock {
-			align = Align.RIGHT
-		}
-		val li = Li {
-			hPanel {
-				textBlock(name)
-				add(typeSpan)
-			}
-
-			onClick { e ->
-				e.stopPropagation()
-
-				val xml = """
+	fun openFile() {
+		val xml = """
 					<Definitions xmlns:meta="Editor">
 						<Data Name="Block" meta:RefKey="Struct">
 							<Data Name="Count1" meta:RefKey="Number" />
@@ -180,21 +233,35 @@ class ProjectFileView(item: ProjectItem, page: ProjectExplorerPage) : AbstractPr
 						</Data>
 					</Definitions>
 				""".trimIndent()
-				val defMap = Project.parseDefinitionsFile(xml, "")
-				val def = defMap["Block"]!!
+		val defMap = Project.parseDefinitionsFile(xml, "")
+		val def = defMap["Block"]!!
 
-				val data = DataDocument()
-				val item = def.createItem(data)
+		val data = DataDocument()
+		val item = def.createItem(data)
 
 
-				data.root = item as CompoundDataItem
+		data.root = item as CompoundDataItem
 
-				val page = DataDocumentPage(data, page.pageManager)
-				page.pageManager.addPage(page)
-				page.show()
-			}
+		val page = DataDocumentPage(data, page.pageManager)
+		page.pageManager.addPage(page)
+		page.show()
+	}
+
+	override fun getComponent(): Component
+	{
+		val typeSpan = TextBlock {
+			align = Align.RIGHT
+			opacity = 0.5
 		}
+		val icon = Div() {
+			width = CssSize(16, UNIT.px)
+			height = CssSize(16, UNIT.px)
+			maxWidth = CssSize(16, UNIT.px)
+			maxHeight = CssSize(16, UNIT.px)
 
+			image(pl.treksoft.kvision.require("images/File.png") as? String)
+		}
+		val name = TextBlock(name)
 		if (item.path.endsWith("xml"))
 		{
 			if (type == null)
@@ -202,6 +269,16 @@ class ProjectFileView(item: ProjectItem, page: ProjectExplorerPage) : AbstractPr
 				page.scope.launch {
 					type = item.path.getFileDefType()
 					typeSpan.content = "($type)"
+
+					val def = page.project.rootDefinitions[type]!!
+					if (def.fileColour.isNotBlank()) {
+						name.color = Color("rgb(${def.fileColour})")
+					}
+
+					if (def.fileIcon.isNotBlank()) {
+						//icon.removeAll()
+						//icon.add(Image(pl.treksoft.kvision.require("images/File.png") as? String))
+					}
 				}
 			}
 			else
@@ -210,7 +287,21 @@ class ProjectFileView(item: ProjectItem, page: ProjectExplorerPage) : AbstractPr
 			}
 		}
 
-		return li
+		return Div {
+			dockPanel {
+				marginLeft = CssSize(depth * 20 + 10, UNIT.px)
+
+				add(typeSpan, Side.RIGHT)
+				add(icon, Side.LEFT)
+				add(name)
+			}
+
+			afterInsert {
+				it.dblclick {
+					openFile()
+				}
+			}
+		}
 	}
 
 }

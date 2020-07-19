@@ -20,6 +20,8 @@ abstract class AbstractDataDefinition<D: AbstractDataDefinition<D, I>, I: Abstra
 	                   )
 
 	lateinit var srcFile: String
+	var fileColour: String = ""
+	var fileIcon: String = ""
 
 	lateinit var name: String
 	var textColour: String = colours["Primitive"] ?: error("")
@@ -27,6 +29,7 @@ abstract class AbstractDataDefinition<D: AbstractDataDefinition<D, I>, I: Abstra
 	lateinit var visibleIf: String
 	var skipIfDefault: Boolean = false
 	var isGlobal = false
+	var isDef = false
 
 	val attributes = ArrayList<AbstractPrimitiveDataDefinition<*, *>>()
 	var referenceMap = HashMap<String, DefinitionReference>()
@@ -164,8 +167,10 @@ abstract class AbstractDataDefinition<D: AbstractDataDefinition<D, I>, I: Abstra
 				throw DefinitionLoadException("The xml '${xml.toString(0)}' did not contain a meta:RefKey attribute")
 			}
 
+			var isDef = false
 			if (type.endsWith("DEF")) {
 				type = type.substring(0, type.length - "DEF".length)
+				isDef = true
 			}
 
 			val def = when(type)
@@ -178,6 +183,7 @@ abstract class AbstractDataDefinition<D: AbstractDataDefinition<D, I>, I: Abstra
 				else -> throw DefinitionLoadException("Unknown definition type $type")
 			}
 			def.srcFile = srcFile
+			def.isDef = isDef
 
 			def.parse(xml)
 

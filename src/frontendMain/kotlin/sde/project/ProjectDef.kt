@@ -1,6 +1,7 @@
 package sde.project
 
 import sde.Services
+import sde.data.Project
 import sde.util.RecentProject
 import sde.util.Settings
 import sde.util.XDocument
@@ -13,8 +14,6 @@ class ProjectDef
     var name: String = ""
     var projectRootPath: String = ""
     var defsFolder: String = ""
-
-    var recentItems: List<String> = ArrayList()
 
     companion object
     {
