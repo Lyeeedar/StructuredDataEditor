@@ -297,14 +297,18 @@ class ProjectFileView(item: ProjectItem, page: ProjectExplorerPage) : AbstractPr
 					type = item.path.getFileDefType()
 					typeSpan.content = "($type)"
 
-					val def = page.project.rootDefinitions[type]!!
-					if (def.fileColour.isNotBlank()) {
-						name.color = Color("rgb(${def.fileColour})")
-					}
+					val def = page.project.rootDefinitions[type]
+					if (def != null) {
+						if (def.fileColour.isNotBlank()) {
+							name.color = Color("rgb(${def.fileColour})")
+						}
 
-					if (def.fileIcon.isNotBlank()) {
-						//icon.removeAll()
-						//icon.add(Image(pl.treksoft.kvision.require("images/File.png") as? String))
+						if (def.fileIcon.isNotBlank()) {
+							//icon.removeAll()
+							//icon.add(Image(pl.treksoft.kvision.require("images/File.png") as? String))
+						}
+					} else {
+						name.color = Color("rgb(255,0,0)")
 					}
 				}
 			}
