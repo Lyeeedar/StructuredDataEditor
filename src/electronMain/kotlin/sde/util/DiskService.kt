@@ -47,14 +47,14 @@ actual class DiskService : IDiskService {
     }
 
     override suspend fun browseFile(fileTypes: String?, initialDirectory: String?): String {
-        return remote.dialog.asDynamic().showOpenDialogSync(object : OpenDialogOptions {
-            override var properties: Array<dynamic>? = arrayOf("openFile")
+        return remote.dialog.asDynamic().showOpenDialogSync(object : OpenDialogOptions {}.apply {
+            properties = arrayOf("openFile")
         })[0] as String
     }
 
     override suspend fun browseFolder(initialDirectory: String?): String {
-        return remote.dialog.asDynamic().showOpenDialogSync(object : OpenDialogOptions {
-            override var properties: Array<dynamic>? = arrayOf("openDirectory")
+        return remote.dialog.asDynamic().showOpenDialogSync(object : OpenDialogOptions {}.apply {
+            properties = arrayOf("openDirectory")
         })[0] as String
     }
 }
