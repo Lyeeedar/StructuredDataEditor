@@ -102,7 +102,7 @@ kotlin {
     js("electron") {
         compilations.all {
             kotlinOptions {
-                moduleKind = "umd"
+                moduleKind = "commonjs"
                 sourceMap = !isProductionBuild
                 if (!isProductionBuild) {
                     sourceMapEmbedSources = "always"
