@@ -13,11 +13,14 @@ jobs:
       - name: Make gradlew executable
         run: chmod +x ./gradlew
 
-      - name: Build and Test
-        run: |
-          ./gradlew compileKotlinBackend
-          ./gradlew compileKotlinFrontend
-          ./gradlew buildApp
+      - name: Build backend
+        run: ./gradlew compileKotlinBackend
+
+      - name: Build frontend
+        run: ./gradlew compileKotlinFrontend
+
+      - name: Build electron
+        run: ./gradlew buildApp
 
       - name: Test
         run: ./gradlew check
