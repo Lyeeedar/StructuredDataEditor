@@ -14,10 +14,7 @@ import sde.data.item.CompoundDataItem
 import sde.ui.TextBlock
 import sde.ui.mouseOverBackgroundColour
 import sde.util.ProjectItem
-import sde.utils.afterInsert
-import sde.utils.disableSelection
-import sde.utils.getFileDefType
-import sde.utils.imageFromBytes
+import sde.utils.*
 
 abstract class AbstractProjectItemView(val item: ProjectItem, val page: ProjectExplorerPage)
 {
@@ -202,15 +199,11 @@ class ProjectFileView(item: ProjectItem, page: ProjectExplorerPage) : AbstractPr
                         }
 
                         if (def.fileIcon.isNotBlank()) {
-                            val imageBytes = Services.disk.loadFileBytes(page.project.projectRootFolder + "/" + def.fileIcon)
-
-                            if (imageBytes.isNotEmpty()) {
-                                icon.removeAll()
-                                icon.add(imageFromBytes(imageBytes, def.fileIcon.split('.').last()) {
-                                    width = CssSize(16, UNIT.px)
-                                    height = CssSize(16, UNIT.px)
-                                })
-                            }
+                            icon.removeAll()
+                            icon.add(imageFromFile(page.project.projectRootFolder + "/" + def.fileIcon) {
+                                width = CssSize(16, UNIT.px)
+                                height = CssSize(16, UNIT.px)
+                            })
                         }
                     } else {
                         name.color = Color("rgb(255,0,0)")
