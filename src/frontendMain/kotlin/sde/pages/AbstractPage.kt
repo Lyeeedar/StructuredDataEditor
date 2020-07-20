@@ -18,14 +18,12 @@ abstract class AbstractPage(val pageManager: PageManager)
 		}
 	}
 
-	var pageTabIndex: Int = 0
-
 	abstract val name: String
 	abstract val closeable: Boolean
 	abstract fun createComponent(): Component
 
 	fun show() {
-		pageManager.tabContainer.activeIndex = pageTabIndex
+		pageManager.tabContainer.selectTab(this)
 	}
 
 	abstract fun canClose(): Boolean

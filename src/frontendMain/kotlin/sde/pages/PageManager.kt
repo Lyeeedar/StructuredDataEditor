@@ -4,11 +4,12 @@ import pl.treksoft.kvision.core.onEvent
 import pl.treksoft.kvision.html.Div
 import pl.treksoft.kvision.panel.Root
 import pl.treksoft.kvision.panel.TabPanel
+import sde.ui.TabControl
 
 class PageManager
 {
 	val pages = ArrayList<AbstractPage>()
-	lateinit var tabContainer: TabPanel
+	lateinit var tabContainer: TabControl
 
 	fun loadPages() {
 		pages.add(StartPage(this))
@@ -22,43 +23,16 @@ class PageManager
 	fun fillRoot(root: Root) {
 		root.removeAll()
 
-		tabContainer = TabPanel()
+		tabContainer = TabControl()
 		updatePages()
 		root.add(tabContainer)
 	}
 
 	private fun updatePages() {
-		tabContainer.removeAll()
+		tabContainer.removeAllTabs()
 
-		var index = 0
 		for (page in pages) {
-			page.pageTabIndex = index++
-			tabContainer.addTab(page.name, page.createComponent(), closable = page.closeable)
-		}
-
-		val el = tabContainer.getElement()
-		if (!addedListeners && el != null)
-		{
-			addedListeners = true
-
-			el.addEventListener("tabClosing", {
-				val index = it.asDynamic().detail.data as Int
-				val page = pages[index]
-
-				if (!page.canClose()) {
-					it.preventDefault()
-				}
-			})
-
-			el.addEventListener("tabClosed", {
-				val index = it.asDynamic().detail.data as Int
-				val page = pages[index]
-
-				pages.remove(page)
-				page.close()
-			})
+			tabContainer.addTab(page.name, page.createComponent(), page, page.closeable, { page.canClose() }, { pages.remove(page); page.close() })
 		}
 	}
-
-	var addedListeners = false
 }

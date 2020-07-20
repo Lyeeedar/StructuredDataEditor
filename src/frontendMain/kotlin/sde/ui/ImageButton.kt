@@ -8,13 +8,14 @@ import sde.utils.disableSelection
 
 class ImageButton(src: String?, init: (ImageButton.() -> Unit)? = null) : Div()
 {
+	var backgroundCol = backgroundLightColour
+	var borderCol = borderLightColour
+
 	var isMouseHover = false
 	var disabled = false
 
 	init
 	{
-		updateBackground()
-
 		image(src)
 
 		afterInsert {
@@ -32,6 +33,8 @@ class ImageButton(src: String?, init: (ImageButton.() -> Unit)? = null) : Div()
 
 		@Suppress("LeakingThis")
 		init?.invoke(this)
+
+		updateBackground()
 	}
 
 	fun updateBackground()
@@ -40,12 +43,12 @@ class ImageButton(src: String?, init: (ImageButton.() -> Unit)? = null) : Div()
 		background = when
 		{
 			isMouseHover && !disabled -> Background(mouseOverBackgroundColour)
-			else -> Background(backgroundLightColour)
+			else -> Background(backgroundCol)
 		}
 		border = when
 		{
 			isMouseHover && !disabled -> Border(CssSize(1, UNIT.px), BorderStyle.SOLID, mouseOverBorderColour)
-			else -> Border(CssSize(1, UNIT.px), BorderStyle.SOLID, borderLightColour)
+			else -> Border(CssSize(1, UNIT.px), BorderStyle.SOLID, borderCol)
 		}
 	}
 

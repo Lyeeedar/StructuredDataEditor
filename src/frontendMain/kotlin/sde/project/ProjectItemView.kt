@@ -62,7 +62,7 @@ abstract class AbstractProjectItemView(val item: ProjectItem, val page: ProjectE
 
 class ProjectFolderView(item: ProjectItem, page: ProjectExplorerPage) : AbstractProjectItemView(item, page)
 {
-    val name = item.path.split('/', '\\').last().split('.').first()
+    val name = item.path.getFileName()
 
     private var children: List<AbstractProjectItemView>? = null
 
@@ -130,7 +130,7 @@ class ProjectFolderView(item: ProjectItem, page: ProjectExplorerPage) : Abstract
 
 class ProjectFileView(item: ProjectItem, page: ProjectExplorerPage) : AbstractProjectItemView(item, page)
 {
-    val name = item.path.split('/', '\\').last()
+    val name = item.path.getFileName()
     var type: String? = null
 
     suspend fun openFile() {
@@ -139,7 +139,7 @@ class ProjectFileView(item: ProjectItem, page: ProjectExplorerPage) : AbstractPr
 
         val def = page.project.rootDefinitions[xml.root.name]!!
 
-        val data = DataDocument()
+        val data = DataDocument(item.path)
         val item = def.loadItem(data, xml.root)
 
         data.root = item as CompoundDataItem

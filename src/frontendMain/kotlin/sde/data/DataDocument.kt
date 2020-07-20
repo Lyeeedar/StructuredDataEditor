@@ -12,10 +12,11 @@ import sde.data.item.DataItem
 import sde.data.item.IRemovable
 import sde.ui.*
 import sde.utils.UndoRedoManager
+import sde.utils.getFileName
 
-class DataDocument
+class DataDocument(val path: String)
 {
-	var name: String = ""
+	var name: String = path.getFileName()
 	lateinit var root: CompoundDataItem
 
 	val undoRedoManager = UndoRedoManager()
@@ -81,7 +82,7 @@ class DataDocument
 		}
 	}
 
-	fun doUpdateComponent()
+	private fun doUpdateComponent()
 	{
 		lastRenderedID++
 		component.removeAll()
