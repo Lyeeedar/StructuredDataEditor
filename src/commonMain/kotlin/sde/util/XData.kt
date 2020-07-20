@@ -9,14 +9,27 @@ class XDocument
 
 	override fun toString(): String
 	{
-		return root.toString(0)
+		val holder = ArrayList<String>()
+		root.write(holder, 0)
+		val output = holder.joinToString("\n")
+
+		return output.trim()
 	}
 }
 
 @Serializable
 abstract class XData
 {
-	abstract fun toString(indentation: Int): String
+	abstract fun write(output: ArrayList<String>, indentation: Int)
+
+	override fun toString(): String
+	{
+		val holder = ArrayList<String>()
+		write(holder, 0)
+		val output = holder.joinToString("\n")
+
+		return output.trim()
+	}
 }
 
 @Serializable
@@ -24,9 +37,10 @@ class XComment() : XData()
 {
 	var text: String = ""
 
-	override fun toString(indentation: Int): String
+	override fun write(output: ArrayList<String>, indentation: Int)
 	{
-		return "${"\t".repeat(indentation)}<--$text-->"
+		val indentation = "\t".repeat(indentation)
+		output.add("$indentation<--$text-->")
 	}
 }
 
@@ -74,16 +88,30 @@ class XElement : XData()
 		return this.getAttribute(name)?.value?.toFloat() ?: fallback
 	}
 
-	override fun toString(indentation: Int): String
+	override fun write(output: ArrayList<String>, indentation: Int)
 	{
-		val indent = "\t".repeat(indentation)
+		val indentationStr = "\t".repeat(indentation)
 
-		var contents = if (children.size > 0) children.joinToString("\n") { indent + it.toString(indentation+1) } else value
-		if (contents.contains("\n") || children.size > 0) contents = "\n$contents\n$indent"
+		var attributesStr = ""
+		if (attributes.size > 0) {
+			val attHolder = ArrayList<String>()
+			attributes.forEach { it.write(attHolder, 0) }
 
-		return """
-			$indent<$name ${attributes.joinToString(" ") { it.toString(indentation) }}>$contents</$name>
-		""".trimIndent()
+			attributesStr = " " + attHolder.joinToString(" ")
+		}
+
+		if (children.size == 0 && value.isBlank()) {
+			output.add("$indentationStr<$name$attributesStr />")
+		} else if (children.size == 0) {
+			output.add("$indentationStr<$name$attributesStr>$value</$name>")
+		} else {
+			output.add("$indentationStr<$name$attributesStr>")
+			for (child in children)
+			{
+				child.write(output, indentation+1)
+			}
+			output.add("$indentationStr</$name>")
+		}
 	}
 }
 
@@ -93,8 +121,8 @@ class XAttribute : XData()
 	var name: String = ""
 	var value: String = ""
 
-	override fun toString(indentation: Int): String
+	override fun write(output: ArrayList<String>, indentation: Int)
 	{
-		return "$name=\"$value\""
+		output.add("$name=\"$value\"")
 	}
 }

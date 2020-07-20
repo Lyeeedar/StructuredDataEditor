@@ -164,7 +164,7 @@ abstract class AbstractDataDefinition<D: AbstractDataDefinition<D, I>, I: Abstra
 			var type = xml.getAttributeValue("meta:RefKey", "???").toUpperCase()
 			if (type == "???")
 			{
-				throw DefinitionLoadException("The xml '${xml.toString(0)}' did not contain a meta:RefKey attribute")
+				throw DefinitionLoadException("The xml '${xml}' did not contain a meta:RefKey attribute")
 			}
 
 			var isDef = false
