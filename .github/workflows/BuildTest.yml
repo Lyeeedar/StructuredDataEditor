@@ -19,14 +19,12 @@ jobs:
       - name: Build frontend
         run: ./gradlew compileKotlinFrontend
 
+      - name: Build electron (will fail)
+        run: ./gradlew buildApp
+        continue-on-error: true
+
       - name: Build electron
         run: ./gradlew buildApp
-
-      - uses: actions/upload-artifact@v2
-        if: failure()
-        with:
-          name: electron-build
-          path: build/js/packages/StructuredDataEditor-electron
 
       - name: Test
         run: ./gradlew check
