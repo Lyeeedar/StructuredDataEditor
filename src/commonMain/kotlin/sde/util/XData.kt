@@ -37,6 +37,10 @@ class XComment() : XData()
 {
 	var text: String = ""
 
+	constructor(text: String) : this() {
+		this.text = text
+	}
+
 	override fun write(output: ArrayList<String>, indentation: Int)
 	{
 		val indentation = "\t".repeat(indentation)
@@ -45,10 +49,15 @@ class XComment() : XData()
 }
 
 @Serializable
-class XElement : XData()
+class XElement() : XData()
 {
 	var name: String = ""
 	var value: String = ""
+
+	constructor(name: String, value: String = ""): this() {
+		this.name = name
+		this.value = value
+	}
 
 	val children = ArrayList<XData>()
 	val attributes = ArrayList<XAttribute>()
@@ -116,10 +125,15 @@ class XElement : XData()
 }
 
 @Serializable
-class XAttribute : XData()
+class XAttribute() : XData()
 {
 	var name: String = ""
 	var value: String = ""
+
+	constructor(name: String, value: String): this() {
+		this.name = name
+		this.value = value
+	}
 
 	override fun write(output: ArrayList<String>, indentation: Int)
 	{

@@ -27,7 +27,7 @@ abstract class AbstractCompoundDefinition<D: AbstractCompoundDefinition<D, I>, I
 		}.toList()
 	}
 
-	override fun doParse(node: XElement)
+	protected override fun doParse(node: XElement)
 	{
 		val extends = node.getAttributeValue("Extends", "")
 		if (extends.isNotBlank())
@@ -80,9 +80,9 @@ abstract class AbstractCompoundDefinition<D: AbstractCompoundDefinition<D, I>, I
 		doParseInstance(node)
 	}
 
-	abstract fun doParseInstance(node: XElement)
+	protected abstract fun doParseInstance(node: XElement)
 
-	override fun postResolve()
+	protected override fun postResolve()
 	{
 		resolveExtends()
 		resolveKeys()

@@ -19,13 +19,13 @@ abstract class AbstractStructDefinition<D: AbstractStructDefinition<D, I>, I: Ab
 		textColour = colours["Struct"]!!
 	}
 
-	override fun doParseInstance(node: XElement)
+	protected override fun doParseInstance(node: XElement)
 	{
 		description = node.getAttributeValue("Description", description)
 		nullable = node.getAttributeValue("Nullable", nullable)
 	}
 
-	override fun createItemInstance(document: DataDocument): I
+	protected override fun createItemInstance(document: DataDocument): I
 	{
 		val item = createItemInstanceInternal(document)
 
@@ -53,15 +53,69 @@ abstract class AbstractStructDefinition<D: AbstractStructDefinition<D, I>, I: Ab
 			}
 		}
 	}
+	protected abstract fun createItemInstanceInternal(document: DataDocument): I
 
-	abstract fun createItemInstanceInternal(document: DataDocument): I
+	protected override fun loadItemInstance(document: DataDocument, xml: XElement): I
+	{
+		val item = loadItemInstanceInternal(document)
+
+		if (!nullable || xml.children.size > 0) {
+
+			for (category in contents)
+			{
+				for (def in category.second)
+				{
+					val childEl = xml.getElement(def.name)
+					if (childEl != null)
+					{
+						val citem = def.loadItem(document, childEl)
+						item.children.add(citem)
+					}
+					else
+					{
+						val citem = def.createItem(document)
+						item.children.add(citem)
+					}
+				}
+			}
+		}
+
+		return item
+	}
+	protected abstract fun loadItemInstanceInternal(document: DataDocument): I
+
+	protected override fun saveItemInstance(item: I): XElement
+	{
+		val xml = saveItemInstanceInternal(item)
+
+		for (child in item.children) {
+			if (child.def.skipIfDefault && child.isDefault()) {
+				continue
+			}
+
+			val childXml = child.def.saveItem(item)
+			xml.children.add(childXml)
+		}
+
+		return xml
+	}
+	protected abstract fun saveItemInstanceInternal(item: I): XElement
 }
 
 class StructDefinition : AbstractStructDefinition<StructDefinition, StructItem>()
 {
-	override fun createItemInstanceInternal(document: DataDocument): StructItem
+	protected override fun createItemInstanceInternal(document: DataDocument): StructItem
 	{
 		return StructItem(this, document)
 	}
 
+	protected override fun loadItemInstanceInternal(document: DataDocument): StructItem
+	{
+		return StructItem(this, document)
+	}
+
+	protected override fun saveItemInstanceInternal(item: StructItem): XElement
+	{
+		return XElement(item.name)
+	}
 }

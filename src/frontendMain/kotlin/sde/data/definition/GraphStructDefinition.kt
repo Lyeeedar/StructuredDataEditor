@@ -14,7 +14,7 @@ class GraphStructDefinition : AbstractStructDefinition<GraphStructDefinition, Gr
 	override var nodeStoreName: String = "Nodes"
 	override var background: String = colours["Struct"]!!
 
-	override fun doParseInstance(node: XElement)
+	protected override fun doParseInstance(node: XElement)
 	{
 		allowReferenceLinks = node.getAttributeValue("AllowReferenceLinks", allowReferenceLinks)
 		allowCircularLinks = node.getAttributeValue("AllowCircularLinks", allowCircularLinks)
@@ -23,8 +23,18 @@ class GraphStructDefinition : AbstractStructDefinition<GraphStructDefinition, Gr
 		background = node.getAttributeValue("Background", background)
 	}
 
-	override fun createItemInstanceInternal(document: DataDocument): GraphStructItem
+	protected override fun createItemInstanceInternal(document: DataDocument): GraphStructItem
 	{
 		return GraphStructItem(this, document)
+	}
+
+	protected override fun loadItemInstanceInternal(document: DataDocument): GraphStructItem
+	{
+		return GraphStructItem(this, document)
+	}
+
+	protected override fun saveItemInstanceInternal(item: GraphStructItem): XElement
+	{
+		return XElement(name)
 	}
 }

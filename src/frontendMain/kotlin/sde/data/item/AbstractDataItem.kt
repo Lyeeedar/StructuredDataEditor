@@ -31,6 +31,17 @@ abstract class AbstractDataItem<D: DataDefinition>(val def: D, val document: Dat
 
 	val attributes = observableListOf<DataItem>()
 
+	fun isDefault(): Boolean {
+		for (att in attributes) {
+			if (!att.isDefault()) {
+				return false
+			}
+		}
+
+		return isDefaultValue()
+	}
+	protected abstract fun isDefaultValue(): Boolean
+
 	protected fun isVisible() = document.lastRenderedID == renderedID
 
 	private var editorComponentDiv = Div()

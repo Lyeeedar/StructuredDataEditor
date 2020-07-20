@@ -4,6 +4,8 @@ import org.w3c.dom.Element
 import org.w3c.dom.Node
 import sde.data.DataDocument
 import sde.data.item.AbstractDataItem
+import sde.data.item.DataItem
+import sde.util.XAttribute
 import sde.util.XDocument
 import sde.util.XElement
 import sde.utils.*
@@ -100,7 +102,7 @@ abstract class AbstractDataDefinition<D: AbstractDataDefinition<D, I>, I: Abstra
 		postResolve()
 	}
 
-	open fun postResolve()
+	protected open fun postResolve()
 	{
 
 	}
@@ -135,7 +137,7 @@ abstract class AbstractDataDefinition<D: AbstractDataDefinition<D, I>, I: Abstra
 		doParse(node)
 	}
 
-	abstract fun doParse(node: XElement)
+	protected abstract fun doParse(node: XElement)
 
 	fun createItem(document: DataDocument): I
 	{
@@ -150,7 +152,42 @@ abstract class AbstractDataDefinition<D: AbstractDataDefinition<D, I>, I: Abstra
 		return item
 	}
 
-	abstract fun createItemInstance(document: DataDocument): I
+	fun loadItem(document: DataDocument, xml: XElement): I
+	{
+		val item = loadItemInstance(document, xml)
+
+		for (att in attributes)
+		{
+			val attItem = att.loadItem(document, xml)
+			item.attributes.add(attItem)
+		}
+
+		return item
+	}
+
+	fun saveItem(item: DataItem): XElement
+	{
+		val itemXml = saveItemInstance(item as I)
+
+		for (att in item.attributes) {
+			if (att.def.skipIfDefault && att.isDefault()) {
+				continue
+			}
+
+			val attXmlEl = att.def.saveItem(att)
+			val attXml = XAttribute()
+			attXml.name = attXmlEl.name
+			attXml.value = attXmlEl.value
+
+			itemXml.attributes.add(attXml)
+		}
+
+		return itemXml
+	}
+
+	protected abstract fun saveItemInstance(item: I): XElement
+	protected abstract fun loadItemInstance(document: DataDocument, xml: XElement): I
+	protected abstract fun createItemInstance(document: DataDocument): I
 
 	companion object
 	{

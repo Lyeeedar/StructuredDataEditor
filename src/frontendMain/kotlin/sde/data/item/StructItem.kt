@@ -47,6 +47,11 @@ abstract class AbstractStructItem<D: AbstractStructDefinition<*, *>>(def: D, doc
 		.updatedBy(CompoundDataItem::children.name) { hasContent = children.size > 0 }
 		.get()
 
+	override fun isDefaultValue(): Boolean
+	{
+		return !hasContent
+	}
+
 	override fun remove()
 	{
 		val contents = children.toList()

@@ -13,7 +13,7 @@ class NumberDefinition : AbstractPrimitiveDataDefinition<NumberDefinition, Numbe
 	var maxValue = Float.MAX_VALUE
 	var useIntegers = false
 
-	override fun doParse(node: XElement)
+	protected override fun doParse(node: XElement)
 	{
 		minValue = node.getAttributeValue("Min", minValue)
 		maxValue = node.getAttributeValue("Max", maxValue)
@@ -21,8 +21,20 @@ class NumberDefinition : AbstractPrimitiveDataDefinition<NumberDefinition, Numbe
 		default = node.getAttributeValue("Default", "0")
 	}
 
-	override fun createItemInstance(document: DataDocument): NumberItem
+	protected override fun createItemInstance(document: DataDocument): NumberItem
 	{
 		return NumberItem(this, document)
+	}
+
+	protected override fun saveItemInstance(item: NumberItem): XElement
+	{
+		return XElement(item.name, item.value.toString())
+	}
+
+	protected override fun loadItemInstance(document: DataDocument, xml: XElement): NumberItem
+	{
+		val item = createItemInstance(document)
+		item.value = xml.value.toFloat()
+		return item
 	}
 }

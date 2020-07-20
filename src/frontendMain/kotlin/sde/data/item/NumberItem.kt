@@ -23,4 +23,9 @@ class NumberItem(def: NumberDefinition, document: DataDocument) : AbstractDataIt
 			}
 		}
 	}
+
+	override fun isDefaultValue(): Boolean
+	{
+		return value == def.default.toFloat()
+	}
 }
