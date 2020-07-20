@@ -199,11 +199,12 @@ class ProjectFileView(item: ProjectItem, page: ProjectExplorerPage) : AbstractPr
                         }
 
                         if (def.fileIcon.isNotBlank()) {
-                            icon.removeAll()
-                            icon.add(imageFromFile(page.project.projectRootFolder + "/" + def.fileIcon) {
+                            val newImage = imageFromFile(page.project.projectRootFolder + "/" + def.fileIcon) {
                                 width = CssSize(16, UNIT.px)
                                 height = CssSize(16, UNIT.px)
-                            })
+                            }
+                            icon.removeAll()
+                            icon.add(newImage)
                         }
                     } else {
                         name.color = Color("rgb(255,0,0)")
