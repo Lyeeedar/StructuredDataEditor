@@ -23,6 +23,10 @@ jobs:
         run: ./gradlew buildApp
         continue-on-error: true
 
+      - name: Build electron (will fail)
+        run: ./gradlew buildApp
+        continue-on-error: true
+
       - name: Build electron
         run: ./gradlew buildApp
 
