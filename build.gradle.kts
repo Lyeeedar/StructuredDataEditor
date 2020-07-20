@@ -502,10 +502,10 @@ afterEvaluate {
             into("webpack.config.d")
         }
         getByName("electronBrowserProductionWebpack", KotlinWebpack::class) {
+	        dependsOn("frontendProcessResources")
             dependsOn("copyElectronWebpackConfig")
         }
         create("buildApp", Copy::class) {
-            dependsOn("frontendProcessResources")
             dependsOn("electronBrowserProductionWebpack")
             group = "build"
             val distribution =
