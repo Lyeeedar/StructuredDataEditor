@@ -5,7 +5,7 @@ jobs:
   test:
     strategy:
       matrix:
-        platform: [windows-latest, ubuntu-latest, macos-latest]
+        platform: [windows-latest]
     runs-on: ${{ matrix.platform }}
     steps:
       - uses: actions/checkout@v1
@@ -18,14 +18,6 @@ jobs:
 
       - name: Build frontend
         run: ./gradlew compileKotlinFrontend
-
-      - name: Build electron (will fail)
-        run: ./gradlew buildApp
-        continue-on-error: true
-
-      - name: Build electron (will fail)
-        run: ./gradlew buildApp
-        continue-on-error: true
 
       - name: Build electron
         run: ./gradlew buildApp
