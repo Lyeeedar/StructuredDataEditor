@@ -13,7 +13,7 @@ abstract class AbstractPage(val pageManager: PageManager)
 			try {
 				jobBody()
 			} catch (ex: Throwable) {
-				Toast.error(ex.message + ex.asDynamic().stack, "Unhandled exception")
+				Toast.error(ex.message + "\n" + ex.asDynamic().stack, "Unhandled exception")
 			}
 		}
 	}

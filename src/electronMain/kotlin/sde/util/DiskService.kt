@@ -2,10 +2,15 @@ package sde.util
 
 import node.fs.fs
 import org.khronos.webgl.get
+import org.w3c.files.Blob
+import org.w3c.files.FileReaderSync
 import pl.treksoft.kvision.electron.OpenDialogOptions
 import pl.treksoft.kvision.electron.Remote
 import pl.treksoft.kvision.electron.nodejs.Process
 import pl.treksoft.kvision.require
+import pl.treksoft.kvision.toast.Toast
+import pl.treksoft.kvision.toast.ToastOptions
+import pl.treksoft.kvision.toast.ToastPosition
 
 external val process: Process
 

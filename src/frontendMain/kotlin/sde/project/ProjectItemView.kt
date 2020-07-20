@@ -179,7 +179,10 @@ class ProjectFileView(item: ProjectItem, page: ProjectExplorerPage) : AbstractPr
                 it.disableSelection()
             }
 
-            image(pl.treksoft.kvision.require("images/File.png") as? String)
+            image(pl.treksoft.kvision.require("images/File.png") as? String) {
+                width = CssSize(16, UNIT.px)
+                height = CssSize(16, UNIT.px)
+            }
         }
         val name = TextBlock(name)
         if (item.path.endsWith("xml"))
@@ -203,7 +206,10 @@ class ProjectFileView(item: ProjectItem, page: ProjectExplorerPage) : AbstractPr
 
                             if (imageBytes.isNotEmpty()) {
                                 icon.removeAll()
-                                icon.add(imageFromBytes(imageBytes, def.fileIcon.split('.').last()))
+                                icon.add(imageFromBytes(imageBytes, def.fileIcon.split('.').last()) {
+                                    width = CssSize(16, UNIT.px)
+                                    height = CssSize(16, UNIT.px)
+                                })
                             }
                         }
                     } else {

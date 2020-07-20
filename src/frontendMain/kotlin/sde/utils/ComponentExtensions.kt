@@ -1,6 +1,11 @@
 package sde.utils
 
 import com.github.snabbdom.VNode
+import org.w3c.dom.url.URL
+import org.w3c.files.Blob
+import org.w3c.files.BlobPropertyBag
+import org.w3c.files.File
+import org.w3c.files.FileReaderSync
 import pl.treksoft.jquery.JQuery
 import pl.treksoft.kvision.core.Widget
 import pl.treksoft.kvision.core.onEvent
@@ -25,10 +30,12 @@ fun Widget.afterInsert(actionFunc: (JQuery)->Unit)
 	}
 }
 
-fun imageFromBytes(bytes: List<Byte>, originalFileType: String): Image
+fun imageFromBytes(bytes: List<Byte>, originalFileType: String, init: (Image.()->Unit)? = null): Image
 {
-	val asBase64 = bytes.joinToString("") { it.toChar().toString() }
-	val dataUrl = "data:image/$originalFileType;base64,$asBase64"
+	val blob = Blob(arrayOf(bytes.toByteArray()), BlobPropertyBag(type = "image/$originalFileType"))
+	val dataUrl = URL.createObjectURL(blob)
 
-	return Image(dataUrl)
+	return Image(dataUrl).apply {
+		init?.invoke(this)
+	}
 }
