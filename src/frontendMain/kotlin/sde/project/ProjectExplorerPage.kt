@@ -65,6 +65,8 @@ class ProjectExplorerPage(val projectDef: ProjectDef, pageManager: PageManager) 
 
 			val children = current.getChildrenIfVisible()
 			if (children != null) {
+				val files = ArrayList<ProjectFileView>()
+
 				for (child in children) {
 					child.depth = depth
 
@@ -72,9 +74,13 @@ class ProjectExplorerPage(val projectDef: ProjectDef, pageManager: PageManager) 
 						for (item in getVisibleItems(child, depth+1)) {
 							yield(item)
 						}
-					} else {
-						yield(child)
+					} else if (child is ProjectFileView) {
+						files.add(child)
 					}
+				}
+
+				for (item in files) {
+					yield(item)
 				}
 			}
 		}
