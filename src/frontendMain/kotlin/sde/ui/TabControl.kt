@@ -14,12 +14,23 @@ import sde.utils.hover
 
 class TabControl : DockPanel()
 {
-    val tabsPanel = HPanel()
-    val bodyPanel = Div()
+    val tabsPanel = HPanel() {
+        width = CssSize(100, UNIT.perc)
+        border = Border(CssSize(1, UNIT.px), BorderStyle.SOLID, borderDarkColour)
+    }
+    val bodyPanel = Div() {
+        width = CssSize(100, UNIT.perc)
+        height = CssSize(100, UNIT.perc)
+        border = Border(CssSize(1, UNIT.px), BorderStyle.SOLID, borderDarkColour)
+    }
+
     var currentTab: Tab? = null
     val tabs = ArrayList<Tab>()
 
     init {
+        width = CssSize(100, UNIT.perc)
+        height = CssSize(100, UNIT.perc)
+
         add(tabsPanel, Side.UP)
         add(bodyPanel)
     }
@@ -31,7 +42,9 @@ class TabControl : DockPanel()
     fun addTab(header: Component, body: Component, key: Any, closeable: Boolean = true, onClosing: (()->Boolean)? = null, onClosed: (()->Unit)? = null, onFocused: (()->Unit)? = null) {
         val tab = Tab(header, body, key, closeable, onClosing, onClosed, onFocused)
         tab.tabHeader = DockPanel {
-            margin = CssSize(1, UNIT.px)
+            marginTop = CssSize(1, UNIT.px)
+            marginLeft = CssSize(1, UNIT.px)
+            marginRight = CssSize(1, UNIT.px)
             padding = CssSize(3, UNIT.px)
 
             border = Border(CssSize(1, UNIT.px), BorderStyle.SOLID, borderNormalColour)

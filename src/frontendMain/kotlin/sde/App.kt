@@ -2,6 +2,8 @@ package sde
 
 import kotlinx.coroutines.*
 import pl.treksoft.kvision.Application
+import pl.treksoft.kvision.core.CssSize
+import pl.treksoft.kvision.core.UNIT
 import pl.treksoft.kvision.i18n.DefaultI18nManager
 import pl.treksoft.kvision.i18n.I18n
 import pl.treksoft.kvision.panel.Root
@@ -28,6 +30,9 @@ class App : Application() {
                 )
             )
         val root = root("kvapp") {
+			width = CssSize(100, UNIT.perc)
+			height = CssSize(100, UNIT.perc)
+
 	        progressBar(5, 0, 10, striped = true, animated = true)
         }
 	    createPages(root)
