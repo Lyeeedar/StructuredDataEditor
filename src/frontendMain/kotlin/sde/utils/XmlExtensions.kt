@@ -36,8 +36,6 @@ fun XMLDocument.toXDocument(): XDocument
 
 fun Node.toXData(): XData?
 {
-	println(this)
-
 	val node = this
 	return when (this.nodeType)
 	{

@@ -40,7 +40,7 @@ class XComment() : XData()
 	override fun write(output: ArrayList<String>, indentation: Int)
 	{
 		val indentation = "\t".repeat(indentation)
-		output.add("$indentation<--$text-->")
+		output.add("$indentation<!--$text-->")
 	}
 }
 
