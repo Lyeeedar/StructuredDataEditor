@@ -140,6 +140,8 @@ class ProjectFileView(item: ProjectItem, page: ProjectExplorerPage) : AbstractPr
         val def = page.project.rootDefinitions[xml.root.name]!!
 
         val data = DataDocument(item.path)
+        data.project = page.project
+
         val item = def.loadItem(data, xml.root)
 
         data.root = item as CompoundDataItem

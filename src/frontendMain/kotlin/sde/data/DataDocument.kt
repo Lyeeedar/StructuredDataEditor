@@ -18,6 +18,7 @@ class DataDocument(val path: String)
 {
 	var name: String = path.getFileName()
 	lateinit var root: CompoundDataItem
+	lateinit var project: Project
 
 	val undoRedoManager = UndoRedoManager()
 

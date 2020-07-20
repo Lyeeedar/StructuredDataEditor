@@ -21,6 +21,7 @@ abstract class AbstractPage(val pageManager: PageManager)
 	abstract val name: String
 	abstract val closeable: Boolean
 	abstract fun createComponent(): Component
+	abstract fun createTabHeader(): Component
 
 	fun show() {
 		pageManager.tabContainer.selectTab(this)

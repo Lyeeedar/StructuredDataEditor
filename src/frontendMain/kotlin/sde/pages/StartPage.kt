@@ -17,6 +17,8 @@ import sde.project.addRecentProject
 import sde.project.removeRecentProject
 import sde.ui.TextBlock
 import sde.ui.textBlock
+import sde.utils.afterInsert
+import sde.utils.disableSelection
 import sde.utils.getProjectName
 import sde.utils.updateSettings
 import kotlin.js.Date
@@ -30,6 +32,14 @@ class StartPage(pageManager: PageManager) : AbstractPage(pageManager)
 		get() = false
 
 	lateinit var recentProjectsDiv: Div
+
+	override fun createTabHeader(): Component {
+		return Bold("Start Page") {
+			afterInsert {
+				it.disableSelection()
+			}
+		}
+	}
 
 	override fun createComponent(): Component
 	{

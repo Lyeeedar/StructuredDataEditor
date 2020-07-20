@@ -32,7 +32,7 @@ class PageManager
 		tabContainer.removeAllTabs()
 
 		for (page in pages) {
-			tabContainer.addTab(page.name, page.createComponent(), page, page.closeable, { page.canClose() }, { pages.remove(page); page.close() })
+			tabContainer.addTab(page.createTabHeader(), page.createComponent(), page, page.closeable, { page.canClose() }, { pages.remove(page); page.close() })
 		}
 	}
 }

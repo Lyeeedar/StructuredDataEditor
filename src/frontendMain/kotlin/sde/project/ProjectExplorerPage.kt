@@ -3,10 +3,7 @@ package sde.project
 import kotlinx.coroutines.launch
 import pl.treksoft.kvision.core.*
 import pl.treksoft.kvision.html.*
-import pl.treksoft.kvision.panel.DockPanel
-import pl.treksoft.kvision.panel.Side
-import pl.treksoft.kvision.panel.VPanel
-import pl.treksoft.kvision.panel.dockPanel
+import pl.treksoft.kvision.panel.*
 import pl.treksoft.kvision.toast.Toast
 import pl.treksoft.kvision.toast.ToastOptions
 import sde.Services
@@ -82,6 +79,19 @@ class ProjectExplorerPage(val projectDef: ProjectDef, pageManager: PageManager) 
 				for (item in files) {
 					yield(item)
 				}
+			}
+		}
+	}
+
+	override fun createTabHeader(): Component {
+		return VPanel {
+			bold(projectDef.name)
+			span("Project Explorer") {
+				opacity = 0.8
+			}
+
+			afterInsert {
+				it.disableSelection()
 			}
 		}
 	}

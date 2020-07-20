@@ -4,6 +4,7 @@ import pl.treksoft.kvision.core.*
 import pl.treksoft.kvision.html.Bold
 import pl.treksoft.kvision.html.Button
 import pl.treksoft.kvision.html.Div
+import pl.treksoft.kvision.html.div
 import pl.treksoft.kvision.panel.DockPanel
 import pl.treksoft.kvision.panel.HPanel
 import pl.treksoft.kvision.panel.Side
@@ -30,6 +31,9 @@ class TabControl : DockPanel()
     fun addTab(header: Component, body: Component, key: Any, closeable: Boolean = true, onClosing: (()->Boolean)? = null, onClosed: (()->Unit)? = null, onFocused: (()->Unit)? = null) {
         val tab = Tab(header, body, key, closeable, onClosing, onClosed, onFocused)
         tab.tabHeader = DockPanel {
+            margin = CssSize(1, UNIT.px)
+            padding = CssSize(3, UNIT.px)
+
             border = Border(CssSize(1, UNIT.px), BorderStyle.SOLID, borderNormalColour)
             background = Background(backgroundNormalColour)
 
@@ -43,6 +47,8 @@ class TabControl : DockPanel()
                 add(ImageButton(pl.treksoft.kvision.require("images/Remove.png") as? String) {
                     backgroundCol = Color("transparent")
                     borderCol = Color("transparent")
+                    marginLeft = CssSize(3, UNIT.px)
+
                     onClick { e ->
                         removeTab(key)
 
