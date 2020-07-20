@@ -505,7 +505,7 @@ afterEvaluate {
             dependsOn("copyElectronWebpackConfig")
         }
         create("buildApp", Copy::class) {
-            dependsOn("compileKotlinFrontend")
+            dependsOn("frontendProcessResources")
             dependsOn("electronBrowserProductionWebpack")
             group = "build"
             val distribution =
