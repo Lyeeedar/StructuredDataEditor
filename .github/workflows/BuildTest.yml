@@ -22,5 +22,11 @@ jobs:
       - name: Build electron
         run: ./gradlew buildApp
 
+      - uses: actions/upload-artifact@v2
+        if: failure()
+        with:
+          name: electron-build
+          path: build/js/packages/StructuredDataEditor-electron
+
       - name: Test
         run: ./gradlew check
