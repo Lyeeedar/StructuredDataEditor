@@ -133,25 +133,14 @@ class ProjectFileView(item: ProjectItem, page: ProjectExplorerPage) : AbstractPr
     val name = item.path.split('/', '\\').last()
     var type: String? = null
 
-    fun openFile() {
-        val xml = """
-					<Definitions xmlns:meta="Editor">
-						<Data Name="Block" meta:RefKey="Struct">
-							<Data Name="Count1" meta:RefKey="Number" />
-							<Data Name="Block" meta:RefKey="Struct">
-								<Data Name="Count1" meta:RefKey="Number" />
-								<Data Name="Count4" meta:RefKey="Number" />
-							</Data>
-							<Data Name="Count2" meta:RefKey="Number" />
-						</Data>
-					</Definitions>
-				""".trimIndent()
-        val defMap = Project.parseDefinitionsFile(xml, "")
-        val def = defMap["Block"]!!
+    suspend fun openFile() {
+        val fileContents = Services.disk.loadFileString(item.path)
+        val xml = fileContents.parseXml().toXDocument()
+
+        val def = page.project.rootDefinitions[xml.root.name]!!
 
         val data = DataDocument()
-        val item = def.createItem(data)
-
+        val item = def.loadItem(data, xml.root)
 
         data.root = item as CompoundDataItem
 
@@ -226,7 +215,9 @@ class ProjectFileView(item: ProjectItem, page: ProjectExplorerPage) : AbstractPr
 
             afterInsert {
                 it.dblclick {
-                    openFile()
+                    page.launch {
+                        openFile()
+                    }
                 }
             }
         }
