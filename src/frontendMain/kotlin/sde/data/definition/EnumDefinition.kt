@@ -54,15 +54,9 @@ class EnumDefinition : AbstractPrimitiveDataDefinition<EnumDefinition, EnumItem>
     }
 
     override fun postResolve() {
-        val keyDef = getReference("Key")
+        val keyDef = getReference<EnumDefinition>("Key")
         if (keyDef != null) {
-            val def = keyDef.definition
-            if (def !is EnumDefinition)
-            {
-                throw DefinitionLoadException("Def $name tried to reference non-enum definition ${keyDef.defName}")
-            }
-
-            for (category in def.enumValues) {
+            for (category in keyDef.enumValues) {
                 for (value in category.value) {
                     addValue(category.key, value)
                 }

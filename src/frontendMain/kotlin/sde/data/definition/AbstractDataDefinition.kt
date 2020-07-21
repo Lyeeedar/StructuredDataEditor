@@ -51,9 +51,17 @@ abstract class AbstractDataDefinition<D: AbstractDataDefinition<D, I>, I: Abstra
 		}
 	}
 
-	fun getReference(name: String): DefinitionReference?
+	inline fun <reified T: DataDefinition> getReference(name: String): T?
 	{
-		return referenceMap[name]
+		val defHolder = referenceMap[name] ?: return null
+
+		val def = defHolder.definition
+		if (def !is T)
+		{
+			throw DefinitionLoadException("Def $name tried to reference non-${T::class.simpleName} ${defHolder.defName}")
+		}
+
+		return def
 	}
 
 	fun getReferences(name: String): List<DefinitionReference>

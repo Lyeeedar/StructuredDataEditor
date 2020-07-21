@@ -81,7 +81,7 @@ abstract class AbstractCompoundDefinition<D: AbstractCompoundDefinition<D, I>, I
 		resolveDefKey()
 	}
 
-	fun resolveKeys()
+	private fun resolveKeys()
 	{
 		val keys = getReferences("Keys")
 		if (keys.isEmpty()) return
@@ -94,15 +94,9 @@ abstract class AbstractCompoundDefinition<D: AbstractCompoundDefinition<D, I>, I
 		}
 	}
 
-	fun resolveExtends()
+	private fun resolveExtends()
 	{
-		val extends = getReference("Extends") ?: return
-		val def = extends.definition ?: return
-
-		if (def !is AbstractCompoundDefinition)
-		{
-			throw DefinitionLoadException("Def $name tried to extend non-compound definition ${extends.defName}")
-		}
+		val def = getReference<AbstractCompoundDefinition<*, *>>("Extends") ?: return
 
 		for (category in def.contents)
 		{
@@ -115,15 +109,9 @@ abstract class AbstractCompoundDefinition<D: AbstractCompoundDefinition<D, I>, I
 		attributes.addAll(def.attributes)
 	}
 
-	fun resolveDefKey()
+	private fun resolveDefKey()
 	{
-		val defKey = getReference("DefKey") ?: return
-		val def = defKey.definition ?: return
-
-		if (def !is AbstractCompoundDefinition)
-		{
-			throw DefinitionLoadException("Def $name tried to use a DefKey from a non-compound definition ${defKey.defName}")
-		}
+		val def = getReference<AbstractCompoundDefinition<*, *>>("DefKey") ?: return
 
 		for (category in def.contents)
 		{
@@ -134,7 +122,7 @@ abstract class AbstractCompoundDefinition<D: AbstractCompoundDefinition<D, I>, I
 		}
 	}
 
-	fun addDef(def: DataDefinition, category: String)
+	private fun addDef(def: DataDefinition, category: String)
 	{
 		var dest = contents.firstOrNull { it.first == category }
 		if (dest == null)
