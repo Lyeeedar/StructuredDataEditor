@@ -1,0 +1,24 @@
+<Definitions colour="125,255,180" icon="CardIcon.png" xmlns:meta="Editor">
+	<Data name="RecursiveStruct" meta:RefKey="StructDef">
+		<Data name="Name" meta:RefKey="String" />
+		<Data name="Child" Def="RecursiveStruct" meta:RefKey="Struct" />
+	</Data>
+
+	<Data name="Root" meta:RefKey="Struct">
+		<!-- Number -->
+		<Data name="Float" meta:RefKey="Number" />
+		<Data name="Float2-6" Min="2" Max="6" Default="3" meta:RefKey="Number" />
+		<Data name="Int" Type="Int" meta:RefKey="Number" />
+		<Data name="Int2-6" Min="2" Max="6" Default="3" Type="Int" meta:RefKey="Number" />
+		<!-- Boolean -->
+		<Data name="Bool" meta:RefKey="Boolean" />
+		<Data name="BoolDefaultTrue" Default="True" meta:RefKey="Boolean" />
+		<!-- Colour -->
+		<Data name="Colour" meta:RefKey="Colour" />
+		<!-- Struct -->
+		<Data name="StructWithDef" Def="RecursiveStruct" meta:RefKey="Struct" />
+		<Data name="StructNotNullable" Nullable="False" meta:RefKey="Struct">
+			<Data name="Value" meta:RefKey="Number" />
+		</Data>
+	</Dat>
+</Definitions>
