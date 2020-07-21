@@ -3,10 +3,11 @@ package sde.pages
 import kotlinx.coroutines.*
 import pl.treksoft.kvision.core.Component
 import pl.treksoft.kvision.toast.Toast
+import sde.AppModel
 
 abstract class AbstractPage(val pageManager: PageManager)
 {
-	private val scope = MainScope() + CoroutineName(this::class.simpleName ?: "")
+	private val scope = AppModel.appScope + CoroutineName(this::class.simpleName ?: "")
 	fun getPageScope() = scope
 	fun launch(jobBody: suspend ()->Unit): Job {
 		return scope.launch {

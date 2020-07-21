@@ -33,17 +33,14 @@ class App : Application() {
 			width = CssSize(100, UNIT.perc)
 			height = CssSize(100, UNIT.perc)
 
-	        progressBar(5, 0, 10, striped = true, animated = true)
         }
 	    createPages(root)
     }
 
 	fun createPages(root: Root) {
-		GlobalScope.launch {
-			pageManager = PageManager()
-			pageManager.loadPages()
-			pageManager.fillRoot(root)
-		}
+		pageManager = PageManager()
+		pageManager.loadPages()
+		pageManager.fillRoot(root)
 	}
 
 	override fun dispose(): Map<String, Any>
