@@ -5,7 +5,9 @@ import org.w3c.dom.Node
 import sde.data.DataDocument
 import sde.data.item.AbstractCompoundDataItem
 import sde.data.item.AbstractDataItem
+import sde.data.item.CommentItem
 import sde.data.item.StructItem
+import sde.util.XComment
 import sde.util.XElement
 import sde.utils.DefinitionLoadException
 
@@ -43,6 +45,10 @@ abstract class AbstractStructDefinition<D: AbstractStructDefinition<D, I>, I: Ab
 
 		for (category in contents)
 		{
+			if (category.first.isNotBlank()) {
+				item.children.add(CommentItem(document, category.first))
+			}
+
 			for (def in category.second)
 			{
 				if (!existingDefs.contains(def))
@@ -63,6 +69,10 @@ abstract class AbstractStructDefinition<D: AbstractStructDefinition<D, I>, I: Ab
 
 			for (category in contents)
 			{
+				if (category.first.isNotBlank()) {
+					item.children.add(CommentItem(document, category.first))
+				}
+
 				for (def in category.second)
 				{
 					val childEl = xml.getElement(def.name)
@@ -93,7 +103,12 @@ abstract class AbstractStructDefinition<D: AbstractStructDefinition<D, I>, I: Ab
 				continue
 			}
 
-			val childXml = child.def.saveItem(item)
+			if (child is CommentItem) {
+				xml.children.add(XComment(child.value))
+				continue
+			}
+
+			val childXml = child.def.saveItem(child)
 			xml.children.add(childXml)
 		}
 

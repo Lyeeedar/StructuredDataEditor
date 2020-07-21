@@ -65,7 +65,7 @@ abstract class AbstractCompoundDefinition<D: AbstractCompoundDefinition<D, I>, I
 		{
 			if (child is XComment)
 			{
-				currentCategory = CategorisedChildren(node.value, ArrayList())
+				currentCategory = CategorisedChildren(child.text, ArrayList())
 				contents.add(currentCategory)
 			}
 			else if (child is XElement)

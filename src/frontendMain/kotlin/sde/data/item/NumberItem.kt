@@ -8,7 +8,7 @@ import sde.data.definition.NumberDefinition
 
 class NumberItem(def: NumberDefinition, document: DataDocument) : AbstractDataItem<NumberDefinition>(def, document)
 {
-	var value: Float by obs(def.default.toFloat(), NumberItem::value.name)
+	var value: Float by obs(def.default.toFloatOrNull() ?: 0f, NumberItem::value.name)
 		.undoable()
 		.get()
 
@@ -26,6 +26,6 @@ class NumberItem(def: NumberDefinition, document: DataDocument) : AbstractDataIt
 
 	override fun isDefaultValue(): Boolean
 	{
-		return value == def.default.toFloat()
+		return value == (def.default.toFloatOrNull() ?: 0f)
 	}
 }

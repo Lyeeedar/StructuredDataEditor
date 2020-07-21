@@ -34,7 +34,7 @@ class NumberDefinition : AbstractPrimitiveDataDefinition<NumberDefinition, Numbe
 	protected override fun loadItemInstance(document: DataDocument, xml: XElement): NumberItem
 	{
 		val item = createItemInstance(document)
-		item.value = xml.value.toFloat()
+		item.value = xml.value.toFloatOrNull() ?: 0f
 		return item
 	}
 }
