@@ -214,6 +214,7 @@ abstract class AbstractDataDefinition<D: AbstractDataDefinition<D, I>, I: Abstra
 			{
 				"BOOLEAN" -> BooleanDefinition()
 				"COLOUR" -> ColourDefinition()
+				"ENUM" -> EnumDefinition()
 				"NUMBER" -> NumberDefinition()
 				"STRING" -> StringDefinition()
 				"VECTOR" -> VectorDefinition()
