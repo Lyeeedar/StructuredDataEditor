@@ -6,7 +6,7 @@ import sde.util.XElement
 
 class BooleanDefinition : AbstractPrimitiveDataDefinition<BooleanDefinition, BooleanItem>() {
     override fun doParse(node: XElement) {
-
+		default = node.getAttributeValue("Default", "false")
     }
 
     override fun createItemInstance(document: DataDocument): BooleanItem
