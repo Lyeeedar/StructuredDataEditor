@@ -215,6 +215,7 @@ abstract class AbstractDataDefinition<D: AbstractDataDefinition<D, I>, I: Abstra
 				"BOOLEAN" -> BooleanDefinition()
 				"COLOUR" -> ColourDefinition()
 				"NUMBER" -> NumberDefinition()
+				"STRING" -> StringDefinition()
 
 				"STRUCT" -> StructDefinition()
 				"GRAPHSTRUCT" -> GraphStructDefinition()

@@ -2,6 +2,8 @@ package sde.data.item
 
 import pl.treksoft.kvision.core.Color
 import pl.treksoft.kvision.core.Component
+import pl.treksoft.kvision.form.text.TextInput
+import pl.treksoft.kvision.form.text.TextInputType
 import sde.data.DataDocument
 import sde.data.definition.ColourDefinition
 import sde.ui.ColorInput
@@ -19,12 +21,12 @@ class ColourItem(def: ColourDefinition, document: DataDocument) : AbstractDataIt
 
 	override fun getEditorComponent(): Component
 	{
-		return ColorInput(Color(value)).apply {
+		return TextInput(TextInputType.COLOR, value).apply {
 			subscribe {
-				this@ColourItem.value = it.asString()
+				this@ColourItem.value = it ?: "255,255,255,255"
 			}
 			registerListener(BooleanItem::value.name) {
-				this.value = Color(this@ColourItem.value)
+				this.value = this@ColourItem.value
 			}
 		}
 	}
