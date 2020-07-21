@@ -7,6 +7,7 @@ import sde.data.item.AbstractDataItem
 import sde.util.XComment
 import sde.util.XElement
 import sde.utils.DefinitionLoadException
+import sde.utils.parseCategoriedString
 
 typealias CategorisedChildren = Pair<String, ArrayList<DataDefinition>>
 
@@ -38,23 +39,9 @@ abstract class AbstractCompoundDefinition<D: AbstractCompoundDefinition<D, I>, I
 		val keys = node.getAttributeValue("Keys", "")
 		if (keys.isNotBlank())
 		{
-			if (keys.contains('('))
-			{
-				val categories = keys.split(')')
-				for (category in categories)
-				{
-					val split = category.split('(')
-					var name = split[0].trim()
-					if (name.startsWith(',')) name = name.substring(1)
-					val defs = split[1].split(',').map { it.trim() }
-
-					registerReference("Keys", defs, name)
-				}
-			}
-			else
-			{
-				val defs = keys.split(',').map { it.trim() }
-				registerReference("Keys", defs)
+			val parsed = keys.parseCategoriedString()
+			for (category in parsed) {
+				registerReference("Keys", category.value, category.key)
 			}
 		}
 
