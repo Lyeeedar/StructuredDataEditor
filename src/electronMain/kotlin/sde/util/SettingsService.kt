@@ -25,11 +25,13 @@ actual class SettingsService : ISettingsService {
     }
 
     override suspend fun saveSettings(settings: Settings): Boolean {
-        val json = Json.stringify(Settings.serializer(), settings)
-        fs.writeFileSync(settingsFile, json)
-
-        this.settings = settings
-
-        return true
+	    this.settings = settings
+	    try {
+		    val json = Json.stringify(Settings.serializer(), settings)
+		    fs.writeFileSync(settingsFile, json)
+		    return true
+	    } catch (ex: Throwable) {
+		    return false
+	    }
     }
 }

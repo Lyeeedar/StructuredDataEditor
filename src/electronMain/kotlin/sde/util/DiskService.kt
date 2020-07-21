@@ -19,40 +19,59 @@ actual class DiskService : IDiskService {
     val remote: Remote = require("electron").remote as Remote
 
     override suspend fun loadFileString(path: String): String {
-        return fs.readFileStringSync(path, "utf8")
+	    try {
+		    return fs.readFileStringSync(path, "utf8")
+	    } catch (ex: Throwable) {
+		    return ""
+	    }
     }
 
     override suspend fun loadFileBytes(path: String): List<Byte> {
-        val buffer = fs.readFileBufferSync(path)
-        return ByteArray(buffer.length) { i -> buffer[i] }.toList()
+	    try {
+		    val buffer = fs.readFileBufferSync(path)
+		    return ByteArray(buffer.length) { i -> buffer[i] }.toList()
+	    } catch (ex: Throwable) {
+		    return listOf()
+	    }
     }
 
     override suspend fun saveFileString(path: String, contents: String): Boolean {
-        fs.writeFileSync(path, contents)
-        return true
+	    try {
+		    fs.writeFileSync(path, contents)
+		    return true
+	    } catch (ex: Throwable) {
+		    return false
+	    }
     }
 
     override suspend fun saveFileBytes(path: String, data: List<Byte>): Boolean {
-        fs.writeFileSync(path, data.toByteArray())
-        return true
+	    try {
+		    fs.writeFileSync(path, data.toByteArray())
+		    return true
+	    } catch (ex: Throwable) {
+		    return false
+	    }
     }
 
     override suspend fun getFolderContents(path: String): List<ProjectItem> {
         val output = ArrayList<ProjectItem>()
 
-        val options = object {
-            val encoding = "utf8"
-            val withFileTypes = true
-        }
-        val rawContents: Array<Dirent> = fs.asDynamic().readdirSync(path, options) as Array<Dirent>
+	    try {
+		    val options = object {
+			    val encoding = "utf8"
+			    val withFileTypes = true
+		    }
+		    val rawContents: Array<Dirent> = fs.asDynamic().readdirSync(path, options) as Array<Dirent>
 
-        for (child in rawContents) {
-            val projItem = ProjectItem()
-            projItem.path = path + "/" + child.name
-            projItem.isDirectory = child.isDirectory()
+		    for (child in rawContents) {
+			    val projItem = ProjectItem()
+			    projItem.path = path + "/" + child.name
+			    projItem.isDirectory = child.isDirectory()
 
-            output.add(projItem)
-        }
+			    output.add(projItem)
+		    }
+	    } catch (ex: Throwable) {
+	    }
 
         return output
     }
