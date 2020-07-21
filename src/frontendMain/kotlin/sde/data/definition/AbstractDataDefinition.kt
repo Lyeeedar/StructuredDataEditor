@@ -216,6 +216,7 @@ abstract class AbstractDataDefinition<D: AbstractDataDefinition<D, I>, I: Abstra
 				"COLOUR" -> ColourDefinition()
 				"NUMBER" -> NumberDefinition()
 				"STRING" -> StringDefinition()
+				"VECTOR" -> VectorDefinition()
 
 				"STRUCT" -> StructDefinition()
 				"GRAPHSTRUCT" -> GraphStructDefinition()

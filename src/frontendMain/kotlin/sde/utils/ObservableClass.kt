@@ -129,3 +129,24 @@ abstract class ObservableClass<B: ObservableClass<B>.AbstractObservableBuilder<*
 		}
 	}
 }
+
+abstract class BasicObservableClass: ObservableClass<BasicObservableClass.BasicObservableBuilder<*>>()
+{
+	inner class BasicObservableBuilder<T>(initialValue: T, name: String) : AbstractObservableBuilder<T, BasicObservableBuilder<T>>(initialValue, name)
+	{
+		override fun beforeChange(kPproperty: KProperty<*>, property: ObservableProperty<T>, oldValue: T, newValue: T): Boolean
+		{
+			return true
+		}
+
+		override fun afterChange(kProperty: KProperty<*>, property: ObservableProperty<T>, oldValue: T, newValue: T)
+		{
+
+		}
+	}
+
+	override fun <T> obs(initialValue: T, name: String): BasicObservableBuilder<T>
+	{
+		return BasicObservableBuilder(initialValue, name)
+	}
+}
