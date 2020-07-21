@@ -213,6 +213,7 @@ abstract class AbstractDataDefinition<D: AbstractDataDefinition<D, I>, I: Abstra
 			val def = when(type)
 			{
 				"BOOLEAN" -> BooleanDefinition()
+				"COLOUR" -> ColourDefinition()
 				"NUMBER" -> NumberDefinition()
 
 				"STRUCT" -> StructDefinition()
