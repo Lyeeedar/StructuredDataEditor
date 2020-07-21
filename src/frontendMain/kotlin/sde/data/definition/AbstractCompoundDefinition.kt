@@ -45,6 +45,11 @@ abstract class AbstractCompoundDefinition<D: AbstractCompoundDefinition<D, I>, I
 			}
 		}
 
+		val defKey = node.getAttributeValue("DefKey", "")
+		if (defKey.isNotBlank()) {
+			registerReference("DefKey", defKey)
+		}
+
 		var currentCategory = CategorisedChildren("", ArrayList())
 		contents.add(currentCategory)
 
@@ -73,6 +78,7 @@ abstract class AbstractCompoundDefinition<D: AbstractCompoundDefinition<D, I>, I
 	{
 		resolveExtends()
 		resolveKeys()
+		resolveDefKey()
 	}
 
 	fun resolveKeys()
@@ -107,6 +113,25 @@ abstract class AbstractCompoundDefinition<D: AbstractCompoundDefinition<D, I>, I
 		}
 
 		attributes.addAll(def.attributes)
+	}
+
+	fun resolveDefKey()
+	{
+		val defKey = getReference("DefKey") ?: return
+		val def = defKey.definition ?: return
+
+		if (def !is AbstractCompoundDefinition)
+		{
+			throw DefinitionLoadException("Def $name tried to use a DefKey from a non-compound definition ${defKey.defName}")
+		}
+
+		for (category in def.contents)
+		{
+			for (def in category.second)
+			{
+				addDef(def, category.first)
+			}
+		}
 	}
 
 	fun addDef(def: DataDefinition, category: String)
