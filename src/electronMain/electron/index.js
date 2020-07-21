@@ -9,9 +9,6 @@ let mainWindow
 function createMainWindow() {
   const window = new BrowserWindow({ webPreferences: { nodeIntegration: true } })
 
-  if (!app.isPackaged) {
-    window.webContents.openDevTools()
-  }
   window.loadFile(path.join(__dirname, "./index.html"));
 
   window.on('closed', () => {
