@@ -12,6 +12,9 @@ class NumberItem(def: NumberDefinition, document: DataDocument) : AbstractDataIt
 		.undoable()
 		.get()
 
+	override val description: String
+		get() = value.toString()
+
 	override fun getEditorComponent(): Component
 	{
 		return SpinnerInput(value, def.minValue, def.maxValue, decimals = if (def.useIntegers) 0 else 4).apply {

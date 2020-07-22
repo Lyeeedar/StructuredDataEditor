@@ -10,6 +10,8 @@ typealias CategorisedChildren = Pair<String, ArrayList<DataDefinition>>
 
 abstract class AbstractCompoundDefinition<D: AbstractCompoundDefinition<D, I>, I: AbstractCompoundDataItem<D>> : AbstractDataDefinition<D, I>()
 {
+	lateinit var description: String
+
 	val contents = ArrayList<CategorisedChildren>()
 
 	override fun children(): List<DataDefinition>
@@ -27,6 +29,8 @@ abstract class AbstractCompoundDefinition<D: AbstractCompoundDefinition<D, I>, I
 
 	protected override fun doParse(node: XElement)
 	{
+		description = node.getAttributeValue("Description", "")
+
 		val extends = node.getAttributeValue("Extends", "")
 		if (extends.isNotBlank())
 		{

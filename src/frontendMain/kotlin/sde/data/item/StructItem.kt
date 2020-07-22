@@ -3,6 +3,7 @@ package sde.data.item
 import pl.treksoft.kvision.core.*
 import pl.treksoft.kvision.html.*
 import pl.treksoft.kvision.panel.DockPanel
+import pl.treksoft.kvision.panel.HPanel
 import pl.treksoft.kvision.panel.Side
 import pl.treksoft.kvision.require
 import sde.data.DataDocument
@@ -10,6 +11,7 @@ import sde.data.definition.AbstractCompoundDefinition
 import sde.data.definition.AbstractStructDefinition
 import sde.data.definition.StructDefinition
 import sde.ui.ImageButton
+import sde.ui.imageButton
 import sde.ui.textBlock
 import sde.utils.hover
 
@@ -17,8 +19,8 @@ abstract class AbstractStructItem<D: AbstractStructDefinition<*, *>>(def: D, doc
 {
 	override fun getEditorComponent(): Component
 	{
-		return DockPanel {
-			add(ImageButton(require("images/Add.png") as? String) {
+		return HPanel {
+			imageButton(require("images/Add.png") as? String) {
 				visible = !hasContent
 
 				onClick {
@@ -31,9 +33,15 @@ abstract class AbstractStructItem<D: AbstractStructDefinition<*, *>>(def: D, doc
 
 					isExpanded = true
 				}
-			}, Side.LEFT)
+			}
 
-			textBlock("")
+			textBlock(description) {
+				marginLeft = CssSize(5, UNIT.px)
+
+				registerListener(DataItem::description.name) {
+					content = description
+				}
+			}
 		}
 	}
 

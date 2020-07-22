@@ -1,5 +1,8 @@
 package sde.data.item
 
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import pl.treksoft.kvision.core.*
 import pl.treksoft.kvision.html.Div
 import pl.treksoft.kvision.html.Image
@@ -31,6 +34,24 @@ abstract class AbstractDataItem<D: DataDefinition>(val def: D, val document: Dat
 
 	val attributes = observableListOf<DataItem>()
 
+	abstract val description: String
+	var parent: DataItem? = null
+
+	init {
+	    registerListener("") {
+			document.scope?.launch {
+				var current: AbstractDataItem<*>? = this@AbstractDataItem
+				while (current != null) {
+					current.raiseEvent(DataItem::description.name)
+
+					delay(100)
+					current = current.parent
+				}
+			}
+		}
+	}
+
+	// ---------------------------------------- default ------------------------------------------
 	fun isDefault(): Boolean {
 		for (att in attributes) {
 			if (!att.isDefault()) {
@@ -42,6 +63,42 @@ abstract class AbstractDataItem<D: DataDefinition>(val def: D, val document: Dat
 	}
 	protected abstract fun isDefaultValue(): Boolean
 
+	// ----------------------------------------- util -------------------------------------------
+	fun getByPath(path: String): DataItem?
+	{
+		val pathParts = path.toLowerCase().split('.')
+
+		var current: DataItem? = this
+		for (part in pathParts) {
+			if (current == null) return null
+
+			current = when(part) {
+				"root" -> current.getRoot()
+				"parent" -> current.parent
+				else -> {
+					var value: DataItem? = null
+
+					val compound = current as? CompoundDataItem
+					if (compound != null) {
+						value = compound.children.firstOrNull { it.name == part }
+					}
+					if (value == null) {
+						value = attributes.firstOrNull { it.name == part }
+					}
+
+					value
+				}
+			}
+		}
+
+		return current
+	}
+
+	fun getRoot(): DataItem {
+		return parent?.getRoot() ?: this
+	}
+
+	// ---------------------------------------- UI ----------------------------------------------
 	protected fun isVisible() = document.lastRenderedID == renderedID
 
 	private var editorComponentDiv = Div()
@@ -142,6 +199,7 @@ abstract class AbstractDataItem<D: DataDefinition>(val def: D, val document: Dat
 		}
 	}
 
+	// ----------------------------------- obs -----------------------------------------------------
 	final override fun <T> obs(initialValue: T, name: String) = DataItemObservableBuilder<T>(initialValue, name)
 	inner class DataItemObservableBuilder<T>(initialValue: T, name: String): AbstractObservableBuilder<T, DataItemObservableBuilder<T>>(initialValue, name)
 	{

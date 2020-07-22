@@ -13,7 +13,6 @@ import sde.utils.DefinitionLoadException
 
 abstract class AbstractStructDefinition<D: AbstractStructDefinition<D, I>, I: AbstractCompoundDataItem<D>> : AbstractCompoundDefinition<D, I>()
 {
-	var description = ""
 	var nullable = true
 
 	init
@@ -23,7 +22,6 @@ abstract class AbstractStructDefinition<D: AbstractStructDefinition<D, I>, I: Ab
 
 	protected override fun doParseInstance(node: XElement)
 	{
-		description = node.getAttributeValue("Description", description)
 		nullable = node.getAttributeValue("Nullable", nullable)
 	}
 

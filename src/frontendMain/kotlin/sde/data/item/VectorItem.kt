@@ -23,6 +23,9 @@ class VectorItem(definition: VectorDefinition, document: DataDocument) : Abstrac
 		.undoable()
 		.get()
 
+	override val description: String
+		get() = "$value1,$value2,$value3,$value4"
+
 	override fun isDefaultValue(): Boolean
 	{
 		return value1 == def.vectorDefault[0] && value2 == def.vectorDefault[1] && value3 == def.vectorDefault[2] && value4 == def.vectorDefault[3]

@@ -14,10 +14,68 @@ abstract class AbstractCompoundDataItem<D: AbstractCompoundDefinition<*, *>>(def
 		.updatesDocument()
 		.get()
 
+	override val description: String
+		get() {
+			val output = StringBuilder()
+
+			val desc = def.description
+
+			if (desc.isNotBlank()) {
+				// resolve template
+				val blocks = desc.split("}")
+				for (block in blocks) {
+					if (block.contains("{")) {
+						val nameAndPath = block.split("{")
+						output.append(nameAndPath[0])
+
+						val item = getByPath(nameAndPath[1])
+						if (item != null) {
+							output.append(item.description)
+						}
+					} else {
+						output.append(block)
+					}
+				}
+
+			} else {
+				// add attributes
+				for (att in attributes) {
+					if (att.name != "Name" && att.isDefault()) continue
+
+					output.append(att.name)
+					output.append("=")
+					output.append(att.description)
+				}
+
+				// just do all children
+				for (child in children) {
+					val childDesc = child.description
+					if (childDesc.isBlank()) continue
+
+					if (output.isNotEmpty()) output.append(", ")
+					output.append(childDesc)
+
+					if (output.length > 200) {
+						if (!output.endsWith("...")) {
+							output.append("...")
+						}
+
+						break
+					}
+				}
+			}
+
+			return output.toString()
+		}
+
 	init
 	{
 		children.onUpdate.add {
 			document.updateComponent()
+
+			for (item in children) {
+				item.parent = this
+			}
 
 			raiseEvent(CompoundDataItem::children.name)
 		}

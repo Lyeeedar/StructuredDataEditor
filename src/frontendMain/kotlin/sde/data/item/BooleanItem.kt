@@ -11,6 +11,9 @@ class BooleanItem(def: BooleanDefinition, document: DataDocument) : AbstractData
             .undoable()
             .get()
 
+    override val description: String
+        get() = value.toString()
+
     override fun getEditorComponent(): Component
     {
         return CheckBox(value).apply {

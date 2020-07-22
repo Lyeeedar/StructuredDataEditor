@@ -16,6 +16,9 @@ class CommentItem(document: DataDocument, initialValue: String = "") : AbstractD
 		.undoable()
 		.get()
 
+	override val description: String
+		get() = ""
+
 	override fun isDefaultValue(): Boolean
 	{
 		return false

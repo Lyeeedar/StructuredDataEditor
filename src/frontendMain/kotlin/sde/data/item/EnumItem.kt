@@ -12,6 +12,9 @@ class EnumItem(definition: EnumDefinition, document: DataDocument) : AbstractDat
             .undoable()
             .get()
 
+    override val description: String
+        get() = value
+
     override fun isDefaultValue(): Boolean
     {
         return value == def.default
