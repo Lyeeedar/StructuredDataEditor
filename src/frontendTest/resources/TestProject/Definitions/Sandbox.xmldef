@@ -6,7 +6,7 @@
 
     <Data Name="AnimalsEnum" EnumValues="big(elephant,hippo,giant),small(ant,mouse,fly,beetle)" meta:RefKey="EnumDef" />
 
-	<Data Name="Root" meta:RefKey="Struct">
+	<Data Name="Sandbox" meta:RefKey="Struct">
 		<!-- Number -->
 		<Data Name="Float" meta:RefKey="Number" />
 		<Data Name="Float2-6" Min="2" Max="6" Default="3" meta:RefKey="Number" />
@@ -26,8 +26,8 @@
 		<Data Name="basic" meta:RefKey="Vector" />
 		<Data Name="vec3" NumComponents="3" meta:RefKey="Vector" />
 		<Data Name="vec4" NumComponents="4" meta:RefKey="Vector" />
-		<Data Name="MinMax" Name1="Min" Name2="Max" meta:RefKey="Vector" />
 		<Data Name="int2-6" Min="2" Max="6" Type="Int" Default="3,4" meta:RefKey="Vector" />
+        <Data Name="MinMax" Name1="Min" Name2="Max" meta:RefKey="Vector" />
         <!-- Enum -->
         <Data Name="YesNo" EnumValues="positive(Yes),negative(No)" meta:RefKey="Enum" />
         <Data Name="YesNoDefault" Default="No" EnumValues="positive(Yes),negative(No)" meta:RefKey="Enum" />

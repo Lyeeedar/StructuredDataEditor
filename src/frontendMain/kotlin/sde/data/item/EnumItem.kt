@@ -19,9 +19,10 @@ class EnumItem(definition: EnumDefinition, document: DataDocument) : AbstractDat
 
     override fun getEditorComponent(): Component
     {
-        return SelectInput().apply {
-            for (category in def.enumValues) {
-                add(SelectOptGroup(category.key, category.value.map { it to it }))
+        return SelectInput(value = value).apply {
+            for (category in def.enumValues.keys.sorted()) {
+	            val values = def.enumValues[category]!!
+                add(SelectOptGroup(category, values.sorted().map { it to it }))
             }
 
             subscribe {
