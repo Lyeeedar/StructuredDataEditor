@@ -66,13 +66,13 @@ abstract class AbstractDataItem<D: DataDefinition>(val def: D, val document: Dat
 	// ----------------------------------------- util -------------------------------------------
 	fun getByPath(path: String): DataItem?
 	{
-		val pathParts = path.toLowerCase().split('.')
+		val pathParts = path.split('.')
 
 		var current: DataItem? = this
 		for (part in pathParts) {
 			if (current == null) return null
 
-			current = when(part) {
+			current = when(part.toLowerCase()) {
 				"root" -> current.getRoot()
 				"parent" -> current.parent
 				else -> {

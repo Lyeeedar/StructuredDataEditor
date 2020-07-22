@@ -30,7 +30,9 @@ abstract class AbstractCompoundDataItem<D: AbstractCompoundDefinition<*, *>>(def
 
 						val item = getByPath(nameAndPath[1])
 						if (item != null) {
+							output.append("<span style=\"color:${item.def.textColour}\">")
 							output.append(item.description)
+							output.append("</span>")
 						}
 					} else {
 						output.append(block)
