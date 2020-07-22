@@ -7,7 +7,7 @@ import sde.AppModel
 
 abstract class AbstractPage(val pageManager: PageManager)
 {
-	private val scope = AppModel.appScope + CoroutineName(this::class.simpleName ?: "")
+	private val scope = MainScope() + CoroutineName((this::class.simpleName ?: "") + id++)
 	fun getPageScope() = scope
 	fun launch(jobBody: suspend ()->Unit): Job {
 		return scope.launch {
@@ -32,5 +32,10 @@ abstract class AbstractPage(val pageManager: PageManager)
 
 	open fun close() {
 		scope.cancel("Page disposed")
+	}
+
+	companion object
+	{
+		private var id = 0
 	}
 }
