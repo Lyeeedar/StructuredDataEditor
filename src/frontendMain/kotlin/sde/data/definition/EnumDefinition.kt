@@ -21,7 +21,7 @@ class EnumDefinition : AbstractPrimitiveDataDefinition<EnumDefinition, EnumItem>
     }
 
     override fun doParse(node: XElement) {
-        default = node.getAttributeValue("Name", default)
+        default = node.getAttributeValue("Default", default)
 
         val enumValues = node.getAttributeValue("EnumValues", "")
         if (enumValues.isNotBlank()) {
