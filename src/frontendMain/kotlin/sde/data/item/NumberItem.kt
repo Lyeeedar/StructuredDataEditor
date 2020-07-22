@@ -14,7 +14,7 @@ class NumberItem(def: NumberDefinition, document: DataDocument) : AbstractDataIt
 
 	override fun getEditorComponent(): Component
 	{
-		return SpinnerInput(value, def.minValue, def.maxValue, forceType = if (def.useIntegers) ForceType.ROUND else ForceType.NONE).apply {
+		return SpinnerInput(value, def.minValue, def.maxValue, decimals = if (def.useIntegers) 0 else 4).apply {
 			subscribe {
 				this@NumberItem.value = this.value!!.toFloat()
 			}

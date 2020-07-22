@@ -32,7 +32,7 @@ class VectorItem(definition: VectorDefinition, document: DataDocument) : Abstrac
 	{
 		return HPanel {
 			span(def.xName + ": ")
-			spinnerInput(value1, def.minValue, def.maxValue, forceType = if (def.useIntegers) ForceType.ROUND else ForceType.NONE).apply {
+			spinnerInput(value1, def.minValue, def.maxValue, decimals = if (def.useIntegers) 0 else 4).apply {
 				subscribe {
 					this@VectorItem.value1 = this.value!!.toFloat()
 				}
@@ -42,7 +42,7 @@ class VectorItem(definition: VectorDefinition, document: DataDocument) : Abstrac
 			}
 
 			span(def.yName + ": ")
-			spinnerInput(value2, def.minValue, def.maxValue, forceType = if (def.useIntegers) ForceType.ROUND else ForceType.NONE).apply {
+			spinnerInput(value2, def.minValue, def.maxValue, decimals = if (def.useIntegers) 0 else 4).apply {
 				subscribe {
 					this@VectorItem.value2 = this.value!!.toFloat()
 				}
@@ -54,7 +54,7 @@ class VectorItem(definition: VectorDefinition, document: DataDocument) : Abstrac
 			if (def.numComponents > 2)
 			{
 				span(def.zName + ": ")
-				spinnerInput(value3, def.minValue, def.maxValue, forceType = if (def.useIntegers) ForceType.ROUND else ForceType.NONE).apply {
+				spinnerInput(value3, def.minValue, def.maxValue, decimals = if (def.useIntegers) 0 else 4).apply {
 					subscribe {
 						this@VectorItem.value3 = this.value!!.toFloat()
 					}
@@ -67,7 +67,7 @@ class VectorItem(definition: VectorDefinition, document: DataDocument) : Abstrac
 			if (def.numComponents > 3)
 			{
 				span(def.wName + ": ")
-				spinnerInput(value4, def.minValue, def.maxValue, forceType = if (def.useIntegers) ForceType.ROUND else ForceType.NONE).apply {
+				spinnerInput(value4, def.minValue, def.maxValue, decimals = if (def.useIntegers) 0 else 4).apply {
 					subscribe {
 						this@VectorItem.value4 = this.value!!.toFloat()
 					}
