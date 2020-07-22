@@ -5,7 +5,7 @@ import pl.treksoft.kvision.html.Span
 import sde.utils.afterInsert
 import sde.utils.disableSelection
 
-class TextBlock(text: String = "", init: (TextBlock.() -> Unit)? = null): Span(text)
+class TextBlock(text: String = "", rich: Boolean = false, init: (TextBlock.() -> Unit)? = null): Span(text, rich = rich)
 {
     init {
         afterInsert {
@@ -16,9 +16,9 @@ class TextBlock(text: String = "", init: (TextBlock.() -> Unit)? = null): Span(t
     }
 }
 
-fun Container.textBlock(text: String = "", init: (TextBlock.() -> Unit)? = null): TextBlock
+fun Container.textBlock(text: String = "", rich: Boolean = false, init: (TextBlock.() -> Unit)? = null): TextBlock
 {
-    val textBlock = TextBlock(text).apply { init?.invoke(this) }
+    val textBlock = TextBlock(text, rich).apply { init?.invoke(this) }
     this.add(textBlock)
     return textBlock
 }

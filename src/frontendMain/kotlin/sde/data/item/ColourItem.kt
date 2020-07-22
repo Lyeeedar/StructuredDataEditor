@@ -7,6 +7,8 @@ import pl.treksoft.kvision.form.text.TextInputType
 import sde.data.DataDocument
 import sde.data.definition.ColourDefinition
 import sde.ui.ColorInput
+import sde.utils.hex2Rgb
+import sde.utils.rgb2Hex
 
 class ColourItem(def: ColourDefinition, document: DataDocument) : AbstractDataItem<ColourDefinition>(def, document)
 {
@@ -15,7 +17,7 @@ class ColourItem(def: ColourDefinition, document: DataDocument) : AbstractDataIt
 		.get()
 
 	override val description: String
-		get() = value
+		get() = "<span style=\"color:rgb($value)\">$value</span>"
 
 	override fun isDefaultValue(): Boolean
 	{
@@ -24,12 +26,12 @@ class ColourItem(def: ColourDefinition, document: DataDocument) : AbstractDataIt
 
 	override fun getEditorComponent(): Component
 	{
-		return TextInput(TextInputType.COLOR, value).apply {
+		return TextInput(TextInputType.COLOR, value.rgb2Hex()).apply {
 			subscribe {
-				this@ColourItem.value = it ?: "255,255,255,255"
+				this@ColourItem.value = it?.hex2Rgb() ?: "#fff"
 			}
 			registerListener(BooleanItem::value.name) {
-				this.value = this@ColourItem.value
+				this.value = this@ColourItem.value.rgb2Hex()
 			}
 		}
 	}

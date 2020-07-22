@@ -42,7 +42,9 @@ abstract class AbstractCompoundDataItem<D: AbstractCompoundDefinition<*, *>>(def
 				for (att in attributes) {
 					if (att.name != "Name" && att.isDefault()) continue
 
+					output.append("<span style=\"color:${att.def.textColour}\">")
 					output.append(att.name)
+					output.append("</span>")
 					output.append("=")
 					output.append(att.description)
 				}
@@ -53,9 +55,12 @@ abstract class AbstractCompoundDataItem<D: AbstractCompoundDefinition<*, *>>(def
 					if (childDesc.isBlank()) continue
 
 					if (output.isNotEmpty()) output.append(", ")
-					output.append(childDesc)
 
-					if (output.length > 200) {
+					output.append("<span style=\"color:${child.def.textColour}\">")
+					output.append(childDesc)
+					output.append("</span>")
+
+					if (output.length > 800) {
 						if (!output.endsWith("...")) {
 							output.append("...")
 						}

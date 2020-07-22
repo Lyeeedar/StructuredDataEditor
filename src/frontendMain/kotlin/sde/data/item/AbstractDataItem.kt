@@ -159,7 +159,10 @@ abstract class AbstractDataItem<D: DataDefinition>(val def: D, val document: Dat
 					}
 				}
 
-				textBlock(item.name)
+				textBlock(item.name) {
+					color = Color(def.textColour)
+					marginLeft = CssSize(3, UNIT.px)
+				}
 
 				if (item is IRemovable && item.canRemove)
 				{

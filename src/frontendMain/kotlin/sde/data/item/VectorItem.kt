@@ -1,6 +1,8 @@
 package sde.data.item
 
 import pl.treksoft.kvision.core.Component
+import pl.treksoft.kvision.core.CssSize
+import pl.treksoft.kvision.core.UNIT
 import pl.treksoft.kvision.form.spinner.ForceType
 import pl.treksoft.kvision.form.spinner.spinnerInput
 import pl.treksoft.kvision.html.span
@@ -34,7 +36,9 @@ class VectorItem(definition: VectorDefinition, document: DataDocument) : Abstrac
 	override fun getEditorComponent(): Component
 	{
 		return HPanel {
-			span(def.xName + ": ")
+			span(def.xName + ": ") {
+				margin = CssSize(3, UNIT.px)
+			}
 			spinnerInput(value1, def.minValue, def.maxValue, decimals = if (def.useIntegers) 0 else 4).apply {
 				subscribe {
 					this@VectorItem.value1 = this.value!!.toFloat()
@@ -44,7 +48,9 @@ class VectorItem(definition: VectorDefinition, document: DataDocument) : Abstrac
 				}
 			}
 
-			span(def.yName + ": ")
+			span(def.yName + ": ") {
+				margin = CssSize(3, UNIT.px)
+			}
 			spinnerInput(value2, def.minValue, def.maxValue, decimals = if (def.useIntegers) 0 else 4).apply {
 				subscribe {
 					this@VectorItem.value2 = this.value!!.toFloat()
@@ -56,7 +62,9 @@ class VectorItem(definition: VectorDefinition, document: DataDocument) : Abstrac
 
 			if (def.numComponents > 2)
 			{
-				span(def.zName + ": ")
+				span(def.zName + ": ") {
+					margin = CssSize(3, UNIT.px)
+				}
 				spinnerInput(value3, def.minValue, def.maxValue, decimals = if (def.useIntegers) 0 else 4).apply {
 					subscribe {
 						this@VectorItem.value3 = this.value!!.toFloat()
@@ -69,7 +77,9 @@ class VectorItem(definition: VectorDefinition, document: DataDocument) : Abstrac
 
 			if (def.numComponents > 3)
 			{
-				span(def.wName + ": ")
+				span(def.wName + ": ") {
+					margin = CssSize(3, UNIT.px)
+				}
 				spinnerInput(value4, def.minValue, def.maxValue, decimals = if (def.useIntegers) 0 else 4).apply {
 					subscribe {
 						this@VectorItem.value4 = this.value!!.toFloat()

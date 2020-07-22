@@ -1,5 +1,6 @@
 package sde.utils
 
+
 fun String.getFileName(): String = this.split('/', '\\').last()
 
 fun String.parseCategorisedString(): HashMap<String, List<String>>
@@ -28,4 +29,23 @@ fun String.parseCategorisedString(): HashMap<String, List<String>>
 	}
 
 	return output
+}
+
+fun String.hex2Rgb(): String {
+	return this.substring(1, 3).toInt(16).toString() + "," +
+			this.substring(3, 5).toInt(16).toString() + "," +
+			this.substring(5, 7).toInt(16).toString()
+}
+
+fun componentToHex(c: Int): String {
+	val hex = c.toString(16);
+	return if (hex.length == 1) "0$hex" else hex
+}
+
+fun String.rgb2Hex(): String {
+	val components = this.split(',')
+	return "#" +
+			componentToHex(components[0].toInt()) +
+			componentToHex(components[1].toInt()) +
+			componentToHex(components[2].toInt())
 }

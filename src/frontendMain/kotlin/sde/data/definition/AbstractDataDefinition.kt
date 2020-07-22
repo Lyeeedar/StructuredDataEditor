@@ -16,9 +16,9 @@ typealias DefinitionMap = HashMap<String, DataDefinition>
 abstract class AbstractDataDefinition<D: AbstractDataDefinition<D, I>, I: AbstractDataItem<D>>
 {
 	val colours = mapOf(
-		"Primitive" to "181,178,156",
-		"Collection" to "156,171,181",
-		"Struct" to "180,156,181"
+		"Primitive" to "rgb(181,178,156)",
+		"Collection" to "rgb(156,171,181)",
+		"Struct" to "rgb(180,156,181)"
 	                   )
 
 	lateinit var srcFile: String

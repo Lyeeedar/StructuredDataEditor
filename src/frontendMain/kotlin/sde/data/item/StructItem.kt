@@ -35,7 +35,7 @@ abstract class AbstractStructItem<D: AbstractStructDefinition<*, *>>(def: D, doc
 				}
 			}
 
-			textBlock(description) {
+			textBlock(description, rich = true) {
 				marginLeft = CssSize(5, UNIT.px)
 
 				registerListener(DataItem::description.name) {
