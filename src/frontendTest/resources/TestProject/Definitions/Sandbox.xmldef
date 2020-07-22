@@ -1,7 +1,7 @@
 <Definitions Colour="125,255,180" Icon="CardIcon.png" xmlns:meta="Editor">
 	<Data Name="RecursiveStruct" meta:RefKey="StructDef">
 		<Data Name="Name" meta:RefKey="String" />
-		<Data Name="Child" Def="RecursiveStruct" meta:RefKey="Struct" />
+		<Data Name="Child" Extends="RecursiveStruct" meta:RefKey="Struct" />
 	</Data>
 
     <Data Name="AnimalsEnum" EnumValues="big(elephant,hippo,giant),small(ant,mouse,fly,beetle)" meta:RefKey="EnumDef" />
@@ -18,7 +18,7 @@
 		<!-- Colour -->
 		<Data Name="Colour" meta:RefKey="Colour" />
 		<!-- Struct -->
-		<Data Name="StructWithDef" Def="RecursiveStruct" meta:RefKey="Struct" />
+		<Data Name="StructWithDef" Extends="RecursiveStruct" meta:RefKey="Struct" />
 		<Data Name="StructNotNullable" Nullable="False" meta:RefKey="Struct">
 			<Data Name="Value" meta:RefKey="Number" />
 		</Data>

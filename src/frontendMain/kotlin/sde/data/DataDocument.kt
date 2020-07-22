@@ -94,9 +94,9 @@ class DataDocument(val path: String)
 		for (item in visibleItems)
 		{
 			val indentation = item.depth * 14
-			val nameLength = item.name.length * 10
+			val nameLength = item.name.length * 8
 
-			val itemWidth = indentation + nameLength + 16 + 50 // expander and padding
+			val itemWidth = indentation + nameLength + 16 + 25 // expander and padding
 
 			if (itemWidth > sensibleHeaderWidth)
 			{

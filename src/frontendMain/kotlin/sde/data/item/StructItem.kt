@@ -18,23 +18,22 @@ abstract class AbstractStructItem<D: AbstractStructDefinition<*, *>>(def: D, doc
 	override fun getEditorComponent(): Component
 	{
 		return DockPanel {
-			if (!hasContent)
-			{
-				add(ImageButton(require("images/Add.png") as? String) {
-					onClick {
-						createContents()
+			add(ImageButton(require("images/Add.png") as? String) {
+				visible = !hasContent
 
-						val contents = children.toList()
-						children.clear()
+				onClick {
+					createContents()
 
-						document.undoRedoManager.applyDoUndo({ children.addAll(contents) }, { children.clear() }, "Create $name")
+					val contents = children.toList()
+					children.clear()
 
-						isExpanded = true
-					}
-				}, Side.LEFT)
-			}
+					document.undoRedoManager.applyDoUndo({ children.addAll(contents) }, { children.clear() }, "Create $name")
 
-			textBlock("this is the struct")
+					isExpanded = true
+				}
+			}, Side.LEFT)
+
+			textBlock("")
 		}
 	}
 

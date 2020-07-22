@@ -41,8 +41,6 @@ abstract class AbstractStructDefinition<D: AbstractStructDefinition<D, I>, I: Ab
 
 	fun createContents(item: I, document: DataDocument)
 	{
-		val existingDefs = item.children.map { it.def }.toSet()
-
 		for (category in contents)
 		{
 			if (category.first.isNotBlank()) {
@@ -51,11 +49,8 @@ abstract class AbstractStructDefinition<D: AbstractStructDefinition<D, I>, I: Ab
 
 			for (def in category.second)
 			{
-				if (!existingDefs.contains(def))
-				{
-					val citem = def.createItem(document)
-					item.children.add(citem)
-				}
+				val citem = def.createItem(document)
+				item.children.add(citem)
 			}
 		}
 	}

@@ -3,6 +3,7 @@ package sde.data.definition
 import sde.data.item.AbstractCompoundDataItem
 import sde.util.XComment
 import sde.util.XElement
+import sde.utils.DefinitionLoadException
 import sde.utils.parseCategorisedString
 
 typealias CategorisedChildren = Pair<String, ArrayList<DataDefinition>>
@@ -75,6 +76,10 @@ abstract class AbstractCompoundDefinition<D: AbstractCompoundDefinition<D, I>, I
 		resolveExtends()
 		resolveKeys()
 		resolveDefKey()
+
+		if (contents.size == 0) {
+			throw DefinitionLoadException("Def $name has no contents")
+		}
 	}
 
 	private fun resolveKeys()
