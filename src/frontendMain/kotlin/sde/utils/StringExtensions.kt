@@ -2,7 +2,7 @@ package sde.utils
 
 fun String.getFileName(): String = this.split('/', '\\').last()
 
-fun String.parseCategoriedString(): HashMap<String, List<String>>
+fun String.parseCategorisedString(): HashMap<String, List<String>>
 {
 	val output = HashMap<String, List<String>>()
 
@@ -11,6 +11,8 @@ fun String.parseCategoriedString(): HashMap<String, List<String>>
 		val categories = this.split(')')
 		for (category in categories)
 		{
+			if (category.isBlank()) continue
+
 			val split = category.split('(')
 			var name = split[0].trim()
 			if (name.startsWith(',')) name = name.substring(1)

@@ -3,8 +3,7 @@ package sde.data.definition
 import sde.data.DataDocument
 import sde.data.item.EnumItem
 import sde.util.XElement
-import sde.utils.DefinitionLoadException
-import sde.utils.parseCategoriedString
+import sde.utils.parseCategorisedString
 
 class EnumDefinition : AbstractPrimitiveDataDefinition<EnumDefinition, EnumItem>()
 {
@@ -25,7 +24,7 @@ class EnumDefinition : AbstractPrimitiveDataDefinition<EnumDefinition, EnumItem>
 
         val enumValues = node.getAttributeValue("EnumValues", "")
         if (enumValues.isNotBlank()) {
-            val parsed = enumValues.parseCategoriedString()
+            val parsed = enumValues.parseCategorisedString()
             for (category in parsed) {
                 for (value in category.value) {
                     addValue(category.key, value)

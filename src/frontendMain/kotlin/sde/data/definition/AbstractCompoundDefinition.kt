@@ -1,13 +1,9 @@
 package sde.data.definition
 
-import org.w3c.dom.Element
-import org.w3c.dom.Node
 import sde.data.item.AbstractCompoundDataItem
-import sde.data.item.AbstractDataItem
 import sde.util.XComment
 import sde.util.XElement
-import sde.utils.DefinitionLoadException
-import sde.utils.parseCategoriedString
+import sde.utils.parseCategorisedString
 
 typealias CategorisedChildren = Pair<String, ArrayList<DataDefinition>>
 
@@ -39,7 +35,7 @@ abstract class AbstractCompoundDefinition<D: AbstractCompoundDefinition<D, I>, I
 		val keys = node.getAttributeValue("Keys", "")
 		if (keys.isNotBlank())
 		{
-			val parsed = keys.parseCategoriedString()
+			val parsed = keys.parseCategorisedString()
 			for (category in parsed) {
 				registerReference("Keys", category.value, category.key)
 			}
