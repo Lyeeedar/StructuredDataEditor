@@ -17,9 +17,7 @@ import sde.pages.StartPage
 import sde.ui.TextBlock
 import sde.ui.mouseOverBackgroundColour
 import sde.util.ProjectItem
-import sde.utils.afterInsert
-import sde.utils.disableSelection
-import sde.utils.getFileDefType
+import sde.utils.*
 
 
 class ProjectExplorerPage(val projectDef: ProjectDef, pageManager: PageManager) : AbstractPage(pageManager)
@@ -111,7 +109,59 @@ class ProjectExplorerPage(val projectDef: ProjectDef, pageManager: PageManager) 
 	override fun createComponent(): Component
 	{
 		updateComponent()
-		return component
+		return DockPanel {
+			add(HPanel(wrap = FlexWrap.WRAP) {
+				div {
+					addCssClass("jumbotron")
+					padding = CssSize(1, UNIT.rem)
+					margin = CssSize(1, UNIT.rem)
+
+					h4("Create definition")
+					p("Create a new .xmldef file")
+					button("Create def...") {
+						align = Align.RIGHT
+
+						onClick {
+
+						}
+					}
+				}
+
+				div {
+					addCssClass("jumbotron")
+					padding = CssSize(1, UNIT.rem)
+					margin = CssSize(1, UNIT.rem)
+
+					h4("Create data")
+					p("Create a new data file")
+
+					launch {
+						project.loadJob?.join()
+
+						for (root in project.rootDefinitions) {
+							button("Create ${root.key} file...") {
+								align = Align.RIGHT
+								onClick {
+									val def = root.value
+									val data = DataDocument("")
+									data.project = project
+
+									val item = def.createItem(data)
+
+									data.root = item as CompoundDataItem
+
+									val page = DataDocumentPage(data, pageManager)
+									page.pageManager.addPage(page)
+									page.show()
+								}
+							}
+						}
+					}
+				}
+			}, Side.UP)
+
+			add(component)
+		}
 	}
 
 	override fun canClose(): Boolean
