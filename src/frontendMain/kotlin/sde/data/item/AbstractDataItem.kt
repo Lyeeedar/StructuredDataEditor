@@ -99,6 +99,20 @@ abstract class AbstractDataItem<D: DataDefinition>(val def: D, val document: Dat
 		return parent?.getRoot() ?: this
 	}
 
+	fun removeFromCollection()
+	{
+		val collection = parent as? AbstractCollectionItem<*> ?: return
+
+		val index = collection.children.indexOf(this)
+		if (index == -1) return
+
+		document.undoRedoManager.applyDoUndo({
+			collection.children.remove(this)
+		}, {
+			collection.children.add(index, this)
+		}, "Remove $name from ${collection.name}")
+	}
+
 	// ---------------------------------------- UI ----------------------------------------------
 	protected fun isVisible() = document.lastRenderedID == renderedID
 
@@ -173,7 +187,14 @@ abstract class AbstractDataItem<D: DataDefinition>(val def: D, val document: Dat
 					marginLeft = CssSize(3, UNIT.px)
 				}
 
-				if (item is IRemovable && item.canRemove)
+				if (item.isCollectionChild && item.parent is AbstractCollectionItem) {
+					add(ImageButton(pl.treksoft.kvision.require("images/Remove.png") as? String) {
+						onClick {
+							item.removeFromCollection()
+						}
+					}, Side.RIGHT)
+				}
+				else if (item is IRemovable && item.canRemove)
 				{
 					add(ImageButton(pl.treksoft.kvision.require("images/Remove.png") as? String) {
 						onClick {
