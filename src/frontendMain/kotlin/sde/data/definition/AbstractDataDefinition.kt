@@ -211,9 +211,10 @@ abstract class AbstractDataDefinition<D: AbstractDataDefinition<D, I>, I: Abstra
 		fun load(xml: XElement, srcFile: String): DataDefinition
 		{
 			var type = xml.getAttributeValue("meta:RefKey", "???").toUpperCase()
+
 			if (type == "???")
 			{
-				throw DefinitionLoadException("The xml '${xml}' did not contain a meta:RefKey attribute")
+				type = xml.name.toUpperCase()
 			}
 
 			var isDef = false
@@ -227,6 +228,7 @@ abstract class AbstractDataDefinition<D: AbstractDataDefinition<D, I>, I: Abstra
 				"BOOLEAN" -> BooleanDefinition()
 				"COLOUR" -> ColourDefinition()
 				"ENUM" -> EnumDefinition()
+				"FILE" -> FileDefinition()
 				"NUMBER" -> NumberDefinition()
 				"STRING" -> StringDefinition()
 				"VECTOR" -> VectorDefinition()
@@ -238,7 +240,7 @@ abstract class AbstractDataDefinition<D: AbstractDataDefinition<D, I>, I: Abstra
 
 				"REFERENCE" -> ReferenceDefinition()
 
-				else -> throw DefinitionLoadException("Unknown definition type $type")
+				else -> throw DefinitionLoadException("Unknown definition type $type for xml '$xml")
 			}
 			def.srcFile = srcFile
 			def.isDef = isDef

@@ -5,5 +5,17 @@ config.module.rules.push(
         options: {
               esModule: false,
         },
-    }
+    },
+
+);
+
+config.module.rules.push(
+    {
+        test: /\.xmldef$/i,
+        loader: 'raw-loader',
+        options: {
+              esModule: false,
+        },
+    },
+
 );
