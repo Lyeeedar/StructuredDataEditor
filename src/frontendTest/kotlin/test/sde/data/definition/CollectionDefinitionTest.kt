@@ -2,10 +2,7 @@ package test.sde.data.definition
 
 import sde.data.DataDocument
 import sde.data.Project
-import sde.data.definition.AbstractDataDefinition
-import sde.data.definition.NumberDefinition
-import sde.data.definition.CollectionDefinition
-import sde.data.definition.DefinitionMap
+import sde.data.definition.*
 import sde.data.item.BooleanItem
 import sde.data.item.CollectionItem
 import sde.data.item.NumberItem
@@ -114,16 +111,19 @@ class CollectionDefinitionTest
 		assertTrue(child2 is BooleanItem)
 		assertEquals("IsAwesome", child2.name)
 		assertEquals(true, child2.value)
+		assertEquals(true, child2.isCollectionChild)
 
 		val child3 = data.children[2]
 		assertTrue(child3 is BooleanItem)
 		assertEquals("IsAwesome", child3.name)
 		assertEquals(false, child3.value)
+		assertEquals(true, child3.isCollectionChild)
 
 		val child4 = data.children[3]
 		assertTrue(child4 is NumberItem)
 		assertEquals("Num", child4.name)
 		assertEquals(1f, child4.value)
+		assertEquals(true, child4.isCollectionChild)
 	}
 
 	@Test
@@ -197,5 +197,37 @@ class CollectionDefinitionTest
 				<!-- real comment -->
 			</Block>
 		""".trimIndent(), data.def.saveItem(data).toString())
+	}
+
+	@Test
+	fun testAdditionalDefs()
+	{
+		val xml = """
+			<Data Name="Block" xmlns:meta="Editor" meta:RefKey="Collection">
+				<AdditionalDefs>
+					<Data Name="Inserted" meta:RefKey="String" />
+				</AdditionalDefs>
+				<Data Name="Count1" meta:RefKey="Number" />
+				<Data Name="Count2" meta:RefKey="Number" />
+			</Data>
+		""".trimIndent().parseXml().toXDocument()
+
+		val def = AbstractDataDefinition.load(xml, "")
+		def.resolve__test()
+
+		assertTrue(def is CollectionDefinition)
+		assertEquals(1, def.contents.size)
+		assertEquals(2, def.contents[0].second.size)
+
+		assertEquals(1, def.additionalDefs.size)
+		assertTrue(def.additionalDefs[0] is StringDefinition)
+
+		assertTrue(def.contents[0].second[0] is NumberDefinition)
+		assertEquals("Count2", def.contents[0].second[1].name)
+
+		val item = def.createItem(DataDocument(""))
+		assertEquals(1, item.children.size)
+		assertEquals("Inserted", item.children[0].def.name)
+		assertEquals(false, item.children[0].isCollectionChild)
 	}
 }

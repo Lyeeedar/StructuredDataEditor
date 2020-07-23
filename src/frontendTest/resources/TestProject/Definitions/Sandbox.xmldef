@@ -32,5 +32,24 @@
         <Data Name="YesNo" EnumValues="positive(Yes),negative(No)" meta:RefKey="Enum" />
         <Data Name="YesNoDefault" Default="No" EnumValues="positive(Yes),negative(No)" meta:RefKey="Enum" />
         <Data Name="FromDef" Key="AnimalsEnum" meta:RefKey="Enum" />
+        <!-- Collection -->
+        <Data Name="SimpleStringCollection" meta:RefKey="Collection">
+            <Data Name="Item" meta:RefKey="String" />
+        </Data>
+        <Data Name="Between1And3Collection" MinCount="1" MaxCount="3" meta:RefKey="Collection">
+            <Data Name="Item" meta:RefKey="String" />
+            <Data Name="Number" meta:RefKey="Number" />
+        </Data>
+        <Data Name="UniqueChildren" ChildrenAreUnique="True" meta:RefKey="Collection">
+            <Data Name="Position" meta:RefKey="Struct">
+                <Data Name="Size" meta:RefKey="Number" />
+            </Data>
+            <Data Name="Stats" meta:RefKey="Struct">
+                <Data Name="HP" meta:RefKey="Number" />
+            </Data>
+            <Data Name="AI" meta:RefKey="Struct">
+                <Data Name="Boss" meta:RefKey="Boolean" />
+            </Data>
+        </Data>
 	</Data>
 </Definitions>
