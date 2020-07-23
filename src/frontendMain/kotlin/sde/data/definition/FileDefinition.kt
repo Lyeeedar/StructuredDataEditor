@@ -7,12 +7,34 @@ import sde.util.XElement
 
 class FileDefinition : AbstractPrimitiveDataDefinition<FileDefinition, FileItem>()
 {
-	var maxLength: Int = -1
+	var stripExtension = false
+	var basePath = ""
+	var resourceDef: DataDefinition? = null
+	val allowedFileTypes = ArrayList<String>()
+	var relativeToThis = false
 
 	override fun doParse(node: XElement)
 	{
-		maxLength = node.getAttributeValue("MaxLength", maxLength)
 		default = node.getAttributeValue("Default", "")
+		stripExtension = node.getAttributeValue("StripExtension", stripExtension)
+		basePath = node.getAttributeValue("BasePath", basePath)
+
+		val resourceType = node.getAttributeValue("ResourceType", "")
+		if (resourceType.isNotBlank()) {
+			registerReference("ResourceDef", resourceType)
+		}
+
+		val fileTypes = node.getAttributeValue("AllowedFileTypes", "")
+		if (fileTypes.isNotBlank()) {
+			allowedFileTypes.addAll(fileTypes.split(','))
+		}
+
+		relativeToThis = node.getAttributeValue("RelativeToThis", relativeToThis)
+	}
+
+	override fun postResolve() {
+		val def = getReference<DataDefinition>("ResourceDef") ?: return
+		resourceDef = def
 	}
 
 	override fun saveItemInstance(item: FileItem): XElement

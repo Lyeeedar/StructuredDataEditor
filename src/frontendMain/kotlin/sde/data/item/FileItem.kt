@@ -24,10 +24,6 @@ class FileItem(def: FileDefinition, document: DataDocument) : AbstractDataItem<F
 	override fun getEditorComponent(): Component
 	{
 		return TextInput(TextInputType.TEXT, value).apply {
-			if (def.maxLength > 0)
-			{
-				maxlength = def.maxLength
-			}
 
 			subscribe {
 				this@FileItem.value = it ?: ""
