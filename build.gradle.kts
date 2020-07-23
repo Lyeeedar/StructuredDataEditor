@@ -172,6 +172,7 @@ kotlin {
                 implementation(npm("po2json"))
                 implementation(npm("grunt"))
                 implementation(npm("grunt-pot"))
+                implementation(npm("raw-loader", "^4.0.1"))
 
                 implementation("pl.treksoft:kvision:$kvisionVersion")
                 implementation("pl.treksoft:kvision-bootstrap:$kvisionVersion")
