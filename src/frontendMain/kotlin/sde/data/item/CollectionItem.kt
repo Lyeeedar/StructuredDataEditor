@@ -41,7 +41,10 @@ abstract class AbstractCollectionItem<D: AbstractCollectionDefinition<D, *>>(def
 					forceEditorComponentRefresh()
 				}
 			}
+
+			name = "${def.name} (${children.size})"
 		}
+		name = "${def.name} (${children.size})"
 	}
 
 	override fun isDefaultValue(): Boolean

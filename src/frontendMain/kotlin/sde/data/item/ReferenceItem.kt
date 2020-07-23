@@ -14,15 +14,27 @@ import sde.data.definition.ReferenceDefinition
 import sde.ui.imageButton
 import sde.ui.textBlock
 
-abstract class AbstractReferenceItem<D: AbstractReferenceDefinition<D, *>>(definition: D, document: DataDocument) : AbstractCompoundDataItem<D>(definition, document)
+abstract class AbstractReferenceItem<D: AbstractReferenceDefinition<D, *>>(definition: D, document: DataDocument) : AbstractCompoundDataItem<D>(definition, document), IRemovable
 {
     var selectedDefinition: DataDefinition by obs(def.contentsMap.values.first(), AbstractReferenceItem<*>::selectedDefinition.name)
             .get()
 
     var createdItem: DataItem? by obs<DataItem?>(null, AbstractReferenceItem<*>::createdItem.name)
             .undoable()
+            .updatesDocument()
             .updatesComponent()
             .get()
+
+    init {
+        registerListener(AbstractReferenceItem<*>::createdItem.name) {
+            val citem = createdItem
+            if (citem == null) {
+                name = def.name
+            } else {
+                name = "${def.name} (${citem.name})"
+            }
+        }
+    }
 
     fun create() {
         val item = selectedDefinition.createItem(document)
@@ -32,6 +44,32 @@ abstract class AbstractReferenceItem<D: AbstractReferenceDefinition<D, *>>(defin
         }
 
         setCreatedItem(item)
+    }
+
+    override val canRemove: Boolean
+        get() = def.nullable && createdItem != null
+
+    override fun remove() {
+        val oldItem = createdItem ?: return
+
+        document.undoRedoManager.applyDoUndo({
+            attributes.clear()
+            children.clear()
+
+            document.undoRedoManager.disableUndoScope {
+                createdItem = null
+            }
+        }, {
+            attributes.addAll(oldItem.attributes)
+
+            if (oldItem is CompoundDataItem) {
+                children.addAll(oldItem.children)
+            }
+
+            document.undoRedoManager.disableUndoScope {
+                createdItem = oldItem
+            }
+        }, "Remove ${def.name}")
     }
 
     fun setCreatedItem(item: DataItem) {

@@ -4,54 +4,89 @@
 		<Data Name="Child" Description="Start{parent.Name}={Name}" Extends="RecursiveStruct" meta:RefKey="Struct" />
 	</Data>
 
+    <Data Name="Car" meta:RefKey="StructDef">
+        <Data Name="Brand" meta:RefKey="String" />
+        <Data Name="Colour" meta:RefKey="Colour" />
+    </Data>
+
+    <Data Name="Bike" meta:RefKey="StructDef">
+        <Data Name="NumGears" meta:RefKey="Number" />
+        <Data Name="Colour" meta:RefKey="Colour" />
+    </Data>
+
+    <Data Name="Train" meta:RefKey="StructDef">
+        <Data Name="Seats" meta:RefKey="Number" />
+        <Data Name="Direction" EnumValues="N,S,E,W" meta:RefKey="Enum" />
+    </Data>
+
+    <Data Name="Structs" Keys="RecursiveStruct,Bike,Train" meta:RefKey="ReferenceDef" />
+
     <Data Name="AnimalsEnum" EnumValues="big(elephant,hippo,giant),small(ant,mouse,fly,beetle)" meta:RefKey="EnumDef" />
 
 	<Data Name="Sandbox" meta:RefKey="Struct">
 		<!-- Number -->
-		<Data Name="Float" meta:RefKey="Number" />
-		<Data Name="Float2-6" Min="2" Max="6" Default="3" meta:RefKey="Number" />
-		<Data Name="Int" Type="Int" meta:RefKey="Number" />
-		<Data Name="Int2-6" Min="2" Max="6" Default="3" Type="Int" meta:RefKey="Number" />
+        <Data Name="Number" Nullable="False" meta:RefKey="Struct">
+            <Data Name="Float" meta:RefKey="Number" />
+            <Data Name="Float2-6" Min="2" Max="6" Default="3" meta:RefKey="Number" />
+            <Data Name="Int" Type="Int" meta:RefKey="Number" />
+            <Data Name="Int2-6" Min="2" Max="6" Default="3" Type="Int" meta:RefKey="Number" />
+        </Data>
 		<!-- Boolean -->
-		<Data Name="Bool" meta:RefKey="Boolean" />
-		<Data Name="BoolDefaultTrue" Default="True" meta:RefKey="Boolean" />
+        <Data Name="Boolean" Nullable="False" meta:RefKey="Struct">
+            <Data Name="Bool" meta:RefKey="Boolean" />
+            <Data Name="BoolDefaultTrue" Default="True" meta:RefKey="Boolean" />
+        </Data>
 		<!-- Colour -->
 		<Data Name="Colour" meta:RefKey="Colour" />
 		<!-- Struct -->
-		<Data Name="StructWithDef" Extends="RecursiveStruct" meta:RefKey="Struct" />
-		<Data Name="StructNotNullable" Nullable="False" meta:RefKey="Struct">
-			<Data Name="Value" meta:RefKey="Number" />
-		</Data>
+        <Data Name="Struct" Nullable="False" meta:RefKey="Struct">
+            <Data Name="StructWithDef" Extends="RecursiveStruct" meta:RefKey="Struct" />
+            <Data Name="StructNotNullable" Nullable="False" meta:RefKey="Struct">
+                <Data Name="Value" meta:RefKey="Number" />
+            </Data>
+        </Data>
 		<!-- Vector -->
-		<Data Name="basic" meta:RefKey="Vector" />
-		<Data Name="vec3" NumComponents="3" meta:RefKey="Vector" />
-		<Data Name="vec4" NumComponents="4" meta:RefKey="Vector" />
-		<Data Name="int2-6" Min="2" Max="6" Type="Int" Default="3,4" meta:RefKey="Vector" />
-        <Data Name="MinMax" Name1="Min" Name2="Max" meta:RefKey="Vector" />
+        <Data Name="Vector" Nullable="False" meta:RefKey="Struct">
+            <Data Name="basic" meta:RefKey="Vector" />
+            <Data Name="vec3" NumComponents="3" meta:RefKey="Vector" />
+            <Data Name="vec4" NumComponents="4" meta:RefKey="Vector" />
+            <Data Name="int2-6" Min="2" Max="6" Type="Int" Default="3,4" meta:RefKey="Vector" />
+            <Data Name="MinMax" Name1="Min" Name2="Max" meta:RefKey="Vector" />
+        </Data>
         <!-- Enum -->
-        <Data Name="YesNo" EnumValues="positive(Yes),negative(No)" meta:RefKey="Enum" />
-        <Data Name="YesNoDefault" Default="No" EnumValues="positive(Yes),negative(No)" meta:RefKey="Enum" />
-        <Data Name="FromDef" Key="AnimalsEnum" meta:RefKey="Enum" />
+        <Data Name="Enum" Nullable="False" meta:RefKey="Struct">
+            <Data Name="YesNo" EnumValues="positive(Yes),negative(No)" meta:RefKey="Enum" />
+            <Data Name="YesNoDefault" Default="No" EnumValues="positive(Yes),negative(No)" meta:RefKey="Enum" />
+            <Data Name="FromDef" Key="AnimalsEnum" meta:RefKey="Enum" />
+        </Data>
         <!-- Collection -->
-        <Data Name="SimpleStringCollection" meta:RefKey="Collection">
-            <Data Name="Item" meta:RefKey="String" />
+        <Data Name="Collection" Nullable="False" meta:RefKey="Struct">
+            <Data Name="SimpleStringCollection" meta:RefKey="Collection">
+                <Data Name="Item" meta:RefKey="String" />
+            </Data>
+            <Data Name="Between1And3Collection" MinCount="1" MaxCount="3" meta:RefKey="Collection">
+                <Data Name="Item" meta:RefKey="String" />
+                <Data Name="Number" meta:RefKey="Number" />
+            </Data>
+            <Data Name="UniqueChildren" ChildrenAreUnique="True" meta:RefKey="Collection">
+                <!-- Behaviour -->
+                <Data Name="Position" meta:RefKey="Struct">
+                    <Data Name="Size" meta:RefKey="Number" />
+                </Data>
+                <!-- Data -->
+                <Data Name="Stats" meta:RefKey="Struct">
+                    <Data Name="HP" meta:RefKey="Number" />
+                </Data>
+                <Data Name="AI" meta:RefKey="Struct">
+                    <Data Name="Boss" meta:RefKey="Boolean" />
+                </Data>
+            </Data>
         </Data>
-        <Data Name="Between1And3Collection" MinCount="1" MaxCount="3" meta:RefKey="Collection">
-            <Data Name="Item" meta:RefKey="String" />
-            <Data Name="Number" meta:RefKey="Number" />
-        </Data>
-        <Data Name="UniqueChildren" ChildrenAreUnique="True" meta:RefKey="Collection">
-            <!-- Behaviour -->
-            <Data Name="Position" meta:RefKey="Struct">
-                <Data Name="Size" meta:RefKey="Number" />
-            </Data>
-            <!-- Data -->
-            <Data Name="Stats" meta:RefKey="Struct">
-                <Data Name="HP" meta:RefKey="Number" />
-            </Data>
-            <Data Name="AI" meta:RefKey="Struct">
-                <Data Name="Boss" meta:RefKey="Boolean" />
-            </Data>
+        <!-- Reference -->
+        <Data Name="Reference" Nullable="False" meta:RefKey="Struct">
+            <Data Name="Basic" Keys="Car,Bike,Train" meta:RefKey="Reference" />
+            <Data Name="NotNullable" Nullable="False" Keys="Car" meta:RefKey="Reference" />
+            <Data Name="UsingDefKey" DefKey="Structs" meta:RefKey="Reference" />
         </Data>
 	</Data>
 </Definitions>
