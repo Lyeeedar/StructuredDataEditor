@@ -13,6 +13,7 @@ abstract class AbstractCompoundDefinition<D: AbstractCompoundDefinition<D, I>, I
 	lateinit var description: String
 
 	val contents = ArrayList<CategorisedChildren>()
+	val contentsMap = HashMap<String, DataDefinition>()
 
 	override fun children(): List<DataDefinition>
 	{
@@ -63,7 +64,7 @@ abstract class AbstractCompoundDefinition<D: AbstractCompoundDefinition<D, I>, I
 			}
 			else if (child is XElement)
 			{
-				if (child.name == "Attributes" || child.name == "AdditionalDefs") continue
+				if (child.name == "Attributes" || doParseChildElement(child)) continue
 
 				val def = load(child, srcFile)
 				currentCategory.second.add(def)
@@ -72,7 +73,10 @@ abstract class AbstractCompoundDefinition<D: AbstractCompoundDefinition<D, I>, I
 
 		doParseInstance(node)
 	}
-
+	protected open fun doParseChildElement(node: XElement): Boolean
+	{
+		return false
+	}
 	protected abstract fun doParseInstance(node: XElement)
 
 	protected override fun postResolve()
@@ -81,7 +85,13 @@ abstract class AbstractCompoundDefinition<D: AbstractCompoundDefinition<D, I>, I
 		resolveKeys()
 		resolveDefKey()
 
-		if (contents.size == 0) {
+		for (group in contents) {
+			for (def in group.second) {
+				contentsMap[def.name] = def
+			}
+		}
+
+		if (contentsMap.size == 0) {
 			throw DefinitionLoadException("Def $name has no contents")
 		}
 	}

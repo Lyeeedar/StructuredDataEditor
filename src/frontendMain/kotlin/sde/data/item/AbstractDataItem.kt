@@ -36,6 +36,7 @@ abstract class AbstractDataItem<D: DataDefinition>(val def: D, val document: Dat
 
 	abstract val description: String
 	var parent: DataItem? = null
+	var isCollectionChild = false
 
 	init {
 	    registerListener("") {

@@ -85,7 +85,7 @@ abstract class AbstractDataDefinition<D: AbstractDataDefinition<D, I>, I: Abstra
 		if (isResolved) return
 		isResolved = true
 
-		val local = allDefs[srcFile]!!
+		val local = allDefs[srcFile] ?: throw DefinitionLoadException("Unable to loaded definition map for $srcFile in definition $name")
 
 		for (ref in referenceMap)
 		{
@@ -229,6 +229,8 @@ abstract class AbstractDataDefinition<D: AbstractDataDefinition<D, I>, I: Abstra
 
 				"STRUCT" -> StructDefinition()
 				"GRAPHSTRUCT" -> GraphStructDefinition()
+
+				"COLLECTION" -> CollectionDefinition()
 
 				else -> throw DefinitionLoadException("Unknown definition type $type")
 			}

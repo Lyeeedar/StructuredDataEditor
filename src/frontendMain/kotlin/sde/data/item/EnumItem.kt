@@ -31,7 +31,7 @@ class EnumItem(definition: EnumDefinition, document: DataDocument) : AbstractDat
             subscribe {
                 this@EnumItem.value = it ?: ""
             }
-            registerListener(StringItem::value.name) {
+            registerListener(EnumItem::value.name) {
                 this.value = this@EnumItem.value
             }
         }

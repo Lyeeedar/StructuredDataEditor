@@ -26,7 +26,16 @@ class VectorItem(definition: VectorDefinition, document: DataDocument) : Abstrac
 		.get()
 
 	override val description: String
-		get() = "$value1,$value2,$value3,$value4"
+		get() {
+			var output = "${value1},${value2}"
+			if (def.numComponents > 2) {
+				output += ",${value3}"
+			}
+			if (def.numComponents > 3) {
+				output += ",${value4}"
+			}
+			return output
+		}
 
 	override fun isDefaultValue(): Boolean
 	{

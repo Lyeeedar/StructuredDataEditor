@@ -3,15 +3,12 @@ package sde.data.definition
 import org.w3c.dom.Element
 import org.w3c.dom.Node
 import sde.data.DataDocument
-import sde.data.item.AbstractCompoundDataItem
-import sde.data.item.AbstractDataItem
-import sde.data.item.CommentItem
-import sde.data.item.StructItem
+import sde.data.item.*
 import sde.util.XComment
 import sde.util.XElement
 import sde.utils.DefinitionLoadException
 
-abstract class AbstractStructDefinition<D: AbstractStructDefinition<D, I>, I: AbstractCompoundDataItem<D>> : AbstractCompoundDefinition<D, I>()
+abstract class AbstractStructDefinition<D: AbstractStructDefinition<D, I>, I: AbstractStructItem<D>> : AbstractCompoundDefinition<D, I>()
 {
 	var nullable = true
 
