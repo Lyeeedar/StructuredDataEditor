@@ -15,7 +15,7 @@ import sde.ui.imageButton
 import sde.ui.textBlock
 import sde.utils.hover
 
-abstract class AbstractStructItem<D: AbstractStructDefinition<*, *>>(def: D, document: DataDocument) : AbstractCompoundDataItem<D>(def, document), IRemovable
+abstract class AbstractStructItem<D: AbstractStructDefinition<D, *>>(def: D, document: DataDocument) : AbstractCompoundDataItem<D>(def, document), IRemovable
 {
 	override fun getEditorComponent(): Component
 	{

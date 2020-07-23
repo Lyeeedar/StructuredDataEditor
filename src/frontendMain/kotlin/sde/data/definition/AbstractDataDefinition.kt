@@ -236,6 +236,8 @@ abstract class AbstractDataDefinition<D: AbstractDataDefinition<D, I>, I: Abstra
 
 				"COLLECTION" -> CollectionDefinition()
 
+				"REFERENCE" -> ReferenceDefinition()
+
 				else -> throw DefinitionLoadException("Unknown definition type $type")
 			}
 			def.srcFile = srcFile

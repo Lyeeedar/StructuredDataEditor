@@ -16,7 +16,7 @@ import sde.data.definition.DataDefinition
 import sde.ui.imageButton
 import sde.ui.textBlock
 
-abstract class AbstractCollectionItem<D: AbstractCollectionDefinition<*, *>>(definition: D, document: DataDocument) : AbstractCompoundDataItem<D>(definition, document)
+abstract class AbstractCollectionItem<D: AbstractCollectionDefinition<D, *>>(definition: D, document: DataDocument) : AbstractCompoundDataItem<D>(definition, document)
 {
 	protected var selectedDefinition: DataDefinition by obs(def.contentsMap.values.first(), AbstractCollectionItem<*>::selectedDefinition.name)
 		.get()
@@ -71,6 +71,15 @@ abstract class AbstractCollectionItem<D: AbstractCollectionDefinition<*, *>>(def
 		}
 	}
 
+	fun create() {
+		val newChild = selectedDefinition.createItem(document)
+		if (newChild is AbstractStructItem<*> && newChild.children.size == 0) {
+			newChild.createContents()
+		}
+
+		document.undoRedoManager.applyDoUndo({ children.add(newChild) }, { children.remove(newChild) }, "Add ${newChild.name} to $name")
+	}
+
 	override fun getEditorComponent(): Component
 	{
 		return HPanel {
@@ -80,12 +89,7 @@ abstract class AbstractCollectionItem<D: AbstractCollectionDefinition<*, *>>(def
 
 				onClick {
 
-					val newChild = selectedDefinition.createItem(document)
-					if (newChild is AbstractStructItem<*>) {
-						newChild.createContents()
-					}
-
-					document.undoRedoManager.applyDoUndo({ children.add(newChild) }, { children.remove(newChild) }, "Add ${newChild.name} to $name")
+					create()
 
 					isExpanded = true
 				}

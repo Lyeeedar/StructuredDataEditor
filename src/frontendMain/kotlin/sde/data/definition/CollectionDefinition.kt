@@ -50,18 +50,9 @@ abstract class AbstractCollectionDefinition<D: AbstractCollectionDefinition<D, I
 			item.children.add(child)
 		}
 
-		if (minCount > 0) {
-			val firstBlock = contents.first().second
-			if (contents.size == 1 && firstBlock.size == 1) {
-				val firstDef = firstBlock.first()
-				for (i in 0 until minCount) {
-					val child = firstDef.createItem(document)
-					item.children.add(child)
-
-					if (child is AbstractStructItem<*>) {
-						child.createContents()
-					}
-				}
+		if (minCount > 0 && contentsMap.size == 1) {
+			for (i in 0 until minCount) {
+				item.create()
 			}
 		}
 
