@@ -121,6 +121,6 @@ class StructDefinition : AbstractStructDefinition<StructDefinition, StructItem>(
 
 	protected override fun saveItemInstanceInternal(item: StructItem): XElement
 	{
-		return XElement(item.name)
+		return XElement(name)
 	}
 }

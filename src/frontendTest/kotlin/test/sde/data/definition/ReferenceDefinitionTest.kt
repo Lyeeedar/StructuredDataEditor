@@ -97,7 +97,7 @@ class ReferenceDefinitionTest
 		val data = def.loadItem(dataDoc, dataXml.root)
 
 		assertTrue(data is ReferenceItem)
-		assertEquals("Ref", data.name)
+		assertEquals("Ref (Block2)", data.name)
 		assertEquals(2, data.children.size)
 		assertNotNull(data.createdItem)
 		assertEquals("Block2", data.createdItem!!.def.name)

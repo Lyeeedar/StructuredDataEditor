@@ -17,7 +17,7 @@ class ColourDefinition : AbstractPrimitiveDataDefinition<ColourDefinition, Colou
 
 	override fun saveItemInstance(item: ColourItem): XElement
 	{
-		return XElement(item.name, item.value)
+		return XElement(name, item.value)
 	}
 
 	override fun loadItemInstance(document: DataDocument, xml: XElement): ColourItem

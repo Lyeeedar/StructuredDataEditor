@@ -42,9 +42,9 @@ abstract class AbstractCollectionItem<D: AbstractCollectionDefinition<D, *>>(def
 				}
 			}
 
-			name = "${def.name} (${children.size})"
+			name = "${def.name} (${children.filter { it !is CommentItem }.size})"
 		}
-		name = "${def.name} (${children.size})"
+		name = "${def.name} (${children.filter { it !is CommentItem }.size})"
 	}
 
 	override fun isDefaultValue(): Boolean

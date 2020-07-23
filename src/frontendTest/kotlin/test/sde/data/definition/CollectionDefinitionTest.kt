@@ -104,7 +104,7 @@ class CollectionDefinitionTest
 		val data = def.loadItem(dataDoc, dataXml.root)
 
 		assertTrue(data is CollectionItem)
-		assertEquals("Block", data.name)
+		assertEquals("Block (4)", data.name)
 		assertEquals(4, data.children.size)
 
 		val child2 = data.children[1]
@@ -187,7 +187,7 @@ class CollectionDefinitionTest
 		val data = def.loadItem(dataDoc, dataXml.root)
 
 		assertTrue(data is CollectionItem)
-		assertEquals("Block", data.name)
+		assertEquals("Block (2)", data.name)
 		assertEquals(3, data.children.size)
 
 		assertEquals("""

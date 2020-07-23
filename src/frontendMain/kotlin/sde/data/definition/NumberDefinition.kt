@@ -28,7 +28,7 @@ class NumberDefinition : AbstractPrimitiveDataDefinition<NumberDefinition, Numbe
 
 	protected override fun saveItemInstance(item: NumberItem): XElement
 	{
-		return XElement(item.name, item.value.toString())
+		return XElement(name, item.value.toString())
 	}
 
 	protected override fun loadItemInstance(document: DataDocument, xml: XElement): NumberItem
