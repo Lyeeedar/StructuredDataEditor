@@ -80,7 +80,7 @@ abstract class AbstractCollectionItem<D: AbstractCollectionDefinition<D, *>>(def
 			newChild.createContents()
 		}
 
-		document.undoRedoManager.applyDoUndo({ children.add(newChild) }, { children.remove(newChild) }, "Add ${newChild.name} to $name")
+		document.undoRedoManager.applyDoUndo({ children.add(newChild) }, { children.remove(newChild) }, "Add ${newChild.name} to ${def.name}")
 	}
 
 	override fun getEditorComponent(): Component
