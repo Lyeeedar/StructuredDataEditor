@@ -49,20 +49,23 @@ abstract class AbstractCollectionItem<D: AbstractCollectionDefinition<*, *>>(def
 		return children.size == def.additionalDefs.size
 	}
 
-	var canAdd: Boolean by obs(children.size < def.maxCount && getValidChildDefinitions().count() > 0, AbstractCollectionItem<*>::canAdd.name)
+	var canAdd: Boolean by obs(getValidChildDefinitions().count() > 0, AbstractCollectionItem<*>::canAdd.name)
 		.updatesComponent()
-		.updatedBy(CompoundDataItem::children.name) { canAdd = children.size < def.maxCount && getValidChildDefinitions().count() > 0 }
+		.updatedBy(CompoundDataItem::children.name) { canAdd = getValidChildDefinitions().count() > 0 }
 		.get()
 
 	protected fun getValidChildDefinitions(): Sequence<DataDefinition> {
 		return sequence {
-			for (child in def.contentsMap.values) {
-				if (def.childrenAreUnique) {
-					if (!children.any { it.def == child }) {
+
+			if (children.size < def.maxCount + def.additionalDefs.size) {
+				for (child in def.contentsMap.values) {
+					if (def.childrenAreUnique) {
+						if (!children.any { it.def == child }) {
+							yield(child)
+						}
+					} else {
 						yield(child)
 					}
-				} else {
-					yield(child)
 				}
 			}
 		}
