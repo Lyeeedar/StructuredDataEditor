@@ -1,6 +1,8 @@
 package sde.data.item
 
 import pl.treksoft.kvision.core.Component
+import pl.treksoft.kvision.core.CssSize
+import pl.treksoft.kvision.core.UNIT
 import pl.treksoft.kvision.core.onClick
 import pl.treksoft.kvision.form.select.SelectOptGroup
 import pl.treksoft.kvision.form.select.selectInput
@@ -27,6 +29,18 @@ abstract class AbstractCollectionItem<D: AbstractCollectionDefinition<*, *>>(def
 					child.isCollectionChild = true
 				}
 			}
+
+			if (def.childrenAreUnique) {
+				if (isVisible())
+				{
+					val validDefs = getValidChildDefinitions().toSet()
+					if (!validDefs.contains(selectedDefinition)) {
+						selectedDefinition = validDefs.first()
+					}
+
+					forceEditorComponentRefresh()
+				}
+			}
 		}
 	}
 
@@ -35,20 +49,38 @@ abstract class AbstractCollectionItem<D: AbstractCollectionDefinition<*, *>>(def
 		return children.size == def.additionalDefs.size
 	}
 
-	var canAdd: Boolean by obs(children.size < def.maxCount, AbstractCollectionItem<*>::canAdd.name)
+	var canAdd: Boolean by obs(children.size < def.maxCount && getValidChildDefinitions().count() > 0, AbstractCollectionItem<*>::canAdd.name)
 		.updatesComponent()
-		.updatedBy(CompoundDataItem::children.name) { canAdd = children.size < def.maxCount }
+		.updatedBy(CompoundDataItem::children.name) { canAdd = children.size < def.maxCount && getValidChildDefinitions().count() > 0 }
 		.get()
+
+	protected fun getValidChildDefinitions(): Sequence<DataDefinition> {
+		return sequence {
+			for (child in def.contentsMap.values) {
+				if (def.childrenAreUnique) {
+					if (!children.any { it.def == child }) {
+						yield(child)
+					}
+				} else {
+					yield(child)
+				}
+			}
+		}
+	}
 
 	override fun getEditorComponent(): Component
 	{
 		return HPanel {
 			imageButton(pl.treksoft.kvision.require("images/Add.png") as? String) {
 				visible = canAdd
+				marginRight = CssSize(5, UNIT.px)
 
 				onClick {
 
 					val newChild = selectedDefinition.createItem(document)
+					if (newChild is AbstractStructItem<*>) {
+						newChild.createContents()
+					}
 
 					document.undoRedoManager.applyDoUndo({ children.add(newChild) }, { children.remove(newChild) }, "Add ${newChild.name} to $name")
 
@@ -59,21 +91,30 @@ abstract class AbstractCollectionItem<D: AbstractCollectionDefinition<*, *>>(def
 			if (def.contentsMap.size == 1) {
 				textBlock(selectedDefinition.name) {
 					opacity = 0.4
+
 				}
 			} else {
-				selectInput(value = selectedDefinition.name).apply {
-					for (category in def.contents.sortedBy { it.first })
-					{
-						val defs = category.second
-						add(SelectOptGroup(category.first, defs.sortedBy { it.name }.map { it.name to it.name }))
-					}
+				val validDefs = getValidChildDefinitions().toSet()
+				if (validDefs.size > 0)
+				{
+					selectInput(value = selectedDefinition.name).apply {
 
-					subscribe {
-						this@AbstractCollectionItem.selectedDefinition = def.contentsMap[it]
-						                                                 ?: def.contentsMap.values.first()
-					}
-					registerListener(AbstractCollectionItem<*>::selectedDefinition.name) {
-						this.value = this@AbstractCollectionItem.selectedDefinition.name
+						for (category in def.contents.sortedBy { it.first })
+						{
+							val defs = category.second.filter { validDefs.contains(it) }
+							if (defs.size > 0)
+							{
+								add(SelectOptGroup(category.first, defs.sortedBy { it.name }.map { it.name to it.name }))
+							}
+						}
+
+						subscribe {
+							this@AbstractCollectionItem.selectedDefinition = def.contentsMap[it]
+							                                                 ?: def.contentsMap.values.first()
+						}
+						registerListener(AbstractCollectionItem<*>::selectedDefinition.name) {
+							this.value = this@AbstractCollectionItem.selectedDefinition.name
+						}
 					}
 				}
 			}

@@ -1,10 +1,7 @@
 package sde.data.definition
 
 import sde.data.DataDocument
-import sde.data.item.AbstractCollectionItem
-import sde.data.item.AbstractCompoundDataItem
-import sde.data.item.CollectionItem
-import sde.data.item.CommentItem
+import sde.data.item.*
 import sde.util.XComment
 import sde.util.XElement
 
@@ -60,6 +57,10 @@ abstract class AbstractCollectionDefinition<D: AbstractCollectionDefinition<D, I
 				for (i in 0 until minCount) {
 					val child = firstDef.createItem(document)
 					item.children.add(child)
+
+					if (child is AbstractStructItem<*>) {
+						child.createContents()
+					}
 				}
 			}
 		}

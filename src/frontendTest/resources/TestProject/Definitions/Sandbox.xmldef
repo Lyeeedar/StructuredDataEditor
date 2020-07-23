@@ -41,9 +41,11 @@
             <Data Name="Number" meta:RefKey="Number" />
         </Data>
         <Data Name="UniqueChildren" ChildrenAreUnique="True" meta:RefKey="Collection">
+            <!-- Behaviour -->
             <Data Name="Position" meta:RefKey="Struct">
                 <Data Name="Size" meta:RefKey="Number" />
             </Data>
+            <!-- Data -->
             <Data Name="Stats" meta:RefKey="Struct">
                 <Data Name="HP" meta:RefKey="Number" />
             </Data>

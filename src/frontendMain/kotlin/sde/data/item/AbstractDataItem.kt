@@ -109,6 +109,14 @@ abstract class AbstractDataItem<D: DataDefinition>(val def: D, val document: Dat
 		updateCachedEditorComponent()
 		return editorComponentDiv
 	}
+	protected fun forceEditorComponentRefresh() {
+		cachedEditorComponent = null
+
+		if (isVisible())
+		{
+			updateCachedEditorComponent()
+		}
+	}
 	private fun updateCachedEditorComponent() {
 		if (cachedEditorComponent == null)
 		{
@@ -183,6 +191,7 @@ abstract class AbstractDataItem<D: DataDefinition>(val def: D, val document: Dat
 				background = Background(backgroundCol)
 				width = CssSize(100, UNIT.perc)
 				height = CssSize(100, UNIT.perc)
+				paddingLeft = CssSize(2, UNIT.px)
 
 				add(item.getEditorComponentCached())
 			}
@@ -236,12 +245,7 @@ abstract class AbstractDataItem<D: DataDefinition>(val def: D, val document: Dat
 		override fun afterChange(kProperty: KProperty<*>, property: ObservableProperty<T>, oldValue: T, newValue: T)
 		{
 			if (doesUpdateComponent) {
-				cachedEditorComponent = null
-
-				if (isVisible())
-				{
-					updateCachedEditorComponent()
-				}
+				forceEditorComponentRefresh()
 			}
 
 			if (doesUpdateDocument && isVisible()) {

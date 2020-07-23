@@ -149,28 +149,32 @@ abstract class AbstractDataDefinition<D: AbstractDataDefinition<D, I>, I: Abstra
 
 	fun createItem(document: DataDocument): I
 	{
-		val item = createItemInstance(document)
+		var item: I? = null
+		document.undoRedoManager.disableUndoScope {
+			item = createItemInstance(document)
 
-		for (att in attributes)
-		{
-			val attItem = att.createItem(document)
-			item.attributes.add(attItem)
+			for (att in attributes)
+			{
+				val attItem = att.createItem(document)
+				item!!.attributes.add(attItem)
+			}
 		}
-
-		return item
+		return item!!
 	}
 
 	fun loadItem(document: DataDocument, xml: XElement): I
 	{
-		val item = loadItemInstance(document, xml)
+		var item: I? = null
+		document.undoRedoManager.disableUndoScope {
+			item = loadItemInstance(document, xml)
 
-		for (att in attributes)
-		{
-			val attItem = att.loadItem(document, xml)
-			item.attributes.add(attItem)
+			for (att in attributes)
+			{
+				val attItem = att.loadItem(document, xml)
+				item!!.attributes.add(attItem)
+			}
 		}
-
-		return item
+		return item!!
 	}
 
 	fun saveItem(item: DataItem): XElement
