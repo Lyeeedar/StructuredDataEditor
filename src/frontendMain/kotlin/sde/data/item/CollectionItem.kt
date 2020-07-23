@@ -31,13 +31,13 @@ abstract class AbstractCollectionItem<D: AbstractCollectionDefinition<*, *>>(def
 			}
 
 			if (def.childrenAreUnique) {
+				val validDefs = getValidChildDefinitions().toSet()
+				if (validDefs.size > 0 && !validDefs.contains(selectedDefinition)) {
+					selectedDefinition = validDefs.first()
+				}
+
 				if (isVisible())
 				{
-					val validDefs = getValidChildDefinitions().toSet()
-					if (!validDefs.contains(selectedDefinition)) {
-						selectedDefinition = validDefs.first()
-					}
-
 					forceEditorComponentRefresh()
 				}
 			}

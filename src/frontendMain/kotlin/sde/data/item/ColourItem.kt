@@ -28,7 +28,7 @@ class ColourItem(def: ColourDefinition, document: DataDocument) : AbstractDataIt
 	{
 		return TextInput(TextInputType.COLOR, value.rgb2Hex()).apply {
 			subscribe {
-				this@ColourItem.value = it?.hex2Rgb() ?: "#fff"
+				this@ColourItem.value = it?.hex2Rgb() ?: "255,255,255"
 			}
 			registerListener(BooleanItem::value.name) {
 				this.value = this@ColourItem.value.rgb2Hex()

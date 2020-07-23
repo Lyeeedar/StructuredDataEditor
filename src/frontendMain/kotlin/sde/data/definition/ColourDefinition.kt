@@ -7,7 +7,7 @@ import sde.util.XElement
 class ColourDefinition : AbstractPrimitiveDataDefinition<ColourDefinition, ColourItem>()
 {
 	override fun doParse(node: XElement) {
-		default = node.getAttributeValue("Default", "255,255,255,255")
+		default = node.getAttributeValue("Default", "255,255,255")
 	}
 
 	override fun createItemInstance(document: DataDocument): ColourItem
