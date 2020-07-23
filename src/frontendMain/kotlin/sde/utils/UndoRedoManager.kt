@@ -1,6 +1,7 @@
 package sde.utils
 
 import pl.treksoft.kvision.core.Component
+import pl.treksoft.kvision.core.TooltipOptions
 import pl.treksoft.kvision.core.onClick
 import pl.treksoft.kvision.require
 import pl.treksoft.kvision.state.observableListOf
@@ -238,6 +239,13 @@ class UndoRedoManager: ObservableClass<UndoRedoManager.UndoRedoManagerObservable
 			this.setDisabled(!canUndo)
 			undoStack.onUpdate.add {
 				this.setDisabled(!canUndo)
+
+				if (!canUndo) {
+					this.disableTooltip()
+				} else {
+					this.disableTooltip()
+					this.enableTooltip(TooltipOptions(undoStack.last().desc))
+				}
 			}
 		}
 	}
@@ -252,6 +260,13 @@ class UndoRedoManager: ObservableClass<UndoRedoManager.UndoRedoManagerObservable
 			this.setDisabled(!canRedo)
 			redoStack.onUpdate.add {
 				this.setDisabled(!canRedo)
+
+				if (!canRedo) {
+					this.disableTooltip()
+				} else {
+					this.disableTooltip()
+					this.enableTooltip(TooltipOptions(redoStack.last().desc))
+				}
 			}
 		}
 	}
