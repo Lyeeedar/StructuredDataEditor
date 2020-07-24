@@ -24,6 +24,7 @@ abstract class AbstractDataDefinition<D: AbstractDataDefinition<D, I>, I: Abstra
 	lateinit var srcFile: String
 	var fileColour: String = ""
 	var fileIcon: String = ""
+	var fileExtension: String = "xml"
 
 	lateinit var name: String
 	var textColour: String = colours["Primitive"] ?: error("")

@@ -96,7 +96,44 @@ class FileItem(def: FileDefinition, document: DataDocument) : AbstractDataItem<F
 	}
 
 	suspend fun create() {
+		val rdef = def.resourceDef ?: return
 
+		if (value.isBlank()) {
+			val basePath = if (def.relativeToThis)
+					document.path.getDirectory()
+				else
+					document.project.projectRootFolder
+
+			val baseName = document.path.getFileNameWithoutExtension() + def.name
+			var name = baseName + "." + def.allowedFileTypes.first()
+
+			if (!Services.disk.fileExists(pathCombine(basePath, name))) {
+				if (def.stripExtension) {
+					value = baseName
+				} else {
+					value = name
+				}
+			} else {
+				var index = 2
+				while (true) {
+					name = baseName + index + "." + def.allowedFileTypes.first()
+					if (!Services.disk.fileExists(pathCombine(basePath, name))) {
+						if (def.stripExtension) {
+							value = baseName
+						} else {
+							value = name
+						}
+						break
+					}
+					index++
+				}
+			}
+		} else if (Services.disk.fileExists(getFullPath())) {
+			Toast.error("File already exists at ${getFullPath()}", "File already exists")
+			return
+		}
+
+		document.project.create(rdef, getFullPath())
 	}
 
 	override fun getEditorComponent(): Component

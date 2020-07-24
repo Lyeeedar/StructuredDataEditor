@@ -35,6 +35,10 @@ class FileDefinition : AbstractPrimitiveDataDefinition<FileDefinition, FileItem>
 	override fun postResolve() {
 		val def = getReference<DataDefinition>("ResourceDef") ?: return
 		resourceDef = def
+
+		if (!allowedFileTypes.contains(def.fileExtension)) {
+			allowedFileTypes.add(def.fileExtension)
+		}
 	}
 
 	override fun saveItemInstance(item: FileItem): XElement

@@ -10,6 +10,7 @@ import sde.Services
 import sde.data.DataDocument
 import sde.data.DataDocumentPage
 import sde.data.Project
+import sde.data.definition.CoreDefinitions
 import sde.data.item.CompoundDataItem
 import sde.pages.AbstractPage
 import sde.pages.PageManager
@@ -122,7 +123,10 @@ class ProjectExplorerPage(val projectDef: ProjectDef, pageManager: PageManager) 
 						align = Align.RIGHT
 
 						onClick {
-
+							val def = CoreDefinitions.rootDef
+							launch {
+								project.create(def, "")
+							}
 						}
 					}
 				}
@@ -143,16 +147,9 @@ class ProjectExplorerPage(val projectDef: ProjectDef, pageManager: PageManager) 
 								align = Align.RIGHT
 								onClick {
 									val def = root.value
-									val data = DataDocument("")
-									data.project = project
-
-									val item = def.createItem(data)
-
-									data.root = item as CompoundDataItem
-
-									val page = DataDocumentPage(data, pageManager)
-									page.pageManager.addPage(page)
-									page.show()
+									launch {
+										project.create(def, "")
+									}
 								}
 							}
 						}

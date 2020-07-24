@@ -68,6 +68,19 @@ class Project(val def: ProjectDef, val page: ProjectExplorerPage)
 		page.show()
 	}
 
+	suspend fun create(def: DataDefinition, path: String) {
+		val data = DataDocument(path)
+		data.project = page.project
+
+		val item = def.createItem(data)
+
+		data.root = item as CompoundDataItem
+
+		val page = DataDocumentPage(data, page.pageManager)
+		page.pageManager.addPage(page)
+		page.show()
+	}
+
 	private suspend fun loadDefinitions(folder: String) {
 		val contents = Services.disk.getFolderContents(folder)
 
