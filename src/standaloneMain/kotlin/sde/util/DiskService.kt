@@ -18,7 +18,12 @@ actual class DiskService : IDiskService {
     @Suppress("UNCHECKED_CAST_TO_EXTERNAL_INTERFACE")
     val remote: Remote = require("electron").remote as Remote
 
-    override suspend fun loadFileString(path: String): String {
+	override suspend fun fileExists(path: String): Boolean
+	{
+		return fs.existsSync(path)
+	}
+
+	override suspend fun loadFileString(path: String): String {
 	    try {
 		    return fs.readFileStringSync(path, "utf8")
 	    } catch (ex: Throwable) {

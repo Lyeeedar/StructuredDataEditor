@@ -5,6 +5,7 @@ import pl.treksoft.kvision.annotations.KVService
 
 @KVService
 interface IDiskService {
+	suspend fun fileExists(path: String): Boolean
     suspend fun loadFileString(path: String): String
     suspend fun loadFileBytes(path: String): List<Byte>
     suspend fun saveFileString(path: String, contents: String): Boolean
