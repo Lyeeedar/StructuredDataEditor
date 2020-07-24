@@ -9,6 +9,7 @@ import pl.treksoft.kvision.panel.GridPanel
 import pl.treksoft.kvision.panel.Side
 import sde.data.DataDocument
 import sde.data.definition.CommentDefinition
+import sde.ui.TextBlock
 
 class CommentItem(document: DataDocument, initialValue: String = "") : AbstractDataItem<CommentDefinition>(CommentDefinition(), document)
 {
@@ -31,7 +32,7 @@ class CommentItem(document: DataDocument, initialValue: String = "") : AbstractD
 		return GridPanel(templateColumns = "1fr auto 1fr") {
 			marginLeft = CssSize(depth, UNIT.px)
 
-			add(Span(value), 2)
+			add(TextBlock(value), 2)
 		}
 	}
 

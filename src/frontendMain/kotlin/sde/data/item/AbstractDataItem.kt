@@ -168,11 +168,19 @@ abstract class AbstractDataItem<D: DataDefinition>(val def: D, val document: Dat
 				{
 					if (item.isExpanded)
 					{
-						add(Image(pl.treksoft.kvision.require("images/OpenArrow.png") as? String), Side.LEFT)
+						add(Image(pl.treksoft.kvision.require("images/OpenArrow.png") as? String).apply {
+							afterInsert {
+								it.disableSelection()
+							}
+						}, Side.LEFT)
 					}
 					else
 					{
-						add(Image(pl.treksoft.kvision.require("images/RightArrow.png") as? String), Side.LEFT)
+						add(Image(pl.treksoft.kvision.require("images/RightArrow.png") as? String).apply {
+							afterInsert {
+								it.disableSelection()
+							}
+						}, Side.LEFT)
 					}
 
 					onClick {e ->
