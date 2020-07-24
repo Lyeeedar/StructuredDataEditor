@@ -134,21 +134,7 @@ class ProjectFileView(item: ProjectItem, page: ProjectExplorerPage) : AbstractPr
     var type: String? = null
 
     suspend fun openFile() {
-        val fileContents = Services.disk.loadFileString(item.path)
-        val xml = fileContents.parseXml().toXDocument()
-
-        val def = page.project.rootDefinitions[xml.root.name]!!
-
-        val data = DataDocument(item.path)
-        data.project = page.project
-
-        val item = def.loadItem(data, xml.root)
-
-        data.root = item as CompoundDataItem
-
-        val page = DataDocumentPage(data, page.pageManager)
-        page.pageManager.addPage(page)
-        page.show()
+        page.project.open(item.path)
     }
 
     override fun getComponent(): Component

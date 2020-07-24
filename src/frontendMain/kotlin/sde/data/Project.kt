@@ -7,16 +7,15 @@ import sde.Services
 import sde.data.definition.AbstractDataDefinition
 import sde.data.definition.DataDefinition
 import sde.data.definition.DefinitionMap
+import sde.data.item.CompoundDataItem
 import sde.project.ProjectDef
 import sde.project.ProjectExplorerPage
 import sde.util.XElement
-import sde.utils.DefinitionLoadException
-import sde.utils.parseXml
-import sde.utils.toXDocument
+import sde.utils.*
 
 class Project(val def: ProjectDef, val page: ProjectExplorerPage)
 {
-	val projectRootFolder = def.projectRootPath.replace('\\', '/').replace("/ProjectRoot.xml", "")
+	val projectRootFolder = def.projectRootPath.getDirectory()
 
 	var recentItems: List<String> = ArrayList()
 
@@ -31,7 +30,7 @@ class Project(val def: ProjectDef, val page: ProjectExplorerPage)
 	init {
 		loadJob = page.launch {
 			try {
-				loadDefinitions(projectRootFolder + "/" + def.defsFolder)
+				loadDefinitions(pathCombine(projectRootFolder, def.defsFolder))
 				for (defMap in definitions.values) {
 					for (def in defMap.values) {
 						try {
@@ -49,6 +48,24 @@ class Project(val def: ProjectDef, val page: ProjectExplorerPage)
 
 			loadJob = null
 		}
+	}
+
+	suspend fun open(path: String) {
+		val fileContents = Services.disk.loadFileString(path)
+		val xml = fileContents.parseXml().toXDocument()
+
+		val def = page.project.rootDefinitions[xml.root.name]!!
+
+		val data = DataDocument(path)
+		data.project = page.project
+
+		val item = def.loadItem(data, xml.root)
+
+		data.root = item as CompoundDataItem
+
+		val page = DataDocumentPage(data, page.pageManager)
+		page.pageManager.addPage(page)
+		page.show()
 	}
 
 	private suspend fun loadDefinitions(folder: String) {

@@ -1,7 +1,78 @@
 package sde.utils
 
+import kotlin.math.min
 
-fun String.getFileName(): String = this.split('/', '\\').last()
+fun String.getExtension(): String {
+	val split = this.getFileName().split('.')
+	if (split.size == 1) {
+		return ""
+	} else {
+		return split.last()
+	}
+}
+
+fun String.getFileName() = this.split('/', '\\').last()
+
+fun String.getFileNameWithoutExtension() = this.getFileName().split(".")[0]
+
+fun String.getDirectory() = this
+	.split('/', '\\')
+	.filter { it.isNotBlank() }
+	.dropLast(1)
+	.joinToString("/")
+
+fun pathCombine(vararg parts: String): String {
+	val builder = StringBuilder()
+	builder.append(parts[0])
+	for (i in 1 until parts.size) {
+		val part = parts[i]
+		if (part.isBlank()) continue
+
+		if (!builder.endsWith("/")) {
+			builder.append("/")
+		}
+
+		builder.append(part)
+	}
+
+	return builder.toString().replace("\\", "/").replace("//", "/")
+}
+
+fun relPath(path: String, relativeTo: String): String
+{
+	val pathParts = path.split('/', '\\').filter { it.isNotEmpty() }
+	val relToParts = relativeTo.split('/', '\\').filter { it.isNotEmpty() }
+
+	val output = StringBuilder()
+
+	val minSize = min(pathParts.size, relToParts.size)
+	var i = 0
+	for (j in 0 until minSize) {
+		val pathPart = pathParts[i]
+		val relToPart = relToParts[i]
+
+		if (pathPart != relToPart) {
+			break
+		}
+
+		i++
+	}
+
+	for (ri in i until relToParts.size) {
+		if (output.isNotEmpty()) {
+			output.append("/")
+		}
+		output.append("..")
+	}
+	for (pi in i until pathParts.size) {
+		if (output.isNotEmpty()) {
+			output.append("/")
+		}
+		output.append(pathParts[pi])
+	}
+
+	return output.toString()
+}
 
 fun String.parseCategorisedString(): HashMap<String, List<String>>
 {
