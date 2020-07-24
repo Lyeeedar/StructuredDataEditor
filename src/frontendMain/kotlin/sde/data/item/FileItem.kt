@@ -12,10 +12,14 @@ import pl.treksoft.kvision.toast.Toast
 import sde.Services
 import sde.data.DataDocument
 import sde.data.definition.FileDefinition
+import sde.ui.AnimatedImage
 import sde.utils.*
 
 class FileItem(def: FileDefinition, document: DataDocument) : AbstractDataItem<FileDefinition>(def, document)
 {
+	val previewDiv = Div()
+	var existingAnimatedImage: AnimatedImage? = null
+
 	var value: String by obs(def.default, FileItem::value.name)
 		.undoable()
 		.updatesComponent()
@@ -38,7 +42,7 @@ class FileItem(def: FileDefinition, document: DataDocument) : AbstractDataItem<F
 		if (def.stripExtension) {
 			for (ext in def.allowedFileTypes) {
 				val tpath = "$path.$ext"
-				if (Services.disk.fileExists(tpath)) {
+				if (exists(tpath)) {
 					path = tpath
 					break
 				}
@@ -65,9 +69,40 @@ class FileItem(def: FileDefinition, document: DataDocument) : AbstractDataItem<F
 		return value == def.default
 	}
 
+	private suspend fun exists(path: String) = Services.disk.fileExists(path)
+
+	suspend fun loadPreview() {
+		existingAnimatedImage?.dispose()
+		existingAnimatedImage = null
+		previewDiv.removeAll()
+
+		val fullPath = getFullPath()
+		if (fullPath.endsWith(".png") && exists(fullPath)) {
+			existingAnimatedImage = AnimatedImage(document.scope!!, imagePaths = listOf(fullPath))
+			previewDiv.add(existingAnimatedImage!!)
+		} else {
+			val frames = ArrayList<String>()
+
+			var i = if (exists(fullPath + "_0.png")) 0 else 1
+			while (true) {
+				val imagePath = fullPath + "_$i.png"
+				if (exists(imagePath)) {
+					frames.add(imagePath)
+				} else {
+					break
+				}
+
+				i++
+			}
+
+			existingAnimatedImage = AnimatedImage(document.scope!!, imagePaths = frames)
+			previewDiv.add(existingAnimatedImage!!)
+		}
+	}
+
 	suspend fun setFile(fullPath: String) {
 		if (def.resourceDef != null) {
-			val exists = Services.disk.fileExists(fullPath)
+			val exists = exists(fullPath)
 			if (exists) {
 				val contents = Services.disk.loadFileString(fullPath)
 				val defType = contents.getFileDefType()
@@ -107,7 +142,7 @@ class FileItem(def: FileDefinition, document: DataDocument) : AbstractDataItem<F
 			val baseName = document.path.getFileNameWithoutExtension() + def.name
 			var name = baseName + "." + def.allowedFileTypes.first()
 
-			if (!Services.disk.fileExists(pathCombine(basePath, name))) {
+			if (!exists(pathCombine(basePath, name))) {
 				if (def.stripExtension) {
 					value = baseName
 				} else {
@@ -117,7 +152,7 @@ class FileItem(def: FileDefinition, document: DataDocument) : AbstractDataItem<F
 				var index = 2
 				while (true) {
 					name = baseName + index + "." + def.allowedFileTypes.first()
-					if (!Services.disk.fileExists(pathCombine(basePath, name))) {
+					if (!exists(pathCombine(basePath, name))) {
 						if (def.stripExtension) {
 							value = baseName
 						} else {
@@ -128,7 +163,7 @@ class FileItem(def: FileDefinition, document: DataDocument) : AbstractDataItem<F
 					index++
 				}
 			}
-		} else if (Services.disk.fileExists(getFullPath())) {
+		} else if (exists(getFullPath())) {
 			Toast.error("File already exists at ${getFullPath()}", "File already exists")
 			return
 		}
@@ -138,6 +173,10 @@ class FileItem(def: FileDefinition, document: DataDocument) : AbstractDataItem<F
 
 	override fun getEditorComponent(): Component
 	{
+		document.scope?.launch {
+			loadPreview()
+		}
+		
 		return DockPanel {
 			add(Button("Browse").apply {
 				onClick {
@@ -152,7 +191,7 @@ class FileItem(def: FileDefinition, document: DataDocument) : AbstractDataItem<F
 				val createOpenButtonDiv = Div()
 
 				document.scope?.launch {
-					val exists = Services.disk.fileExists(getFullPath())
+					val exists = exists(getFullPath())
 					if (exists) {
 						createOpenButtonDiv.removeAll()
 						createOpenButtonDiv.add(Button("Open").apply {
@@ -176,6 +215,8 @@ class FileItem(def: FileDefinition, document: DataDocument) : AbstractDataItem<F
 
 				add(createOpenButtonDiv, Side.RIGHT)
 			}
+
+			add(previewDiv, Side.RIGHT)
 
 			textInput (TextInputType.TEXT, value).apply {
 				subscribe {
