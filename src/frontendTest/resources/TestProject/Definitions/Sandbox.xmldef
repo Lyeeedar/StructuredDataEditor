@@ -24,6 +24,12 @@
     <Data Name="AnimalsEnum" EnumValues="big(elephant,hippo,giant),small(ant,mouse,fly,beetle)" meta:RefKey="EnumDef" />
 
 	<Data Name="Sandbox" meta:RefKey="Struct">
+        <!-- String -->
+        <Data Name="String" Nullable="False" meta:RefKey="Struct">
+            <Data Name="Normal" meta:RefKey="String" />
+            <Data Name="WithDefault" Default="Cheesecake" meta:RefKey="String" />
+            <Data Name="Char" MaxLength="1" meta:RefKey="String" />
+        </Data>
 		<!-- Number -->
         <Data Name="Number" Nullable="False" meta:RefKey="Struct">
             <Data Name="Float" meta:RefKey="Number" />
