@@ -1,0 +1,10 @@
+<Definitions xmlns:meta="Editor">
+    <Data Name="Weapon" meta:RefKey="Struct">
+        <Data Name="Name" meta:RefKey="String" />
+        <Data Name="Damage" meta:RefKey="Number" />
+    </Data>
+    <Data Name="Armour" meta:RefKey="Struct">
+        <Data Name="Name" meta:RefKey="String" />
+        <Data Name="Defense" meta:RefKey="Number" />
+    </Data>
+</Definitions>

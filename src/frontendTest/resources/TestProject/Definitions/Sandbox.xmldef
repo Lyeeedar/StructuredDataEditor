@@ -88,5 +88,12 @@
             <Data Name="NotNullable" Nullable="False" Keys="Car" meta:RefKey="Reference" />
             <Data Name="UsingDefKey" DefKey="Structs" meta:RefKey="Reference" />
         </Data>
+        <!-- File -->
+        <Data Name="File" Nullable="False" meta:RefKey="Struct">
+            <Data Name="AnyFile" meta:RefKey="File" />
+            <Data Name="Image" AllowedFileTypes="png" meta:RefKey="File" />
+            <Data Name="SwordFromProject" ResourceType="Weapon" meta:RefKey="File" />
+            <Data Name="ArmourRelative" RelativeToThis="True" StripExtension="True" ResourceType="Armour" meta:RefKey="File" />
+        </Data>
 	</Data>
 </Definitions>

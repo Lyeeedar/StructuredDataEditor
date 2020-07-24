@@ -2,11 +2,13 @@ package sde.data.item
 
 import kotlinx.coroutines.launch
 import pl.treksoft.kvision.core.Component
+import pl.treksoft.kvision.form.text.TextInput
 import pl.treksoft.kvision.form.text.TextInputType
 import pl.treksoft.kvision.form.text.textInput
 import pl.treksoft.kvision.html.Button
 import pl.treksoft.kvision.html.Div
 import pl.treksoft.kvision.panel.DockPanel
+import pl.treksoft.kvision.panel.GridPanel
 import pl.treksoft.kvision.panel.Side
 import pl.treksoft.kvision.toast.Toast
 import sde.Services
@@ -20,10 +22,26 @@ class FileItem(def: FileDefinition, document: DataDocument) : AbstractDataItem<F
 	val previewDiv = Div()
 	var existingAnimatedImage: AnimatedImage? = null
 
+	val createOpenButtonDiv = Div()
+
 	var value: String by obs(def.default, FileItem::value.name)
 		.undoable()
-		.updatesComponent()
 		.get()
+
+	init
+	{
+		registerListener(FileItem::value.name) {
+			document.scope?.launch {
+				loadPreview()
+				updateCreateOpenButton()
+			}
+		}
+
+		document.scope?.launch {
+			loadPreview()
+			updateCreateOpenButton()
+		}
+	}
 
 	override val description: String
 		get() = value.getFileNameWithoutExtension()
@@ -71,7 +89,7 @@ class FileItem(def: FileDefinition, document: DataDocument) : AbstractDataItem<F
 
 	private suspend fun exists(path: String) = Services.disk.fileExists(path)
 
-	suspend fun loadPreview() {
+	private suspend fun loadPreview() {
 		existingAnimatedImage?.dispose()
 		existingAnimatedImage = null
 		previewDiv.removeAll()
@@ -97,6 +115,30 @@ class FileItem(def: FileDefinition, document: DataDocument) : AbstractDataItem<F
 
 			existingAnimatedImage = AnimatedImage(document.scope!!, imagePaths = frames)
 			previewDiv.add(existingAnimatedImage!!)
+		}
+	}
+
+	private suspend fun updateCreateOpenButton() {
+		if (def.resourceDef == null) return
+		createOpenButtonDiv.removeAll()
+
+		val exists = exists(getFullPath())
+		if (exists) {
+			createOpenButtonDiv.add(Button("Open").apply {
+				onClick {
+					document.scope?.launch {
+						document.project.open(getFullPath())
+					}
+				}
+			})
+		} else {
+			createOpenButtonDiv.add(Button("Create").apply {
+				onClick {
+					document.scope?.launch {
+						create()
+					}
+				}
+			})
 		}
 	}
 
@@ -173,11 +215,22 @@ class FileItem(def: FileDefinition, document: DataDocument) : AbstractDataItem<F
 
 	override fun getEditorComponent(): Component
 	{
-		document.scope?.launch {
-			loadPreview()
-		}
-		
-		return DockPanel {
+		return GridPanel(templateColumns = "1fr auto auto auto") {
+			add(TextInput(TextInputType.TEXT, value).apply {
+				subscribe {
+					this@FileItem.value = it ?: ""
+				}
+				registerListener(FileItem::value.name) {
+					this.value = this@FileItem.value
+				}
+			}, 1)
+
+			add(previewDiv, 2)
+
+			if (def.resourceDef != null) {
+				add(createOpenButtonDiv, 3)
+			}
+
 			add(Button("Browse").apply {
 				onClick {
 					document.scope?.launch {
@@ -185,48 +238,7 @@ class FileItem(def: FileDefinition, document: DataDocument) : AbstractDataItem<F
 						setFile(file)
 					}
 				}
-			}, Side.RIGHT)
-
-			if (def.resourceDef != null) {
-				val createOpenButtonDiv = Div()
-
-				document.scope?.launch {
-					val exists = exists(getFullPath())
-					if (exists) {
-						createOpenButtonDiv.removeAll()
-						createOpenButtonDiv.add(Button("Open").apply {
-							onClick {
-								document.scope?.launch {
-									document.project.open(getFullPath())
-								}
-							}
-						})
-					} else {
-						createOpenButtonDiv.removeAll()
-						createOpenButtonDiv.add(Button("Create").apply {
-							onClick {
-								document.scope?.launch {
-									create()
-								}
-							}
-						})
-					}
-				}
-
-				add(createOpenButtonDiv, Side.RIGHT)
-			}
-
-			add(previewDiv, Side.RIGHT)
-
-			textInput (TextInputType.TEXT, value).apply {
-				subscribe {
-					this@FileItem.value = it ?: ""
-				}
-				registerListener(FileItem::value.name) {
-					this.value = this@FileItem.value
-				}
-			}
-
+			}, 4)
 		}
 	}
 }
