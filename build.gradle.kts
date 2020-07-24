@@ -53,7 +53,7 @@ val jdbcNamedParametersVersion: String by project
 
 // Custom Properties
 val webDir = file("src/frontendMain/web")
-val electronDir = file("src/electronMain/electron")
+val electronDir = file("src/standaloneMain/electron")
 val isProductionBuild = project.extra.get("production") as Boolean
 val mainClassName = "io.ktor.server.netty.EngineMain"
 
@@ -99,7 +99,7 @@ kotlin {
             }
         }
     }
-    js("electron") {
+    js("standalone") {
         compilations.all {
             kotlinOptions {
                 moduleKind = "commonjs"
@@ -119,7 +119,7 @@ kotlin {
                                 "/kv/*" to "http://localhost:8080",
                                 "/kvws/*" to mapOf("target" to "ws://localhost:8080", "ws" to true)
                         ),
-                        contentBase = listOf("$buildDir/processedResources/electron/main")
+                        contentBase = listOf("$buildDir/processedResources/standalone/main")
                 )
             }
             testTask {
@@ -201,7 +201,7 @@ kotlin {
                 implementation("pl.treksoft:kvision-testutils:$kvisionVersion:tests")
             }
         }
-        val electronMain by getting {
+        val standaloneMain by getting {
             resources.srcDirs(sourceSets["frontendMain"].resources.srcDirs)
             kotlin.srcDir("src/frontendMain/kotlin")
             dependencies {
@@ -275,7 +275,7 @@ tasks {
                         }
                     }
                 }
-                into(file("${buildDir.path}/js/packages/${project.name}-electron/kotlin-dce"))
+                into(file("${buildDir.path}/js/packages/${project.name}-standalone/kotlin-dce"))
             }
         }
     }
@@ -322,6 +322,26 @@ afterEvaluate {
             delete("webpack.config.d")
             group = "build"
         }
+
+	    // Backend
+	    getByName("backendProcessResources", Copy::class) {
+		    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+	    }
+	    getByName("backendJar").group = "package"
+	    create("backendRun", JavaExec::class) {
+		    dependsOn("compileKotlinBackend")
+		    group = "run"
+		    main = mainClassName
+		    classpath =
+			    configurations["backendRuntimeClasspath"] + project.tasks["compileKotlinBackend"].outputs.files +
+			    project.tasks["backendProcessResources"].outputs.files
+		    workingDir = buildDir
+	    }
+	    getByName("compileKotlinBackend") {
+		    dependsOn("compileKotlinMetadata")
+	    }
+
+	    // Frontend
         create("copyFrontendWebpackConfig", Copy::class) {
             dependsOn("cleanWebpackConfig")
             group = "build"
@@ -396,54 +416,15 @@ afterEvaluate {
                 )
             }
         }
-        getByName("backendProcessResources", Copy::class) {
-            duplicatesStrategy = DuplicatesStrategy.EXCLUDE
-        }
-        getByName("backendJar").group = "package"
-        create("jar", Jar::class).apply {
-            dependsOn("frontendArchive", "backendJar")
-            group = "package"
-            manifest {
-                attributes(
-                    mapOf(
-                        "Implementation-Title" to rootProject.name,
-                        "Implementation-Group" to rootProject.group,
-                        "Implementation-Version" to rootProject.version,
-                        "Timestamp" to System.currentTimeMillis(),
-                        "Main-Class" to mainClassName
-                    )
-                )
-            }
-            val dependencies = configurations["backendRuntimeClasspath"].filter { it.name.endsWith(".jar") } +
-                    project.tasks["backendJar"].outputs.files +
-                    project.tasks["frontendArchive"].outputs.files
-            dependencies.forEach {
-                if (it.isDirectory) from(it) else from(zipTree(it))
-            }
-            exclude("META-INF/*.RSA", "META-INF/*.SF", "META-INF/*.DSA")
-            inputs.files(dependencies)
-            outputs.file(archiveFile)
-            duplicatesStrategy = DuplicatesStrategy.EXCLUDE
-        }
-        getByName("frontendRun").group = "run"
-        create("backendRun", JavaExec::class) {
-            dependsOn("compileKotlinBackend")
-            group = "run"
-            main = mainClassName
-            classpath =
-                configurations["backendRuntimeClasspath"] + project.tasks["compileKotlinBackend"].outputs.files +
-                        project.tasks["backendProcessResources"].outputs.files
-            workingDir = buildDir
-        }
-        getByName("compileKotlinBackend") {
-            dependsOn("compileKotlinMetadata")
-        }
+	    getByName("frontendRun").group = "run"
         getByName("compileKotlinFrontend") {
             dependsOn("compileKotlinMetadata")
             dependsOn("copyFrontendWebpackConfig")
         }
-        getByName("electronProcessResources", Copy::class) {
-            dependsOn("compileKotlinElectron")
+
+	    // Electron
+        getByName("standaloneProcessResources", Copy::class) {
+            dependsOn("compileKotlinStandalone")
             exclude("**/*.pot")
             doLast("Convert PO to JSON") {
                 destinationDir.walkTopDown().filter {
@@ -482,35 +463,21 @@ afterEvaluate {
                 }
             }
         }
-        create("zip", Zip::class) {
-            dependsOn("electronBrowserProductionWebpack")
-            group = "package"
-            destinationDirectory.set(file("$buildDir/libs"))
-            val distribution =
-                    project.tasks.getByName("electronBrowserProductionWebpack", KotlinWebpack::class).destinationDirectory!!
-            from(distribution) {
-                include("*.*")
-            }
-            from(webDir)
-            duplicatesStrategy = DuplicatesStrategy.EXCLUDE
-            inputs.files(distribution, webDir)
-            outputs.file(archiveFile)
-        }
         create("copyElectronWebpackConfig", Copy::class) {
             dependsOn("cleanWebpackConfig")
             group = "build"
             from("electron.webpack.config.d")
             into("webpack.config.d")
         }
-        getByName("electronBrowserProductionWebpack", KotlinWebpack::class) {
+        getByName("standaloneBrowserProductionWebpack", KotlinWebpack::class) {
 	        dependsOn("frontendProcessResources")
             dependsOn("copyElectronWebpackConfig")
         }
         create("buildApp", Copy::class) {
-            dependsOn("electronBrowserProductionWebpack")
+            dependsOn("standaloneBrowserProductionWebpack")
             group = "build"
             val distribution =
-                    project.tasks.getByName("electronBrowserProductionWebpack", KotlinWebpack::class).destinationDirectory
+                    project.tasks.getByName("standaloneBrowserProductionWebpack", KotlinWebpack::class).destinationDirectory
             from(distribution, webDir, electronDir)
             inputs.files(distribution, webDir, electronDir)
             into("$buildDir/dist")
@@ -522,11 +489,52 @@ afterEvaluate {
             executable = getNodeJsBinaryExecutable()
             args("$buildDir/js/node_modules/electron/cli.js", ".")
         }
+
+	    // package
+	    create("jar", Jar::class).apply {
+		    dependsOn("frontendArchive", "backendJar")
+		    group = "package"
+		    manifest {
+			    attributes(
+				    mapOf(
+					    "Implementation-Title" to rootProject.name,
+					    "Implementation-Group" to rootProject.group,
+					    "Implementation-Version" to rootProject.version,
+					    "Timestamp" to System.currentTimeMillis(),
+					    "Main-Class" to mainClassName
+				         )
+			              )
+		    }
+		    val dependencies = configurations["backendRuntimeClasspath"].filter { it.name.endsWith(".jar") } +
+		                       project.tasks["backendJar"].outputs.files +
+		                       project.tasks["frontendArchive"].outputs.files
+		    dependencies.forEach {
+			    if (it.isDirectory) from(it) else from(zipTree(it))
+		    }
+		    exclude("META-INF/*.RSA", "META-INF/*.SF", "META-INF/*.DSA")
+		    inputs.files(dependencies)
+		    outputs.file(archiveFile)
+		    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+	    }
+	    create("zip", Zip::class) {
+		    dependsOn("standaloneBrowserProductionWebpack")
+		    group = "package"
+		    destinationDirectory.set(file("$buildDir/libs"))
+		    val distribution =
+			    project.tasks.getByName("standaloneBrowserProductionWebpack", KotlinWebpack::class).destinationDirectory!!
+		    from(distribution) {
+			    include("*.*")
+		    }
+		    from(webDir)
+		    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+		    inputs.files(distribution, webDir)
+		    outputs.file(archiveFile)
+	    }
         create("bundleApp", Exec::class) {
             dependsOn("buildApp")
             group = "package"
             doFirst {
-                val targetDir = file("$buildDir/electron")
+                val targetDir = file("$buildDir/standalone")
                 if (targetDir.exists()) {
                     targetDir.deleteRecursively()
                 }
