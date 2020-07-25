@@ -120,3 +120,9 @@ fun String.rgb2Hex(): String {
 			componentToHex(components[1].toInt()) +
 			componentToHex(components[2].toInt())
 }
+
+fun String.prepareStackForToast(): String {
+	val lines = this.split('\n')
+	val simpleLines = lines.map { it.split("@webpack")[0] }
+	return simpleLines.joinToString("<br />")
+}

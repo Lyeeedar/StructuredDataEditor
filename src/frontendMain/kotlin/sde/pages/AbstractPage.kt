@@ -4,6 +4,7 @@ import kotlinx.coroutines.*
 import pl.treksoft.kvision.core.Component
 import pl.treksoft.kvision.toast.Toast
 import sde.AppModel
+import sde.utils.prepareStackForToast
 
 abstract class AbstractPage(val pageManager: PageManager)
 {
@@ -14,7 +15,7 @@ abstract class AbstractPage(val pageManager: PageManager)
 			try {
 				jobBody()
 			} catch (ex: Throwable) {
-				Toast.error(ex.message + "\n" + ex.asDynamic().stack, "Unhandled exception")
+				Toast.error(ex.message + "<br />" + ex.asDynamic().stack.toString().prepareStackForToast(), "Unhandled exception")
 			}
 		}
 	}
