@@ -154,7 +154,16 @@ class ProjectFileView(item: ProjectItem, page: ProjectExplorerPage) : AbstractPr
             }
         }
         val name = TextBlock(name)
-        if (item.path.endsWith("xml"))
+        if (item.path.endsWith(".xmldef")) {
+            name.color = Color("#acb5ad")
+
+            val newImage = Image(pl.treksoft.kvision.require("images/DefIcon.png") as? String).apply {
+                width = CssSize(16, UNIT.px)
+                height = CssSize(16, UNIT.px)
+            }
+            icon.removeAll()
+            icon.add(newImage)
+        } else if (page.project.supportedExtensions.contains(item.path.getExtension()))
         {
             if (type == null)
             {
@@ -178,15 +187,6 @@ class ProjectFileView(item: ProjectItem, page: ProjectExplorerPage) : AbstractPr
                             icon.removeAll()
                             icon.add(newImage)
                         }
-                    } else if (item.path.endsWith(".xmldef")) {
-                        name.color = Color("#acb5ad")
-
-                        val newImage = Image(pl.treksoft.kvision.require("images/DefIcon.png") as? String).apply {
-                            width = CssSize(16, UNIT.px)
-                            height = CssSize(16, UNIT.px)
-                        }
-                        icon.removeAll()
-                        icon.add(newImage)
                     } else {
                         name.color = Color("rgb(255,0,0)")
                     }

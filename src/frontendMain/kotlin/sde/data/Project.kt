@@ -23,6 +23,7 @@ class Project(val def: ProjectDef, val page: ProjectExplorerPage)
 	val globalDefs = HashMap<String, DataDefinition>()
 	val definitions = HashMap<String, DefinitionMap>()
 	val rootDefinitions = HashMap<String, DataDefinition>()
+	val supportedExtensions = HashSet<String>()
 
 	val definitionLoadErrors = ArrayList<Pair<String, String>>()
 
@@ -40,6 +41,9 @@ class Project(val def: ProjectDef, val page: ProjectExplorerPage)
 							definitionLoadErrors.add(Pair(def.srcFile, ex.message ?: ""))
 						}
 					}
+				}
+				for (def in rootDefinitions.values) {
+					supportedExtensions.add(def.fileExtension)
 				}
 
 				Toast.success("Loaded ${rootDefinitions.size} resource types", "Definition load complete")
@@ -127,6 +131,7 @@ class Project(val def: ProjectDef, val page: ProjectExplorerPage)
 
 			val fileColour = root.getAttributeValue("Colour", "")
 			val fileIcon = root.getAttributeValue("Icon", "")
+			val fileExtension = root.getAttributeValue("Extension", "xml")
 
 			val map = DefinitionMap()
 			for (element in root.children)
@@ -136,6 +141,7 @@ class Project(val def: ProjectDef, val page: ProjectExplorerPage)
 				val def = AbstractDataDefinition.load(element, srcFile)
 				def.fileColour = fileColour
 				def.fileIcon = fileIcon
+				def.fileExtension = fileExtension
 
 				map[def.name] = def
 			}
