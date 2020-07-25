@@ -97,7 +97,7 @@
         <!-- File -->
         <Data Name="File" Nullable="False" meta:RefKey="Struct">
             <Data Name="AnyFile" meta:RefKey="File" />
-            <Data Name="Image" AllowedFileTypes="png" meta:RefKey="File" />
+            <Data Name="Image" BasePath="Sprites" AllowedFileTypes="png" meta:RefKey="File" />
             <Data Name="SwordFromProject" ResourceType="Weapon" meta:RefKey="File" />
             <Data Name="ArmourRelative" RelativeToThis="True" StripExtension="True" ResourceType="Armour" meta:RefKey="File" />
         </Data>

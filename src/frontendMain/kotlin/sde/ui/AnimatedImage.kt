@@ -8,51 +8,63 @@ import pl.treksoft.kvision.core.CssSize
 import pl.treksoft.kvision.core.UNIT
 import pl.treksoft.kvision.html.Div
 import pl.treksoft.kvision.html.Image
-import sde.utils.afterInsert
-import sde.utils.disableSelection
-import sde.utils.imageFromFile
+import sde.utils.*
 
-class AnimatedImage(val loadScope: CoroutineScope, val size: Int = 16, val imagePaths: List<String>) : Div()
+class AnimatedImage(val loadScope: CoroutineScope, val size: Int = 24, val imagePaths: List<String>) : Div()
 {
-	val images = ArrayList<Image>()
+	val image: Image
+	val images = ArrayList<String>()
 	val updateJob: Job
 
 	init
 	{
+		image = Image("").apply {
+			width = CssSize(size, UNIT.px)
+			height = CssSize(size, UNIT.px)
+
+			afterInsert {
+				val el = it
+				it.hover({
+					el.css("transform", "scale(10)")
+				}, {
+					el.css("transform", "scale(1)")
+				})
+				el.css("image-rendering", "crisp-edges")
+			}
+		}
+
 		val loadJob = loadScope.launch {
 			for (src in imagePaths)
 			{
-				val img = imageFromFile(src) {
-					width = CssSize(size, UNIT.px)
-					height = CssSize(size, UNIT.px)
-				}
+				val img = ImageCache.getImageUrl(src)
 				images.add(img)
 			}
 		}
 		updateJob = loadScope.launch {
 			loadJob.join()
+			if (images.size > 0) {
+				add(image)
 
-			if (images.size > 1)
-			{
-				var i = 0
-				while (true)
+				if (images.size > 1)
 				{
-					val img = images[i]
-
-					removeAll()
-					add(img)
-
-					i++
-					if (i >= images.size)
+					var i = 0
+					while (true)
 					{
-						i = 0
-					}
+						val img = images[i]
 
-					delay(500)
+						image.src = img
+
+						i++
+						if (i >= images.size)
+						{
+							i = 0
+						}
+
+						delay(500)
+					}
+				} else {
+					image.src = images[0]
 				}
-			} else {
-				removeAll()
-				add(images[0])
 			}
 		}
 
