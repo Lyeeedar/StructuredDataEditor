@@ -4,6 +4,7 @@ import sde.data.DataDocument
 import sde.data.item.*
 import sde.util.XComment
 import sde.util.XElement
+import sde.utils.DefinitionLoadException
 
 abstract class AbstractCollectionDefinition<D: AbstractCollectionDefinition<D, I>, I: AbstractCollectionItem<D>> : AbstractCompoundDefinition<D, I>()
 {
@@ -118,6 +119,12 @@ abstract class AbstractCollectionDefinition<D: AbstractCollectionDefinition<D, I
 		return xml
 	}
 	protected abstract fun saveItemInstanceInternal(item: I): XElement
+
+	override fun doPostResolveInstance() {
+		if (contentsMap.size == 0) {
+			throw DefinitionLoadException("Collection $name has no contents")
+		}
+	}
 }
 
 class CollectionDefinition : AbstractCollectionDefinition<CollectionDefinition, CollectionItem>()

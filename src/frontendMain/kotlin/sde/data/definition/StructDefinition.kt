@@ -105,6 +105,10 @@ abstract class AbstractStructDefinition<D: AbstractStructDefinition<D, I>, I: Ab
 		return xml
 	}
 	protected abstract fun saveItemInstanceInternal(item: I): XElement
+
+	override fun doPostResolveInstance() {
+
+	}
 }
 
 class StructDefinition : AbstractStructDefinition<StructDefinition, StructItem>()

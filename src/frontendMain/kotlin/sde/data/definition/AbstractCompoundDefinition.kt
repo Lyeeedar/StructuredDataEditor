@@ -79,10 +79,13 @@ abstract class AbstractCompoundDefinition<D: AbstractCompoundDefinition<D, I>, I
 	}
 	protected abstract fun doParseInstance(node: XElement)
 
+	override fun postResolveImmediate() {
+		resolveKeys()
+	}
+
 	protected override fun postResolve()
 	{
 		resolveExtends()
-		resolveKeys()
 		resolveDefKey()
 
 		for (group in contents) {
@@ -91,10 +94,9 @@ abstract class AbstractCompoundDefinition<D: AbstractCompoundDefinition<D, I>, I
 			}
 		}
 
-		if (contentsMap.size == 0) {
-			throw DefinitionLoadException("Def $name has no contents")
-		}
+		doPostResolveInstance()
 	}
+	protected abstract fun doPostResolveInstance()
 
 	private fun resolveKeys()
 	{

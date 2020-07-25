@@ -1,5 +1,6 @@
 package test.sde.data.definition
 
+import sde.data.DataDocument
 import sde.data.definition.CoreDefinitions
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -17,5 +18,12 @@ class CoreDefinitionsTest
 
         assertNotNull(CoreDefinitions.coreDefinitions.containsKey("Collection"))
         assertNotNull(CoreDefinitions.coreDefinitions.containsKey("CollectionDef"))
+    }
+
+    @Test
+    fun createTest() {
+        assertTrue(CoreDefinitions.rootDef.isResolved)
+        val item = CoreDefinitions.rootDef.createItem(DataDocument(""))
+        assertNotNull(item)
     }
 }

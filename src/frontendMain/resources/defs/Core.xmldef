@@ -1,6 +1,6 @@
 <Definitions Extension="xmldef" xmlns:meta="Editor">
 
-    <ReferenceDef Name="Elements" Keys="Primitive(Boolean,Colour,Enum,File,Flags,Number,String,Vector),Complex(Collection,GraphReference,MultilineString,Reference,Struct,Timeline,Tree),Comment(Comment)" />
+    <ReferenceDef Name="Elements" Keys="Primitive(Boolean,Colour,Enum,File,Flags,Number,String,Vector),Complex(Collection,GraphReference,MultilineString,Reference,Struct,Timeline),Comment(Comment)" />
 
     <CollectionDef Name="Attributes" ToolTip="A the attributes of this element." TextColour="Struct" SkipIfDefault="true">
         <Reference Name="Attribute" Keys="Boolean,Colour,Enum,File,Flags,Number,String" ToolTip="The attribute" />
@@ -175,18 +175,6 @@
         </Attributes>
         <String Name="EnumValue" />
     </CollectionDef>
-
-    <StructDef Name="Tree" ToolTip="A tree of string values." TextColour="Collection">
-        <Attributes>
-            <String Name="Name" Default="Tree" ToolTip="The name to be written for this element. Place a path to an element inside a '{}' to use that elements value." />
-            <Boolean Name="SkipIfDefault" ToolTip="Don't write out this element if it is at the default value." Default="true" />
-            <String Name="VisibleIf" ToolTip="The expression to use to determine whether this element is visible. Leave blank to have always visible." />
-            <Colour Name="TextColour" ToolTip="The colour on the element name in the ui." Default="Collection" HasAlpha="false" />
-            <String Name="ToolTip" ToolTip="The tooltip to display when this element is moused over." />
-            <Boolean Name="HasAttributes" ToolTip="Enable to allow adding attributes" VisibleIf="Root.DataType==xml" />
-        </Attributes>
-        <Reference Name="Attributes" Keys="Attributes" ToolTip="The attributes of this element" Nullable="true" VisibleIf="HasAttributes==true" />
-    </StructDef>
 
     <CollectionDef Name="Collection" ToolTip="A collection containing multiple elements of the specified child." TextColour="Collection">
         <Attributes>

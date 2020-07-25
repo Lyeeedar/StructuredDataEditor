@@ -70,6 +70,12 @@ abstract class AbstractReferenceDefinition<D: AbstractReferenceDefinition<D, I>,
         return xml
     }
     protected abstract fun saveItemInstanceInternal(item: I): XElement
+
+    override fun doPostResolveInstance() {
+        if (contentsMap.size == 0) {
+            throw DefinitionLoadException("Reference $name has no contents")
+        }
+    }
 }
 
 class ReferenceDefinition : AbstractReferenceDefinition<ReferenceDefinition, ReferenceItem>()

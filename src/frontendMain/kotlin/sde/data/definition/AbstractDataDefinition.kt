@@ -94,7 +94,12 @@ abstract class AbstractDataDefinition<D: AbstractDataDefinition<D, I>, I: Abstra
 			val defName = refHolder.defName
 			val def = local[defName] ?: global[defName] ?: throw DefinitionLoadException("Unable to resolve ${refHolder.name}: $defName")
 			refHolder.definition = def
+		}
 
+		postResolveImmediate()
+
+		for (refHolder in referenceMap.values) {
+			val def = refHolder.definition!!
 			def.resolve(global, allDefs)
 		}
 
@@ -111,6 +116,10 @@ abstract class AbstractDataDefinition<D: AbstractDataDefinition<D, I>, I: Abstra
 		postResolve()
 	}
 
+	protected open fun postResolveImmediate()
+	{
+
+	}
 	protected open fun postResolve()
 	{
 
