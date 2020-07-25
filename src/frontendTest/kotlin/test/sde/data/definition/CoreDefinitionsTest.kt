@@ -11,7 +11,7 @@ class CoreDefinitionsTest
 {
     @Test
     fun loadedTest() {
-        assertEquals(30, CoreDefinitions.coreDefinitions.size)
+        assertEquals(29, CoreDefinitions.coreDefinitions.size)
 
         assertNotNull(CoreDefinitions.coreDefinitions.containsKey("Struct"))
         assertNotNull(CoreDefinitions.coreDefinitions.containsKey("StructDef"))
