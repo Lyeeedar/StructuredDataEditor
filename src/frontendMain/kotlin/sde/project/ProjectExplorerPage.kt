@@ -1,22 +1,17 @@
 package sde.project
 
-import kotlinx.coroutines.launch
 import pl.treksoft.kvision.core.*
 import pl.treksoft.kvision.html.*
+import pl.treksoft.kvision.modal.Modal
 import pl.treksoft.kvision.panel.*
 import pl.treksoft.kvision.toast.Toast
 import pl.treksoft.kvision.toast.ToastOptions
-import sde.Services
-import sde.data.DataDocument
-import sde.data.DataDocumentPage
 import sde.data.Project
 import sde.data.definition.CoreDefinitions
-import sde.data.item.CompoundDataItem
 import sde.pages.AbstractPage
 import sde.pages.PageManager
 import sde.pages.StartPage
-import sde.ui.TextBlock
-import sde.ui.mouseOverBackgroundColour
+import sde.ui.textBlock
 import sde.util.ProjectItem
 import sde.utils.*
 
@@ -33,6 +28,8 @@ class ProjectExplorerPage(val projectDef: ProjectDef, pageManager: PageManager) 
 
 	val projectRoot: ProjectFolderView
 
+	val failedLoadBanner = Div()
+
 	init {
 		val rootItem = ProjectItem()
 		rootItem.path = projectDef.projectRootPath.split('/', '\\').dropLast(1).joinToString("/")
@@ -40,16 +37,44 @@ class ProjectExplorerPage(val projectDef: ProjectDef, pageManager: PageManager) 
 
 		projectRoot = ProjectFolderView(rootItem, this@ProjectExplorerPage)
 
+		loadDefinitions()
+	}
+
+	private fun loadDefinitions() {
+		failedLoadBanner.removeAll()
+
 		launch {
 			project.loadJob?.join()
 
 			if (project.definitionLoadErrors.size > 0) {
 				var message = ""
 				for (error in project.definitionLoadErrors.groupBy { it.first }) {
-					message += error.key.split(projectDef.defsFolder)[1] + ":\n" + error.value.joinToString("\n") { it.second } + "\n"
+					message += error.key.getFileNameWithoutExtension() + "<br />"
 				}
 
 				Toast.error(message,"Some definitions failed to load", ToastOptions(timeOut = 100000))
+
+				failedLoadBanner.add(HPanel {
+					background = Background(Color("red"))
+
+					textBlock("Some definitions failed to load, click for more details") {
+						margin = CssSize(5, UNIT.px)
+					}
+					button("Show errors", style = ButtonStyle.DANGER) {
+						onClick {
+							val modal = Modal {
+								for (error in project.definitionLoadErrors.groupBy { it.first }) {
+									val title = error.key.getFileNameWithoutExtension()
+									h3(title)
+									for (errorMessage in error.value) {
+										p(errorMessage.second)
+									}
+								}
+							}
+							modal.show()
+						}
+					}
+				})
 			}
 		}
 	}
@@ -95,11 +120,11 @@ class ProjectExplorerPage(val projectDef: ProjectDef, pageManager: PageManager) 
 		}
 	}
 
-	private val component = Div()
-	fun updateComponent() {
-		component.removeAll()
+	private val projectItemsComponent = Div()
+	fun updateProjectItemsComponent() {
+		projectItemsComponent.removeAll()
 
-		component.add(VPanel {
+		projectItemsComponent.add(VPanel {
 			for (item in getVisibleItems()) {
 				val component = item.getComponentCached()
 				add(component)
@@ -109,8 +134,10 @@ class ProjectExplorerPage(val projectDef: ProjectDef, pageManager: PageManager) 
 
 	override fun createComponent(): Component
 	{
-		updateComponent()
-		return DockPanel {
+		updateProjectItemsComponent()
+		return GridPanel(templateRows = "auto auto 1fr") {
+			add(failedLoadBanner, 1, 1)
+
 			add(HPanel(wrap = FlexWrap.WRAP) {
 				div {
 					addCssClass("jumbotron")
@@ -131,7 +158,7 @@ class ProjectExplorerPage(val projectDef: ProjectDef, pageManager: PageManager) 
 					}
 				}
 
-				div {
+				vPanel {
 					addCssClass("jumbotron")
 					padding = CssSize(1, UNIT.rem)
 					margin = CssSize(1, UNIT.rem)
@@ -144,7 +171,6 @@ class ProjectExplorerPage(val projectDef: ProjectDef, pageManager: PageManager) 
 
 						for (root in project.rootDefinitions) {
 							button("Create ${root.key} file...") {
-								align = Align.RIGHT
 								onClick {
 									val def = root.value
 									launch {
@@ -155,9 +181,9 @@ class ProjectExplorerPage(val projectDef: ProjectDef, pageManager: PageManager) 
 						}
 					}
 				}
-			}, Side.UP)
+			}, 1, 2)
 
-			add(component)
+			add(projectItemsComponent, 1, 3)
 		}
 	}
 

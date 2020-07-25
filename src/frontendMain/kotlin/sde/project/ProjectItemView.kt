@@ -1,16 +1,11 @@
 package sde.project
 
-import kotlinx.coroutines.launch
 import pl.treksoft.kvision.core.*
 import pl.treksoft.kvision.html.*
 import pl.treksoft.kvision.panel.DockPanel
 import pl.treksoft.kvision.panel.Side
 import pl.treksoft.kvision.panel.dockPanel
 import sde.Services
-import sde.data.DataDocument
-import sde.data.DataDocumentPage
-import sde.data.Project
-import sde.data.item.CompoundDataItem
 import sde.ui.TextBlock
 import sde.ui.mouseOverBackgroundColour
 import sde.util.ProjectItem
@@ -70,7 +65,7 @@ class ProjectFolderView(item: ProjectItem, page: ProjectExplorerPage) : Abstract
         set(value) {
             field = value
             component = null
-            page.updateComponent()
+            page.updateProjectItemsComponent()
 
             page.launch {
                 loadChildren()
@@ -91,7 +86,7 @@ class ProjectFolderView(item: ProjectItem, page: ProjectExplorerPage) : Abstract
             val items = Services.disk.getFolderContents(item.path)
             children = items.map { getItemView(it, page) }.toList()
 
-            page.updateComponent()
+            page.updateProjectItemsComponent()
         }
     }
 
@@ -183,6 +178,15 @@ class ProjectFileView(item: ProjectItem, page: ProjectExplorerPage) : AbstractPr
                             icon.removeAll()
                             icon.add(newImage)
                         }
+                    } else if (item.path.endsWith(".xmldef")) {
+                        name.color = Color("#acb5ad")
+
+                        val newImage = Image(pl.treksoft.kvision.require("images/DefIcon.png") as? String).apply {
+                            width = CssSize(16, UNIT.px)
+                            height = CssSize(16, UNIT.px)
+                        }
+                        icon.removeAll()
+                        icon.add(newImage)
                     } else {
                         name.color = Color("rgb(255,0,0)")
                     }

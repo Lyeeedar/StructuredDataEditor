@@ -5,6 +5,7 @@ import kotlinx.coroutines.launch
 import pl.treksoft.kvision.toast.Toast
 import sde.Services
 import sde.data.definition.AbstractDataDefinition
+import sde.data.definition.CoreDefinitions
 import sde.data.definition.DataDefinition
 import sde.data.definition.DefinitionMap
 import sde.data.item.CompoundDataItem
@@ -54,7 +55,11 @@ class Project(val def: ProjectDef, val page: ProjectExplorerPage)
 		val fileContents = Services.disk.loadFileString(path)
 		val xml = fileContents.parseXml().toXDocument()
 
-		val def = page.project.rootDefinitions[xml.root.name]!!
+		val def =
+				if (path.endsWith(".xmldef"))
+					CoreDefinitions.rootDef
+				else
+					page.project.rootDefinitions[xml.root.name]!!
 
 		val data = DataDocument(path)
 		data.project = page.project
