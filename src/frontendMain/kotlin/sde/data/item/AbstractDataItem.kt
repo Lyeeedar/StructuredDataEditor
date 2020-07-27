@@ -35,7 +35,7 @@ abstract class AbstractDataItem<D: DataDefinition>(val def: D, val document: Dat
 	val attributes = observableListOf<DataItem>()
 
 	abstract val description: String
-	var parent: DataItem? = null
+	var parent: CompoundDataItem? = null
 	var isCollectionChild = false
 
 	init {
