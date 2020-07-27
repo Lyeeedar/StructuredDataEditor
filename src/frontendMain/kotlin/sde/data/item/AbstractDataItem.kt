@@ -40,14 +40,28 @@ abstract class AbstractDataItem<D: DataDefinition>(val def: D, val document: Dat
 
 	init {
 	    registerListener("") {
-			document.scope?.launch {
-				var current: AbstractDataItem<*>? = this@AbstractDataItem
-				while (current != null) {
-					current.raiseEvent(DataItem::description.name)
+			bubbleEvent()
+			updateDescriptions()
+		}
+	}
 
-					delay(100)
-					current = current.parent
-				}
+	fun bubbleEvent() {
+		var current: AbstractDataItem<*>? = this@AbstractDataItem
+		while (current != null) {
+			current.raiseEvent("childEvent")
+
+			current = current.parent
+		}
+	}
+
+	fun updateDescriptions() {
+		document.scope?.launch {
+			var current: AbstractDataItem<*>? = this@AbstractDataItem
+			while (current != null) {
+				current.raiseEvent(DataItem::description.name)
+
+				delay(100)
+				current = current.parent
 			}
 		}
 	}

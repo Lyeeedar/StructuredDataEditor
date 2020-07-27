@@ -2,9 +2,11 @@ package sde.ui
 
 import com.github.snabbdom.VNode
 import pl.treksoft.kvision.html.Canvas
+import pl.treksoft.kvision.html.Image
 import sde.data.item.ColourItem
 import sde.data.item.Keyframe
 import sde.data.item.TimelineItem
+import kotlin.math.max
 
 class Timeline(val timelineItem: TimelineItem) : Canvas()
 {
@@ -17,6 +19,16 @@ class Timeline(val timelineItem: TimelineItem) : Canvas()
 	private val actualHeight: Double
 		get() = (canvasHeight ?: 0).toDouble()
 
+	private var mouseOverItem: Keyframe? = null
+
+	init {
+	    redraw()
+	}
+
+	fun redraw() {
+		doRedraw()
+	}
+
 	private fun doRedraw() {
 		context2D.clearRect(0.0, 0.0, actualWidth, actualHeight)
 
@@ -25,7 +37,7 @@ class Timeline(val timelineItem: TimelineItem) : Canvas()
 
 		val pixelsASecond = actualWidth / timelineItem.timelineRange
 
-		val sortedKeyframes = timelineItem.keyframes.sortedBy { it.time.value }.toList()
+		val sortedKeyframes = timelineItem.keyframes.sortedBy { it.time }.toList()
 
 		if (timelineItem.def.contentsMap.size == 1) {
 			drawInterpolationPreview(sortedKeyframes, pixelsASecond)
@@ -60,8 +72,8 @@ class Timeline(val timelineItem: TimelineItem) : Canvas()
 				val thisCol = thisKeyframe.colours[i]
 				val nextCol = nextKeyframe.colours[i]
 
-				val thisDrawPos = thisKeyframe.time.value * pixelsASecond + timelineItem.leftPad
-				val nextDrawPos = nextKeyframe.time.value * pixelsASecond + timelineItem.leftPad
+				val thisDrawPos = thisKeyframe.time * pixelsASecond + timelineItem.leftPad
+				val nextDrawPos = nextKeyframe.time * pixelsASecond + timelineItem.leftPad
 
 				val gradient = context2D.createLinearGradient(0.0, 0.0, nextDrawPos - thisDrawPos, 0.0)
 				gradient.addColorStop(0.0, "rgb(${thisCol.value})")
@@ -75,7 +87,7 @@ class Timeline(val timelineItem: TimelineItem) : Canvas()
 
 				val thisCol = thisKeyframe.colours[i]
 
-				val thisDrawPos = thisKeyframe.time.value * pixelsASecond + timelineItem.leftPad
+				val thisDrawPos = thisKeyframe.time * pixelsASecond + timelineItem.leftPad
 
 				context2D.fillStyle = thisCol.value
 				context2D.fillRect(thisDrawPos-5, (drawPos+lineHeight/2) - 5, 10.0, 10.0)
@@ -114,8 +126,8 @@ class Timeline(val timelineItem: TimelineItem) : Canvas()
 				val thisH = (actualHeight - 20) - (actualHeight - 25) * thisAlpha
 				val nextH = (actualHeight - 20) - (actualHeight - 25) * nextAlpha
 
-				val thisDrawPos = thisKeyframe.time.value * pixelsASecond + timelineItem.leftPad
-				val nextDrawPos = thisKeyframe.time.value * pixelsASecond + timelineItem.leftPad
+				val thisDrawPos = thisKeyframe.time * pixelsASecond + timelineItem.leftPad
+				val nextDrawPos = thisKeyframe.time * pixelsASecond + timelineItem.leftPad
 
 				context2D.strokeStyle = col
 				context2D.beginPath()
@@ -133,7 +145,7 @@ class Timeline(val timelineItem: TimelineItem) : Canvas()
 
 				val thisH = (actualHeight - 20) - (actualHeight - 25) * thisAlpha
 
-				val thisDrawPos = thisKeyframe.time.value * pixelsASecond + timelineItem.leftPad
+				val thisDrawPos = thisKeyframe.time * pixelsASecond + timelineItem.leftPad
 
 				context2D.fillStyle = col
 				context2D.fillRect(thisDrawPos-5, thisH - 5, 10.0, 10.0)
@@ -149,6 +161,57 @@ class Timeline(val timelineItem: TimelineItem) : Canvas()
 	}
 
 	private fun drawKeyFrames(keyframes: List<Keyframe>, pixelsASecond: Double) {
+		for (keyframe in keyframes) {
+			var thickness = if (keyframe.isSelected) 2 else 1
+			if (keyframe == mouseOverItem) thickness++
 
+			val col = if (keyframe.isSelected) selectionBorderColour else borderLightColour
+
+			val width = getKeyframeWidth(keyframe)
+
+			val preview = keyframe.getImagePreview { redraw() }
+			if (preview != null) {
+				context2D.fillStyle = "rgb(${keyframe.item.def.background})"
+				context2D.fillRect(keyframe.time * pixelsASecond + timelineItem.leftPad, 5.0, width, actualHeight - 20)
+
+				context2D.drawImage(preview, keyframe.time * pixelsASecond + timelineItem.leftPad, 5.0, width, actualHeight - 20)
+
+				context2D.strokeStyle = col
+				context2D.strokeRect(keyframe.time * pixelsASecond + timelineItem.leftPad, 5.0, width, actualHeight - 20)
+			} else {
+				if (timelineItem.def.contentsMap.size > 1) {
+					val name = keyframe.item.def.name
+
+					val size = context2D.measureText(name)
+					val fontHeight = size.fontBoundingBoxAscent + size.fontBoundingBoxDescent
+
+					context2D.fillStyle = "rgb(${keyframe.item.def.background})"
+					context2D.fillRect(keyframe.time * pixelsASecond + timelineItem.leftPad, fontHeight, width, actualHeight - 15 - fontHeight)
+
+					context2D.strokeStyle = col
+					context2D.strokeRect(keyframe.time * pixelsASecond + timelineItem.leftPad, fontHeight, width, actualHeight - 15 - fontHeight)
+
+					context2D.fillStyle = "white"
+					context2D.fillText(name, max(0.0, (keyframe.time * pixelsASecond + timelineItem.leftPad + width / 2) - (size.width / 2.0)), 0.0)
+				} else {
+					context2D.fillStyle = "rgb(${keyframe.item.def.background})"
+					context2D.fillRect(keyframe.time * pixelsASecond + timelineItem.leftPad, 5.0, width, actualHeight - 20)
+
+					context2D.strokeStyle = col
+					context2D.strokeRect(keyframe.time * pixelsASecond + timelineItem.leftPad, 5.0, width, actualHeight - 20)
+				}
+			}
+		}
+	}
+
+	private fun getKeyframeWidth(keyframe: Keyframe): Double {
+		val pixelsASecond = actualWidth / timelineItem.timelineRange
+		if (keyframe.duration > 0f) return keyframe.duration * pixelsASecond
+
+		val preview = keyframe.getImagePreview { redraw() }
+
+		if (preview != null) return actualHeight - 20
+
+		return 10.0
 	}
 }

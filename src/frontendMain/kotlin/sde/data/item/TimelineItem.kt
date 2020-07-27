@@ -1,17 +1,32 @@
 package sde.data.item
 
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.await
+import kotlinx.coroutines.launch
+import org.w3c.dom.CanvasImageSource
+import org.w3c.dom.ImageBitmap
+import org.w3c.dom.ImageBitmapOptions
+import org.w3c.dom.ImageBitmapSource
+import pl.treksoft.kvision.core.Component
+import pl.treksoft.kvision.core.CssSize
+import pl.treksoft.kvision.core.UNIT
 import sde.data.DataDocument
+import sde.data.definition.KeyframeDefinition
 import sde.data.definition.TimelineDefinition
+import sde.ui.Timeline
+import sde.utils.ImageCache
+import kotlin.browser.window
 
 class TimelineItem(definition: TimelineDefinition, document: DataDocument) : AbstractCollectionItem<TimelineDefinition>(definition, document)
 {
-	private val keyframeMap = HashMap<StructItem, Keyframe>()
+	private val keyframeMap = HashMap<KeyframeItem, Keyframe>()
 
 	val keyframes: Sequence<Keyframe>
 		get() {
 			return sequence {
 				for (child in children) {
-					if (child is StructItem) {
+					if (child is KeyframeItem) {
 
 						var item = keyframeMap[child]
 						if (item == null) {
@@ -26,7 +41,7 @@ class TimelineItem(definition: TimelineDefinition, document: DataDocument) : Abs
 		}
 
 	val maxTime: Float
-		get() = keyframes.map { it.time.def.maxValue }.max() ?: 1f
+		get() = keyframes.map { it.timeItem.def.maxValue }.max() ?: 1f
 
 	var timelineRange: Float = -1f
 		get()
@@ -91,19 +106,74 @@ class TimelineItem(definition: TimelineDefinition, document: DataDocument) : Abs
 		}
 
 	var leftPad: Int = 0
+
+	var timeline: Timeline = Timeline(this)
+	init {
+	    registerListener("childEvent") {
+			timeline.redraw()
+		}
+	}
+
+	override fun getEditorComponent(): Component {
+		return timeline.apply {
+			height = CssSize(50, UNIT.px)
+			width = CssSize(100, UNIT.perc)
+		}
+	}
 }
 
-class Keyframe(val item: StructItem)
+class Keyframe(val item: KeyframeItem)
 {
-	val time = item.children.firstOrNull { it.def.name == "Time" } as? NumberItem ?: throw Exception("Unable to find a Time child on ${item.def.name}")
-	val duration = item.children.firstOrNull { it.def.name == "Duration" } as? NumberItem
+	val timeItem = item.children.firstOrNull { it.def.name == "Time" } as? NumberItem ?: throw Exception("Unable to find a Time child on ${item.def.name}")
+	val durationItem = item.children.firstOrNull { it.def.name == "Duration" } as? NumberItem
+
+	var time: Float
+		get() = timeItem.value
+		set(value) {
+			timeItem.value = value
+		}
+
+	var duration: Float
+		get() = durationItem?.value ?: 0f
+		set(value) {
+			durationItem?.value = value
+		}
 
 	val endTime: Float
-		get() = time.value + (duration?.value ?: 0f)
+		get() = time + duration
 
 	val colours: List<ColourItem>
 		get() = item.children.filterIsInstance<ColourItem>()
 
 	val numbers: List<NumberItem>
 		get() = item.children.filterIsInstance<NumberItem>()
+
+	val file: FileItem?
+		get() = item.children.firstOrNull { it is FileItem } as? FileItem
+
+	var isSelected = false
+
+	var cachedImage: CanvasImageSource? = null
+	var cachedImagePath: String? = null
+	fun getImagePreview(completionFunc: ()->Unit): CanvasImageSource? {
+		val file = file ?: return null
+
+		GlobalScope.launch {
+			val fullPath = file.getFullPath()
+
+			if (cachedImagePath != fullPath) {
+				cachedImage = null
+
+				if (fullPath.endsWith(".png")) {
+					val blob = ImageCache.getImageBlob(file.getFullPath())
+					cachedImage = window.createImageBitmap(blob, ImageBitmapOptions()).await()
+					cachedImagePath = fullPath
+
+					completionFunc.invoke()
+				}
+			}
+		}
+
+		return cachedImage
+	}
 }

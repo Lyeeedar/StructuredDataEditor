@@ -248,6 +248,9 @@ abstract class AbstractDataDefinition<D: AbstractDataDefinition<D, I>, I: Abstra
 
 				"COLLECTION" -> CollectionDefinition()
 
+				"TIMELINE" -> TimelineDefinition()
+				"KEYFRAME" -> KeyframeDefinition()
+
 				"REFERENCE" -> ReferenceDefinition()
 
 				else -> throw DefinitionLoadException("Unknown definition type $type for xml '$xml")

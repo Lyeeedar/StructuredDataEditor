@@ -43,18 +43,18 @@ suspend fun imageFromFile(path: String, init: (Image.()->Unit)? = null): Image
 }
 
 object ImageCache {
-	val mutex = Mutex()
-	val imageUrlCache = HashMap<String, String>()
+	private val mutex = Mutex()
+	private val imageBlobCache = HashMap<String, Blob>()
+	private val imageUrlCache = HashMap<String, String>()
 
-	suspend fun getImageUrl(path: String): String
-	{
-		val existing = imageUrlCache[path]
+	suspend fun getImageBlob(path: String): Blob {
+		val existing = imageBlobCache[path]
 		if (existing != null) {
 			return existing
 		}
 
 		mutex.withLock {
-			val existing = imageUrlCache[path]
+			val existing = imageBlobCache[path]
 			if (existing != null) {
 				return existing
 			}
@@ -62,10 +62,23 @@ object ImageCache {
 			val bytes = Services.disk.loadFileBytes(path)
 			val fileType = path.split('.').last()
 			val blob = Blob(arrayOf(bytes.toByteArray()), BlobPropertyBag(type = "image/$fileType"))
-			val dataUrl = URL.createObjectURL(blob)
-			imageUrlCache[path] = dataUrl
+			imageBlobCache[path] = blob
 
-			return dataUrl
+			return blob
 		}
+	}
+
+
+	suspend fun getImageUrl(path: String): String {
+		val existing = imageUrlCache[path]
+		if (existing != null) {
+			return existing
+		}
+
+		val blob = getImageBlob(path)
+		val dataUrl = URL.createObjectURL(blob)
+		imageUrlCache[path] = dataUrl
+
+		return dataUrl
 	}
 }

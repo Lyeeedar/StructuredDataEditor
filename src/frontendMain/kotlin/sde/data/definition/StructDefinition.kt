@@ -21,6 +21,7 @@ abstract class AbstractStructDefinition<D: AbstractStructDefinition<D, I>, I: Ab
 	{
 		nullable = node.getAttributeValue("Nullable", nullable)
 	}
+	protected abstract fun doParseInstanceInternal(node: XElement)
 
 	protected override fun createItemInstance(document: DataDocument): I
 	{
@@ -33,6 +34,7 @@ abstract class AbstractStructDefinition<D: AbstractStructDefinition<D, I>, I: Ab
 
 		return item
 	}
+	protected abstract fun createItemInstanceInternal(document: DataDocument): I
 
 	fun createContents(item: I, document: DataDocument)
 	{
@@ -49,7 +51,6 @@ abstract class AbstractStructDefinition<D: AbstractStructDefinition<D, I>, I: Ab
 			}
 		}
 	}
-	protected abstract fun createItemInstanceInternal(document: DataDocument): I
 
 	protected override fun loadItemInstance(document: DataDocument, xml: XElement): I
 	{
@@ -126,5 +127,9 @@ class StructDefinition : AbstractStructDefinition<StructDefinition, StructItem>(
 	protected override fun saveItemInstanceInternal(item: StructItem): XElement
 	{
 		return XElement(name)
+	}
+
+	override fun doParseInstanceInternal(node: XElement) {
+
 	}
 }
