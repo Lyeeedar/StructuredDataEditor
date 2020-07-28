@@ -105,7 +105,7 @@ class TimelineItem(definition: TimelineDefinition, document: DataDocument) : Abs
 			}
 		}
 
-	var leftPad: Int = 10
+	var leftPad: Double = 10.0
 
 	var timeline: Timeline = Timeline(this)
 	init {

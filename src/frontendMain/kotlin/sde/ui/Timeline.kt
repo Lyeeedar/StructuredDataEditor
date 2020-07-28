@@ -3,7 +3,10 @@ package sde.ui
 import com.github.snabbdom.VNode
 import org.w3c.dom.Element
 import pl.treksoft.kvision.core.CssSize
+import pl.treksoft.kvision.core.Cursor
 import pl.treksoft.kvision.core.UNIT
+import pl.treksoft.kvision.core.onEvent
+import pl.treksoft.kvision.html.Button
 import pl.treksoft.kvision.html.Canvas
 import pl.treksoft.kvision.html.Image
 import sde.data.item.ColourItem
@@ -28,6 +31,9 @@ class Timeline(val timelineItem: TimelineItem) : Canvas(canvasWidth = 1000, canv
 
 	private var inserted = false
 	private var mouseOverItem: Keyframe? = null
+	private var mouseX = 0.0
+	private var mouseY = 0.0
+	private var isPanning = false
 
 	init
 	{
@@ -35,11 +41,37 @@ class Timeline(val timelineItem: TimelineItem) : Canvas(canvasWidth = 1000, canv
 			inserted = true
 			redraw()
 		}
+
+		onEvent {
+			wheel = {
+				onScroll(it.deltaY)
+
+				it.stopPropagation()
+				it.preventDefault()
+			}
+			mouseenter = {
+				mouseX = it.offsetX
+				mouseY = it.offsetY
+			}
+			mousemove = {
+				val deltaX = it.offsetX - mouseX
+
+				mouseX = it.offsetX
+				mouseY = it.offsetY
+
+				onMouseMove(deltaX, it.buttons)
+			}
+			mousedown = {
+				onMouseDown()
+			}
+		}
 	}
 
 	fun redraw() {
 		doRedraw()
 	}
+
+	// region Drawing
 
 	private fun findBestIndicatorStep(): Double {
 		for (step in possibleValueSteps) {
@@ -64,11 +96,11 @@ class Timeline(val timelineItem: TimelineItem) : Canvas(canvasWidth = 1000, canv
 
 		val sortedKeyframes = timelineItem.keyframes.sortedBy { it.time }.toList()
 
+		drawIndicators(pixelsASecond)
+
 		if (timelineItem.def.contentsMap.size == 1) {
 			drawInterpolationPreview(sortedKeyframes, pixelsASecond)
 		}
-
-		drawIndicators(pixelsASecond)
 
 		drawKeyFrames(sortedKeyframes, pixelsASecond)
 	}
@@ -115,7 +147,7 @@ class Timeline(val timelineItem: TimelineItem) : Canvas(canvasWidth = 1000, canv
 
 				val thisDrawPos = thisKeyframe.time * pixelsASecond + timelineItem.leftPad
 
-				context2D.fillStyle = thisCol.value
+				context2D.fillStyle = "rgb(${thisCol.value})"
 				context2D.fillRect(thisDrawPos-5, (drawPos+lineHeight/2) - 5, 10.0, 10.0)
 
 				context2D.strokeStyle = borderDarkColour
@@ -197,11 +229,11 @@ class Timeline(val timelineItem: TimelineItem) : Canvas(canvasWidth = 1000, canv
 
 			val timeText = time.toString().split("0000")[0]
 			val textSize = context2D.measureText(timeText)
-			val fontHeight = textSize.actualBoundingBoxAscent + textSize.actualBoundingBoxDescent
+			val fontHeight = 10
 
 			context2D.font = "10px Arial"
-			context2D.fillStyle = "white"
-			context2D.fillText(timeText, tpos - (textSize.width / 2.0), actualHeight - fontHeight)
+			context2D.fillStyle = "gray"
+			context2D.fillText(timeText, tpos - (textSize.width / 2.0), actualHeight - 3)
 
 			context2D.strokeStyle = borderDarkColour
 			context2D.beginPath()
@@ -251,7 +283,7 @@ class Timeline(val timelineItem: TimelineItem) : Canvas(canvasWidth = 1000, canv
 
 					context2D.font = "10px Arial"
 					val textSize = context2D.measureText(name)
-					val fontHeight = textSize.actualBoundingBoxAscent + textSize.actualBoundingBoxDescent
+					val fontHeight = 10.0
 
 					context2D.fillStyle = "rgb(${keyframe.item.def.background})"
 					context2D.fillRect(keyframe.time * pixelsASecond + timelineItem.leftPad, fontHeight, width, actualHeight - 15 - fontHeight)
@@ -282,4 +314,84 @@ class Timeline(val timelineItem: TimelineItem) : Canvas(canvasWidth = 1000, canv
 
 		return 10.0
 	}
+
+	//endregion
+
+	// region events
+
+	private fun onScroll(amount: Double) {
+		if (amount < 0) {
+			cursor = Cursor.ZOOMIN
+		} else {
+			cursor = Cursor.ZOOMOUT
+		}
+
+		var pixelsASecond = actualWidth / timelineItem.timelineRange
+
+		val valueUnderCursor = (mouseX - timelineItem.leftPad) / pixelsASecond
+
+		timelineItem.timelineRange += (timelineItem.timelineRange * (amount / 120)).toFloat()
+
+		pixelsASecond = actualWidth / timelineItem.timelineRange
+		timelineItem.leftPad = ((valueUnderCursor * pixelsASecond) - mouseX) * -1.0
+		if (timelineItem.leftPad > 10) timelineItem.leftPad = 10.0
+
+		for (timeline in timelineItem.timelineGroup) {
+			timeline.timelineRange = timelineItem.timelineRange
+			timeline.leftPad = timelineItem.leftPad
+			timeline.timeline.redraw()
+		}
+	}
+
+	private fun onMouseDown() {
+		val item = getItemAt(mouseX - timelineItem.leftPad)
+
+		isPanning = false
+
+		if (item == null) {
+			isPanning = true
+
+			for (keyframe in timelineItem.keyframes) {
+				keyframe.isSelected = false
+			}
+		} else {
+			item.isSelected = true
+		}
+
+		redraw()
+	}
+
+	private fun getItemAt(clickPos: Double): Keyframe? {
+		val pixelsASecond = actualWidth / timelineItem.timelineRange
+
+		for (keyframe in timelineItem.keyframes) {
+			val time = keyframe.time * pixelsASecond
+			val diff = clickPos - time
+
+			if (diff >= 0 && diff < getKeyframeWidth(keyframe)) {
+				return keyframe
+			}
+		}
+
+		return null
+	}
+
+	private fun onMouseMove(deltaX: Double, button: Short) {
+		cursor = Cursor.AUTO
+
+		if (isPanning && button == 1.toShort()) {
+			timelineItem.leftPad += deltaX
+
+			if (timelineItem.leftPad > 10) timelineItem.leftPad = 10.0
+
+			cursor = Cursor.ALLSCROLL
+
+			for (timeline in timelineItem.timelineGroup) {
+				timeline.leftPad = timelineItem.leftPad
+				timeline.timeline.redraw()
+			}
+		}
+	}
+
+	//endregion
 }
