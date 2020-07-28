@@ -110,7 +110,11 @@ class TimelineItem(definition: TimelineDefinition, document: DataDocument) : Abs
 	var timeline: Timeline = Timeline(this)
 	init {
 	    registerListener("childEvent") {
-			timeline.redraw()
+
+		    if (isVisible())
+		    {
+			    timeline.redraw()
+		    }
 		}
 	}
 
@@ -118,6 +122,8 @@ class TimelineItem(definition: TimelineDefinition, document: DataDocument) : Abs
 		return timeline.apply {
 			height = CssSize(50, UNIT.px)
 			width = CssSize(100, UNIT.perc)
+
+			redraw()
 		}
 	}
 }

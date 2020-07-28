@@ -21,10 +21,6 @@ class Timeline(val timelineItem: TimelineItem) : Canvas()
 
 	private var mouseOverItem: Keyframe? = null
 
-	init {
-	    redraw()
-	}
-
 	fun redraw() {
 		doRedraw()
 	}
