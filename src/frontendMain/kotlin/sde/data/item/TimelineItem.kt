@@ -169,10 +169,16 @@ class Keyframe(val item: KeyframeItem)
 		get() = item.children.filterIsInstance<ColourItem>()
 
 	val numbers: List<NumberItem>
-		get() = item.children.filterIsInstance<NumberItem>()
+		get() = item.children.filterIsInstance<NumberItem>().filter { it != timeItem && it != durationItem }
 
 	val file: FileItem?
 		get() = item.children.firstOrNull { it is FileItem } as? FileItem
+
+	val isDurationLocked: Boolean
+		get() {
+			if (durationItem == null) return true
+			return false
+		}
 
 	var isSelected = false
 

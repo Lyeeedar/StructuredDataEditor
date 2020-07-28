@@ -13,6 +13,7 @@ import sde.data.item.ColourItem
 import sde.data.item.Keyframe
 import sde.data.item.TimelineItem
 import sde.utils.afterInsert
+import kotlin.browser.window
 import kotlin.math.absoluteValue
 import kotlin.math.floor
 import kotlin.math.max
@@ -34,6 +35,13 @@ class Timeline(val timelineItem: TimelineItem) : Canvas(canvasWidth = 1000, canv
 	private var mouseX = 0.0
 	private var mouseY = 0.0
 	private var isPanning = false
+	private var lastSelectedItem: Keyframe? = null
+	private var resizeItem: Keyframe? = null
+	private var startPos: Double = -1.0
+	private var isResizing = false
+	private var resizingLeft = false
+	private var snapLines = ArrayList<Double>()
+	private var ctrlDown = false
 
 	init
 	{
@@ -63,6 +71,16 @@ class Timeline(val timelineItem: TimelineItem) : Canvas(canvasWidth = 1000, canv
 			}
 			pointerdown = {
 				onMouseDown()
+			}
+			keydown = {
+				if (it.ctrlKey) {
+					ctrlDown = true
+				}
+			}
+			keyup = {
+				if (it.ctrlKey) {
+					ctrlDown = false
+				}
 			}
 		}
 	}
@@ -344,18 +362,39 @@ class Timeline(val timelineItem: TimelineItem) : Canvas(canvasWidth = 1000, canv
 	}
 
 	private fun onMouseDown() {
-		val item = getItemAt(mouseX - timelineItem.leftPad)
+		val pixelsASecond = actualWidth / timelineItem.timelineRange
+
+		val clickPos = mouseX - timelineItem.leftPad
+		val clickItem = getItemAt(clickPos)
 
 		isPanning = false
+		isResizing = false
 
-		if (item == null) {
+		if (clickItem == null) {
 			isPanning = true
 
 			for (keyframe in timelineItem.keyframes) {
 				keyframe.isSelected = false
 			}
 		} else {
-			item.isSelected = true
+			clickItem.isSelected = true
+			lastSelectedItem = clickItem
+
+			resizeItem = clickItem
+			startPos = clickPos
+
+			if (!clickItem.isDurationLocked) {
+				var time = clickItem.time * pixelsASecond
+				if ((clickItem.endTime * pixelsASecond - clickPos).absoluteValue < 10) {
+					isResizing = true
+					resizingLeft = false
+				} else if ((time - clickPos).absoluteValue < 10) {
+					isResizing = true
+					resizingLeft = true
+				}
+			}
+
+			generateSnapList(clickItem)
 		}
 
 		redraw()
@@ -376,26 +415,121 @@ class Timeline(val timelineItem: TimelineItem) : Canvas(canvasWidth = 1000, canv
 		return null
 	}
 
-	private fun onMouseMove(deltaX: Double, button: Short, pointerId: Int) {
-		cursor = Cursor.AUTO
+	private fun generateSnapList(dragged: Keyframe) {
+		snapLines.clear()
 
-		if (isPanning && button == 1.toShort()) {
-			timelineItem.leftPad += deltaX
+		for (timeline in timelineItem.timelineGroup) {
+			for (keyframe in timeline.keyframes) {
+				if (keyframe == dragged || keyframe.isSelected) continue
 
-			if (timelineItem.leftPad > 10) timelineItem.leftPad = 10.0
-
-			cursor = Cursor.ALLSCROLL
-
-			for (timeline in timelineItem.timelineGroup) {
-				timeline.leftPad = timelineItem.leftPad
-				timeline.timeline.redraw()
-			}
-
-			val el = getElement() as? Element
-			if (el != null) {
-				el.setPointerCapture(pointerId)
+				val time = keyframe.time.toDouble()
+				if (!snapLines.contains(time)) snapLines.add(time)
+				if (keyframe.duration > 0f) {
+					val time = keyframe.endTime.toDouble()
+					if (!snapLines.contains(time)) snapLines.add(time)
+				}
 			}
 		}
+
+		snapLines.sort()
+	}
+
+	private fun snap(time: Double): Double {
+		var time = time
+		if (ctrlDown) {
+			val bestStep = findBestIndicatorStep() / 6
+			val roundedTime = floor(time / bestStep) * bestStep
+			time = roundedTime
+		} else {
+			val pixelsASecond = actualWidth / timelineItem.timelineRange
+
+			var bestSnapTime = -1.0
+			var bestSnapDist = 10.0 / pixelsASecond
+
+			for (line in snapLines) {
+				val diff = (line - time).absoluteValue
+				if (diff < bestSnapDist) {
+					bestSnapDist = diff
+					bestSnapTime = line
+				}
+			}
+
+			if (bestSnapTime > -1) {
+				time = bestSnapTime
+			}
+		}
+
+		return time
+	}
+
+	private fun onMouseMove(deltaX: Double, button: Short, pointerId: Int) {
+		val pixelsASecond = actualWidth / timelineItem.timelineRange
+		val clickPos = mouseX - timelineItem.leftPad
+
+		cursor = Cursor.AUTO
+
+		val leftMouseDown = button == 1.toShort()
+
+		if (leftMouseDown) {
+			if (isPanning) {
+				timelineItem.leftPad += deltaX
+
+				if (timelineItem.leftPad > 10) timelineItem.leftPad = 10.0
+
+				cursor = Cursor.ALLSCROLL
+
+				for (timeline in timelineItem.timelineGroup) {
+					timeline.leftPad = timelineItem.leftPad
+					timeline.timeline.redraw()
+				}
+
+				val el = getElement() as? Element
+				if (el != null) {
+					el.setPointerCapture(pointerId)
+				}
+			} else if (isResizing) {
+
+				val resizeItem = resizeItem!!
+				if (resizingLeft) {
+					val newTime = clickPos / pixelsASecond
+					var roundedTime = snap(newTime)
+
+					val oldEnd = resizeItem.endTime.toDouble()
+
+					if (roundedTime > oldEnd) roundedTime = oldEnd
+					resizeItem.time = roundedTime.toFloat()
+
+					resizeItem.duration = (oldEnd - resizeItem.time).toFloat()
+				} else {
+					val newTime = clickPos / pixelsASecond
+					val roundedTime = snap(newTime)
+
+					resizeItem.duration = (roundedTime - resizeItem.time).toFloat()
+				}
+
+				cursor = Cursor.EWRESIZE
+
+				val el = getElement() as? Element
+				if (el != null) {
+					el.setPointerCapture(pointerId)
+				}
+			}
+		}
+		else {
+			val item = getItemAt(clickPos)
+			mouseOverItem = item
+
+			if (item != null) {
+				if (!item.isDurationLocked) {
+					val time = item.time * pixelsASecond
+					if ((item.endTime * pixelsASecond - clickPos).absoluteValue < 10 || (time - clickPos).absoluteValue < 10) {
+						cursor = Cursor.EWRESIZE
+					}
+				}
+			}
+		}
+
+		redraw()
 	}
 
 	//endregion

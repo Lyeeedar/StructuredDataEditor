@@ -142,6 +142,28 @@
                     </Keyframe>
                 </Data>
             </Data>
+            <!-- Seperator -->
+            <Data Name="Resizable" MinCount="1" meta:RefKey="Timeline">
+                <Keyframe Name="Keyframe" meta:RefKey="Keyframe">
+                    <Time Name="Time" Min="0" Max="1" SkipIfDefault="False" meta:RefKey="Number" />
+                    <Duration Name="Duration" Min="0" Max="1" Default="0.1" SkipIfDefault="False" meta:RefKey="Number" />
+                </Keyframe>
+            </Data>
+            <!-- Seperator -->
+            <Data Name="MultiDef" meta:RefKey="Timeline">
+                <Data Name="ColourAction" meta:RefKey="Keyframe">
+                    <Time Name="Time" Min="0" Max="1" SkipIfDefault="False" meta:RefKey="Number" />
+                    <Data Name="Colour" SkipIfDefault="False" meta:RefKey="Colour" />
+                </Data>
+                <Data Name="NumberAction" meta:RefKey="Keyframe">
+                    <Time Name="Time" Min="0" Max="1" SkipIfDefault="False" meta:RefKey="Number" />
+                    <Data Name="Number" SkipIfDefault="False" meta:RefKey="Number" />
+                </Data>
+                <Data Name="StringAction" meta:RefKey="Keyframe">
+                    <Time Name="Time" Min="0" Max="1" SkipIfDefault="False" meta:RefKey="Number" />
+                    <Data Name="String" SkipIfDefault="False" meta:RefKey="String" />
+                </Data>
+            </Data>
         </Data>
 	</Data>
 </Definitions>
