@@ -49,19 +49,19 @@ class Timeline(val timelineItem: TimelineItem) : Canvas(canvasWidth = 1000, canv
 				it.stopPropagation()
 				it.preventDefault()
 			}
-			mouseenter = {
+			pointerenter = {
 				mouseX = it.offsetX
 				mouseY = it.offsetY
 			}
-			mousemove = {
+			pointermove = {
 				val deltaX = it.offsetX - mouseX
 
 				mouseX = it.offsetX
 				mouseY = it.offsetY
 
-				onMouseMove(deltaX, it.buttons)
+				onMouseMove(deltaX, it.buttons, it.pointerId)
 			}
-			mousedown = {
+			pointerdown = {
 				onMouseDown()
 			}
 		}
@@ -376,7 +376,7 @@ class Timeline(val timelineItem: TimelineItem) : Canvas(canvasWidth = 1000, canv
 		return null
 	}
 
-	private fun onMouseMove(deltaX: Double, button: Short) {
+	private fun onMouseMove(deltaX: Double, button: Short, pointerId: Int) {
 		cursor = Cursor.AUTO
 
 		if (isPanning && button == 1.toShort()) {
@@ -389,6 +389,11 @@ class Timeline(val timelineItem: TimelineItem) : Canvas(canvasWidth = 1000, canv
 			for (timeline in timelineItem.timelineGroup) {
 				timeline.leftPad = timelineItem.leftPad
 				timeline.timeline.redraw()
+			}
+
+			val el = getElement() as? Element
+			if (el != null) {
+				el.setPointerCapture(pointerId)
 			}
 		}
 	}
