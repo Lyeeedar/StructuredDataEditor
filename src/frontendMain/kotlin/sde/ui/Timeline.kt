@@ -1,14 +1,18 @@
 package sde.ui
 
 import com.github.snabbdom.VNode
+import org.w3c.dom.Element
+import pl.treksoft.kvision.core.CssSize
+import pl.treksoft.kvision.core.UNIT
 import pl.treksoft.kvision.html.Canvas
 import pl.treksoft.kvision.html.Image
 import sde.data.item.ColourItem
 import sde.data.item.Keyframe
 import sde.data.item.TimelineItem
+import sde.utils.afterInsert
 import kotlin.math.max
 
-class Timeline(val timelineItem: TimelineItem) : Canvas()
+class Timeline(val timelineItem: TimelineItem) : Canvas(canvasWidth = 1000, canvasHeight = 50)
 {
 	private val possibleValueSteps = arrayOf(10000, 5000, 1000, 500, 100, 50, 10, 5, 1, 0.5, 0.1, 0.05, 0.01, 0.005, 0.001, 0.0005, 0.0001)
 	private val trackColours = arrayOf("forestgreen", "darkcyan", "darkviolet", "darkorange")
@@ -19,13 +23,24 @@ class Timeline(val timelineItem: TimelineItem) : Canvas()
 	private val actualHeight: Double
 		get() = (canvasHeight ?: 0).toDouble()
 
+	private var inserted = false
 	private var mouseOverItem: Keyframe? = null
+
+	init
+	{
+		afterInsert {
+			inserted = true
+			redraw()
+		}
+	}
 
 	fun redraw() {
 		doRedraw()
 	}
 
 	private fun doRedraw() {
+		if (!inserted) return
+
 		context2D.clearRect(0.0, 0.0, actualWidth, actualHeight)
 
 		context2D.fillStyle = backgroundDarkColour
@@ -75,6 +90,7 @@ class Timeline(val timelineItem: TimelineItem) : Canvas()
 				gradient.addColorStop(0.0, "rgb(${thisCol.value})")
 				gradient.addColorStop(1.0, "rgb(${nextCol.value})")
 
+				context2D.fillStyle = gradient
 				context2D.fillRect(thisDrawPos, drawPos, nextDrawPos - thisDrawPos, lineHeight)
 			}
 

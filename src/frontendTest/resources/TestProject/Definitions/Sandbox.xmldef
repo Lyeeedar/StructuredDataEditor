@@ -121,8 +121,8 @@
                 <Keyframe Name="Keyframe" meta:RefKey="Keyframe">
                     <Time Name="Time" Min="0" Max="1" SkipIfDefault="False" meta:RefKey="Number" />
                     <Data Name="Alpha" Min="0" Max="1" Default="1" SkipIfDefault="False" meta:RefKey="Number" />
-                    <Data Name="AlphaRef" Min="0" Max="1" Default="1" SkipIfDefault="False" meta:RefKey="Number" />
-                    <Data Name="Opacity" Min="0" Max="1" Default="1" SkipIfDefault="False" meta:RefKey="Number" />
+                    <Data Name="AlphaRef" Min="0" Max="1" Default="0" SkipIfDefault="False" meta:RefKey="Number" />
+                    <Data Name="Opacity" Min="0" Max="1" Default="0.5" SkipIfDefault="False" meta:RefKey="Number" />
                 </Keyframe>
             </Data>
             <!-- Seperator -->
@@ -137,7 +137,7 @@
                 <Data Name="Sizes" MinCount="1" meta:RefKey="Timeline">
                     <Keyframe Name="Keyframe" meta:RefKey="Keyframe">
                         <Time Name="Time" Min="0" Max="1" SkipIfDefault="False" meta:RefKey="Number" />
-                        <Data Name="Min" Min="0" Default="1" SkipIfDefault="False" meta:RefKey="Number" />
+                        <Data Name="Min" Min="0" Default="0" SkipIfDefault="False" meta:RefKey="Number" />
                         <Data Name="Max" Min="0" Default="1" SkipIfDefault="False" meta:RefKey="Number" />
                     </Keyframe>
                 </Data>

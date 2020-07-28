@@ -4,18 +4,18 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.await
 import kotlinx.coroutines.launch
-import org.w3c.dom.CanvasImageSource
-import org.w3c.dom.ImageBitmap
-import org.w3c.dom.ImageBitmapOptions
-import org.w3c.dom.ImageBitmapSource
+import org.w3c.dom.*
 import pl.treksoft.kvision.core.Component
 import pl.treksoft.kvision.core.CssSize
 import pl.treksoft.kvision.core.UNIT
+import pl.treksoft.kvision.core.onEvent
+import pl.treksoft.kvision.html.Div
 import sde.data.DataDocument
 import sde.data.definition.KeyframeDefinition
 import sde.data.definition.TimelineDefinition
 import sde.ui.Timeline
 import sde.utils.ImageCache
+import sde.utils.afterInsert
 import kotlin.browser.window
 
 class TimelineItem(definition: TimelineDefinition, document: DataDocument) : AbstractCollectionItem<TimelineDefinition>(definition, document)
@@ -119,11 +119,28 @@ class TimelineItem(definition: TimelineDefinition, document: DataDocument) : Abs
 	}
 
 	override fun getEditorComponent(): Component {
-		return timeline.apply {
+		return Div {
 			height = CssSize(50, UNIT.px)
 			width = CssSize(100, UNIT.perc)
 
-			redraw()
+			document.scope?.launch {
+				while (true) {
+					val el = getElement() as? HTMLElement ?: continue
+
+					if (timeline.canvasWidth != el.offsetWidth) {
+						timeline.canvasWidth = el.offsetWidth
+					}
+
+					add(timeline)
+					timeline.redraw()
+
+					break
+				}
+			}
+
+			afterInsert {
+
+			}
 		}
 	}
 }
