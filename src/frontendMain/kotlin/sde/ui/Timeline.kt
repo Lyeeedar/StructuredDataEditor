@@ -14,10 +14,7 @@ import sde.data.item.Keyframe
 import sde.data.item.TimelineItem
 import sde.utils.afterInsert
 import kotlin.browser.window
-import kotlin.math.absoluteValue
-import kotlin.math.floor
-import kotlin.math.max
-import kotlin.math.round
+import kotlin.math.*
 
 class Timeline(val timelineItem: TimelineItem) : Canvas(canvasWidth = 1000, canvasHeight = 50)
 {
@@ -373,8 +370,10 @@ class Timeline(val timelineItem: TimelineItem) : Canvas(canvasWidth = 1000, canv
 		if (clickItem == null) {
 			isPanning = true
 
-			for (keyframe in timelineItem.keyframes) {
-				keyframe.isSelected = false
+			for (timeline in timelineItem.timelineGroup) {
+				for (keyframe in timeline.keyframes) {
+					keyframe.isSelected = false
+				}
 			}
 		} else {
 			clickItem.isSelected = true
@@ -392,6 +391,27 @@ class Timeline(val timelineItem: TimelineItem) : Canvas(canvasWidth = 1000, canv
 					isResizing = true
 					resizingLeft = true
 				}
+			}
+
+			if (!isResizing) {
+				val timelineGroup = timelineItem.timelineGroup.toList()
+				for (timeline in timelineGroup) {
+					for (keyframe in timeline.keyframes) {
+						if (keyframe.isSelected) {
+							val startOffset = (clickPos / pixelsASecond) - keyframe.time
+							val timelineIndex = timelineGroup.indexOf(timeline)
+							val dragAction = DragAction(keyframe, keyframe.time.toDouble(), startOffset, timelineIndex)
+							draggedActions.add(dragAction)
+
+							if (keyframe == clickItem) {
+								draggedAction = dragAction
+							}
+						}
+					}
+				}
+
+				isDraggingItems = true
+				cursor = Cursor.MOVE
 			}
 
 			generateSnapList(clickItem)
@@ -463,15 +483,64 @@ class Timeline(val timelineItem: TimelineItem) : Canvas(canvasWidth = 1000, canv
 	}
 
 	private fun onMouseMove(deltaX: Double, button: Short, pointerId: Int) {
+		val leftMouseDown = button == 1.toShort()
+
+		if ((isDraggingItems || isResizing) && !leftMouseDown) {
+			endDrag()
+		}
+
 		val pixelsASecond = actualWidth / timelineItem.timelineRange
 		val clickPos = mouseX - timelineItem.leftPad
 
 		cursor = Cursor.AUTO
 
-		val leftMouseDown = button == 1.toShort()
 
 		if (leftMouseDown) {
-			if (isPanning) {
+			if (isDraggingItems) {
+				val dragItems = draggedActions
+				val dragItem = draggedAction!!
+
+				// do time change
+				val newTime = clickPos / pixelsASecond - dragItem.actionStartOffset
+				var roundedTime = snap(newTime)
+
+				if (dragItem.keyframe.duration > 0f && !ctrlDown) {
+					val endTime = newTime + dragItem.keyframe.duration
+					val snapped = snap(endTime)
+					roundedTime += snapped - endTime
+				}
+
+				val diff = roundedTime - dragItem.originalPosition
+
+				for (item in dragItems) {
+					item.keyframe.time = (item.originalPosition + diff).toFloat()
+				}
+
+				// do timeline change
+				val timelineGroup = timelineItem.timelineGroup.toList()
+				val currentTimelineIndex = timelineGroup.indexOf(timelineItem)
+				if (currentTimelineIndex != timelineGroup.indexOf(dragItem.keyframe.timelineItem)) {
+					val idealChange = currentTimelineIndex - dragItem.startTimelineIndex
+
+					// move items
+					for (item in dragItems) {
+						val itemTimelineIndex = item.startTimelineIndex
+
+						for (i in 0 until idealChange.absoluteValue+1) {
+							val signedI = idealChange.sign
+							val index = itemTimelineIndex + (idealChange - signedI)
+							val targetTimeline = timelineGroup[index]
+
+							if (targetTimeline.def.contentsMap.values.contains(item.keyframe.item.def)) {
+								item.keyframe.timelineItem.children.remove(item.keyframe.item)
+								targetTimeline.children.add(item.keyframe.item)
+							}
+						}
+					}
+				}
+
+				cursor = Cursor.MOVE
+			} else if (isPanning) {
 				timelineItem.leftPad += deltaX
 
 				if (timelineItem.leftPad > 10) timelineItem.leftPad = 10.0
@@ -532,5 +601,32 @@ class Timeline(val timelineItem: TimelineItem) : Canvas(canvasWidth = 1000, canv
 		redraw()
 	}
 
+	fun endDrag() {
+		val wasDragging = isResizing || isDraggingItems
+		isResizing = false
+		resizeItem = null
+		isPanning = false
+		isDraggingItems = false
+		draggedActions.clear()
+		draggedAction = null
+
+		cursor = Cursor.AUTO
+
+		if (wasDragging) {
+			for (timeline in timelineItem.timelineGroup) {
+				timeline.children.sortBy { timeline.getKeyframe(it)?.time ?: 0f }
+			}
+		}
+	}
+
 	//endregion
+
+	companion object
+	{
+		var isDraggingItems = false
+		val draggedActions = ArrayList<DragAction>()
+		var draggedAction: DragAction? = null
+	}
 }
+
+class DragAction(val keyframe: Keyframe, val originalPosition: Double, val actionStartOffset: Double, val startTimelineIndex: Int)

@@ -26,15 +26,9 @@ class TimelineItem(definition: TimelineDefinition, document: DataDocument) : Abs
 		get() {
 			return sequence {
 				for (child in children) {
-					if (child is KeyframeItem) {
-
-						var item = keyframeMap[child]
-						if (item == null) {
-							item = Keyframe(child)
-							keyframeMap[child] = item
-						}
-
-						yield(item!!)
+					val keyframe = getKeyframe(child)
+					if (keyframe != null) {
+						yield(keyframe!!)
 					}
 				}
 			}
@@ -118,6 +112,22 @@ class TimelineItem(definition: TimelineDefinition, document: DataDocument) : Abs
 		}
 	}
 
+	fun getKeyframe(item: DataItem): Keyframe?
+	{
+		if (item is KeyframeItem) {
+
+			var keyframe = keyframeMap[item]
+			if (keyframe == null) {
+				keyframe = Keyframe(item, this)
+				keyframeMap[item] = keyframe
+			}
+
+			return keyframe
+		}
+
+		return null
+	}
+
 	override fun getEditorComponent(): Component {
 		return Div {
 			height = CssSize(50, UNIT.px)
@@ -145,7 +155,7 @@ class TimelineItem(definition: TimelineDefinition, document: DataDocument) : Abs
 	}
 }
 
-class Keyframe(val item: KeyframeItem)
+class Keyframe(val item: KeyframeItem, val timelineItem: TimelineItem)
 {
 	val timeItem = item.children.firstOrNull { it.def.name == "Time" } as? NumberItem ?: throw Exception("Unable to find a Time child on ${item.def.name}")
 	val durationItem = item.children.firstOrNull { it.def.name == "Duration" } as? NumberItem
