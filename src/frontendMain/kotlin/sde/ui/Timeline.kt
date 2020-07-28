@@ -1,19 +1,12 @@
 package sde.ui
 
-import com.github.snabbdom.VNode
 import org.w3c.dom.Element
-import pl.treksoft.kvision.core.CssSize
 import pl.treksoft.kvision.core.Cursor
-import pl.treksoft.kvision.core.UNIT
 import pl.treksoft.kvision.core.onEvent
-import pl.treksoft.kvision.html.Button
 import pl.treksoft.kvision.html.Canvas
-import pl.treksoft.kvision.html.Image
-import sde.data.item.ColourItem
-import sde.data.item.Keyframe
+import sde.data.item.KeyframeItem
 import sde.data.item.TimelineItem
 import sde.utils.afterInsert
-import kotlin.browser.window
 import kotlin.math.*
 
 class Timeline(val timelineItem: TimelineItem) : Canvas(canvasWidth = 1000, canvasHeight = 50)
@@ -28,12 +21,12 @@ class Timeline(val timelineItem: TimelineItem) : Canvas(canvasWidth = 1000, canv
 		get() = (canvasHeight ?: 0).toDouble()
 
 	private var inserted = false
-	private var mouseOverItem: Keyframe? = null
+	private var mouseOverItem: KeyframeItem? = null
 	private var mouseX = 0.0
 	private var mouseY = 0.0
 	private var isPanning = false
-	private var lastSelectedItem: Keyframe? = null
-	private var resizeItem: Keyframe? = null
+	private var lastSelectedItem: KeyframeItem? = null
+	private var resizeItem: KeyframeItem? = null
 	private var startPos: Double = -1.0
 	private var isResizing = false
 	private var resizingLeft = false
@@ -109,43 +102,43 @@ class Timeline(val timelineItem: TimelineItem) : Canvas(canvasWidth = 1000, canv
 
 		val pixelsASecond = actualWidth / timelineItem.timelineRange
 
-		val sortedKeyframes = timelineItem.keyframes.sortedBy { it.time }.toList()
+		val sortedkeyframeItems = timelineItem.keyframes.sortedBy { it.time }.toList()
 
 		drawIndicators(pixelsASecond)
 
 		if (timelineItem.def.contentsMap.size == 1) {
-			drawInterpolationPreview(sortedKeyframes, pixelsASecond)
+			drawInterpolationPreview(sortedkeyframeItems, pixelsASecond)
 		}
 
-		drawKeyFrames(sortedKeyframes, pixelsASecond)
+		drawkeyframeItems(sortedkeyframeItems, pixelsASecond)
 	}
 
-	private fun drawInterpolationPreview(keyframes: List<Keyframe>, pixelsASecond: Double) {
-		if (keyframes.size == 0) {
+	private fun drawInterpolationPreview(keyframeItems: List<KeyframeItem>, pixelsASecond: Double) {
+		if (keyframeItems.size == 0) {
 			return
 		}
 
-		drawInterpolatedColours(keyframes, pixelsASecond)
-		drawInterpolatedNumbers(keyframes, pixelsASecond)
+		drawInterpolatedColours(keyframeItems, pixelsASecond)
+		drawInterpolatedNumbers(keyframeItems, pixelsASecond)
 	}
 
-	private fun drawInterpolatedColours(keyframes: List<Keyframe>, pixelsASecond: Double) {
-		val numColours = keyframes[0].colours.size
+	private fun drawInterpolatedColours(keyframeItems: List<KeyframeItem>, pixelsASecond: Double) {
+		val numColours = keyframeItems[0].colours.size
 		val linePad = 2
 		val lineHeight = 5.0
 		val bottomPad = (actualHeight - (lineHeight * numColours + (numColours - 1) * linePad)) / 2
 		for (i in 0 until numColours) {
 			val drawPos = bottomPad + (lineHeight + linePad) * i
 
-			for (ii in 0 until keyframes.size-1) {
-				val thisKeyframe = keyframes[ii]
-				val nextKeyframe = keyframes[ii+1]
+			for (ii in 0 until keyframeItems.size-1) {
+				val thiskeyframeItem = keyframeItems[ii]
+				val nextkeyframeItem = keyframeItems[ii+1]
 
-				val thisCol = thisKeyframe.colours[i]
-				val nextCol = nextKeyframe.colours[i]
+				val thisCol = thiskeyframeItem.colours[i]
+				val nextCol = nextkeyframeItem.colours[i]
 
-				val thisDrawPos = thisKeyframe.time * pixelsASecond + timelineItem.leftPad
-				val nextDrawPos = nextKeyframe.time * pixelsASecond + timelineItem.leftPad
+				val thisDrawPos = thiskeyframeItem.time * pixelsASecond + timelineItem.leftPad
+				val nextDrawPos = nextkeyframeItem.time * pixelsASecond + timelineItem.leftPad
 
 				val gradient = context2D.createLinearGradient(0.0, 0.0, nextDrawPos - thisDrawPos, 0.0)
 				gradient.addColorStop(0.0, "rgb(${thisCol.value})")
@@ -155,12 +148,12 @@ class Timeline(val timelineItem: TimelineItem) : Canvas(canvasWidth = 1000, canv
 				context2D.fillRect(thisDrawPos, drawPos, nextDrawPos - thisDrawPos, lineHeight)
 			}
 
-			for (ii in 0 until keyframes.size) {
-				val thisKeyframe = keyframes[ii]
+			for (ii in 0 until keyframeItems.size) {
+				val thiskeyframeItem = keyframeItems[ii]
 
-				val thisCol = thisKeyframe.colours[i]
+				val thisCol = thiskeyframeItem.colours[i]
 
-				val thisDrawPos = thisKeyframe.time * pixelsASecond + timelineItem.leftPad
+				val thisDrawPos = thiskeyframeItem.time * pixelsASecond + timelineItem.leftPad
 
 				context2D.fillStyle = "rgb(${thisCol.value})"
 				context2D.fillRect(thisDrawPos-5, (drawPos+lineHeight/2) - 5, 10.0, 10.0)
@@ -171,13 +164,13 @@ class Timeline(val timelineItem: TimelineItem) : Canvas(canvasWidth = 1000, canv
 		}
 	}
 
-	private fun drawInterpolatedNumbers(keyframes: List<Keyframe>, pixelsASecond: Double) {
-		val numNumbers = keyframes[0].numbers.size
+	private fun drawInterpolatedNumbers(keyframeItems: List<KeyframeItem>, pixelsASecond: Double) {
+		val numNumbers = keyframeItems[0].numbers.size
 		var min = Float.MAX_VALUE
 		var max = -Float.MAX_VALUE
 
-		for (keyframe in keyframes) {
-			for (num in keyframe.numbers) {
+		for (keyframeItem in keyframeItems) {
+			for (num in keyframeItem.numbers) {
 				if (num.value < min) min = num.value
 				if (num.value > max) max = num.value
 			}
@@ -186,12 +179,12 @@ class Timeline(val timelineItem: TimelineItem) : Canvas(canvasWidth = 1000, canv
 		for (i in 0 until numNumbers) {
 			val col = trackColours[i]
 
-			for (ii in 0 until keyframes.size-1) {
-				val thisKeyframe = keyframes[ii]
-				val nextKeyframe = keyframes[ii+1]
+			for (ii in 0 until keyframeItems.size-1) {
+				val thiskeyframeItem = keyframeItems[ii]
+				val nextkeyframeItem = keyframeItems[ii+1]
 
-				val thisNum = thisKeyframe.numbers[i]
-				val nextNum = nextKeyframe.numbers[i]
+				val thisNum = thiskeyframeItem.numbers[i]
+				val nextNum = nextkeyframeItem.numbers[i]
 
 				val thisAlpha = (thisNum.value - min) / (max - min)
 				val nextAlpha = (nextNum.value - min) / (max - min)
@@ -199,8 +192,8 @@ class Timeline(val timelineItem: TimelineItem) : Canvas(canvasWidth = 1000, canv
 				val thisH = (actualHeight - 20) - (actualHeight - 25) * thisAlpha
 				val nextH = (actualHeight - 20) - (actualHeight - 25) * nextAlpha
 
-				val thisDrawPos = thisKeyframe.time * pixelsASecond + timelineItem.leftPad
-				val nextDrawPos = thisKeyframe.time * pixelsASecond + timelineItem.leftPad
+				val thisDrawPos = thiskeyframeItem.time * pixelsASecond + timelineItem.leftPad
+				val nextDrawPos = thiskeyframeItem.time * pixelsASecond + timelineItem.leftPad
 
 				context2D.strokeStyle = col
 				context2D.beginPath()
@@ -209,16 +202,16 @@ class Timeline(val timelineItem: TimelineItem) : Canvas(canvasWidth = 1000, canv
 				context2D.stroke()
 			}
 
-			for (ii in 0 until keyframes.size) {
-				val thisKeyframe = keyframes[ii]
+			for (ii in 0 until keyframeItems.size) {
+				val thiskeyframeItem = keyframeItems[ii]
 
-				val thisNum = thisKeyframe.numbers[i]
+				val thisNum = thiskeyframeItem.numbers[i]
 
 				val thisAlpha = (thisNum.value - min) / (max - min)
 
 				val thisH = (actualHeight - 20) - (actualHeight - 25) * thisAlpha
 
-				val thisDrawPos = thisKeyframe.time * pixelsASecond + timelineItem.leftPad
+				val thisDrawPos = thiskeyframeItem.time * pixelsASecond + timelineItem.leftPad
 
 				context2D.fillStyle = col
 				context2D.fillRect(thisDrawPos-5, thisH - 5, 10.0, 10.0)
@@ -274,56 +267,56 @@ class Timeline(val timelineItem: TimelineItem) : Canvas(canvasWidth = 1000, canv
 		}
 	}
 
-	private fun drawKeyFrames(keyframes: List<Keyframe>, pixelsASecond: Double) {
-		for (keyframe in keyframes) {
-			var thickness = if (keyframe.isSelected) 2 else 1
-			if (keyframe == mouseOverItem) thickness++
+	private fun drawkeyframeItems(keyframeItems: List<KeyframeItem>, pixelsASecond: Double) {
+		for (keyframeItem in keyframeItems) {
+			var thickness = if (keyframeItem.isSelected) 2 else 1
+			if (keyframeItem == mouseOverItem) thickness++
 
-			val col = if (keyframe.isSelected) selectionBorderColour else borderLightColour
+			val col = if (keyframeItem.isSelected) selectionBorderColour else borderLightColour
 
-			val width = getKeyframeWidth(keyframe)
+			val width = getkeyframeItemWidth(keyframeItem)
 
-			val preview = keyframe.getImagePreview { redraw() }
+			val preview = keyframeItem.getImagePreview { redraw() }
 			if (preview != null) {
-				context2D.fillStyle = "rgb(${keyframe.item.def.background})"
-				context2D.fillRect(keyframe.time * pixelsASecond + timelineItem.leftPad, 5.0, width, actualHeight - 20)
+				context2D.fillStyle = "rgb(${keyframeItem.def.background})"
+				context2D.fillRect(keyframeItem.time * pixelsASecond + timelineItem.leftPad, 5.0, width, actualHeight - 20)
 
-				context2D.drawImage(preview, keyframe.time * pixelsASecond + timelineItem.leftPad, 5.0, width, actualHeight - 20)
+				context2D.drawImage(preview, keyframeItem.time * pixelsASecond + timelineItem.leftPad, 5.0, width, actualHeight - 20)
 
 				context2D.strokeStyle = col
-				context2D.strokeRect(keyframe.time * pixelsASecond + timelineItem.leftPad, 5.0, width, actualHeight - 20)
+				context2D.strokeRect(keyframeItem.time * pixelsASecond + timelineItem.leftPad, 5.0, width, actualHeight - 20)
 			} else {
 				if (timelineItem.def.contentsMap.size > 1) {
-					val name = keyframe.item.def.name
+					val name = keyframeItem.def.name
 
 					context2D.font = "10px Arial"
 					val textSize = context2D.measureText(name)
 					val fontHeight = 10.0
 
-					context2D.fillStyle = "rgb(${keyframe.item.def.background})"
-					context2D.fillRect(keyframe.time * pixelsASecond + timelineItem.leftPad, fontHeight, width, actualHeight - 15 - fontHeight)
+					context2D.fillStyle = "rgb(${keyframeItem.def.background})"
+					context2D.fillRect(keyframeItem.time * pixelsASecond + timelineItem.leftPad, fontHeight, width, actualHeight - 15 - fontHeight)
 
 					context2D.strokeStyle = col
-					context2D.strokeRect(keyframe.time * pixelsASecond + timelineItem.leftPad, fontHeight, width, actualHeight - 15 - fontHeight)
+					context2D.strokeRect(keyframeItem.time * pixelsASecond + timelineItem.leftPad, fontHeight, width, actualHeight - 15 - fontHeight)
 
 					context2D.fillStyle = "white"
-					context2D.fillText(name, max(0.0, (keyframe.time * pixelsASecond + timelineItem.leftPad + width / 2) - (textSize.width / 2.0)), 0.0)
+					context2D.fillText(name, max(0.0, (keyframeItem.time * pixelsASecond + timelineItem.leftPad + width / 2) - (textSize.width / 2.0)), 0.0)
 				} else {
-					context2D.fillStyle = "rgb(${keyframe.item.def.background})"
-					context2D.fillRect(keyframe.time * pixelsASecond + timelineItem.leftPad, 5.0, width, actualHeight - 20)
+					context2D.fillStyle = "rgb(${keyframeItem.def.background})"
+					context2D.fillRect(keyframeItem.time * pixelsASecond + timelineItem.leftPad, 5.0, width, actualHeight - 20)
 
 					context2D.strokeStyle = col
-					context2D.strokeRect(keyframe.time * pixelsASecond + timelineItem.leftPad, 5.0, width, actualHeight - 20)
+					context2D.strokeRect(keyframeItem.time * pixelsASecond + timelineItem.leftPad, 5.0, width, actualHeight - 20)
 				}
 			}
 		}
 	}
 
-	private fun getKeyframeWidth(keyframe: Keyframe): Double {
+	private fun getkeyframeItemWidth(keyframeItem: KeyframeItem): Double {
 		val pixelsASecond = actualWidth / timelineItem.timelineRange
-		if (keyframe.duration > 0f) return keyframe.duration * pixelsASecond
+		if (keyframeItem.duration > 0f) return keyframeItem.duration * pixelsASecond
 
-		val preview = keyframe.getImagePreview { redraw() }
+		val preview = keyframeItem.getImagePreview { redraw() }
 
 		if (preview != null) return actualHeight - 20
 
@@ -371,8 +364,8 @@ class Timeline(val timelineItem: TimelineItem) : Canvas(canvasWidth = 1000, canv
 			isPanning = true
 
 			for (timeline in timelineItem.timelineGroup) {
-				for (keyframe in timeline.keyframes) {
-					keyframe.isSelected = false
+				for (keyframeItem in timeline.keyframes) {
+					keyframeItem.isSelected = false
 				}
 			}
 		} else {
@@ -383,7 +376,7 @@ class Timeline(val timelineItem: TimelineItem) : Canvas(canvasWidth = 1000, canv
 			startPos = clickPos
 
 			if (!clickItem.isDurationLocked) {
-				var time = clickItem.time * pixelsASecond
+				val time = clickItem.time * pixelsASecond
 				if ((clickItem.endTime * pixelsASecond - clickPos).absoluteValue < 10) {
 					isResizing = true
 					resizingLeft = false
@@ -395,19 +388,20 @@ class Timeline(val timelineItem: TimelineItem) : Canvas(canvasWidth = 1000, canv
 
 			if (!isResizing) {
 				val timelineGroup = timelineItem.timelineGroup.toList()
+				var timelineIndex = 0
 				for (timeline in timelineGroup) {
-					for (keyframe in timeline.keyframes) {
-						if (keyframe.isSelected) {
-							val startOffset = (clickPos / pixelsASecond) - keyframe.time
-							val timelineIndex = timelineGroup.indexOf(timeline)
-							val dragAction = DragAction(keyframe, keyframe.time.toDouble(), startOffset, timelineIndex)
+					for (keyframeItem in timeline.keyframes) {
+						if (keyframeItem.isSelected) {
+							val startOffset = (clickPos / pixelsASecond) - keyframeItem.time
+							val dragAction = DragAction(keyframeItem, keyframeItem.time.toDouble(), startOffset, timelineIndex)
 							draggedActions.add(dragAction)
 
-							if (keyframe == clickItem) {
+							if (keyframeItem == clickItem) {
 								draggedAction = dragAction
 							}
 						}
 					}
+					timelineIndex++
 				}
 
 				isDraggingItems = true
@@ -420,32 +414,32 @@ class Timeline(val timelineItem: TimelineItem) : Canvas(canvasWidth = 1000, canv
 		redraw()
 	}
 
-	private fun getItemAt(clickPos: Double): Keyframe? {
+	private fun getItemAt(clickPos: Double): KeyframeItem? {
 		val pixelsASecond = actualWidth / timelineItem.timelineRange
 
-		for (keyframe in timelineItem.keyframes) {
-			val time = keyframe.time * pixelsASecond
+		for (keyframeItem in timelineItem.keyframes) {
+			val time = keyframeItem.time * pixelsASecond
 			val diff = clickPos - time
 
-			if (diff >= 0 && diff < getKeyframeWidth(keyframe)) {
-				return keyframe
+			if (diff >= 0 && diff < getkeyframeItemWidth(keyframeItem)) {
+				return keyframeItem
 			}
 		}
 
 		return null
 	}
 
-	private fun generateSnapList(dragged: Keyframe) {
+	private fun generateSnapList(dragged: KeyframeItem) {
 		snapLines.clear()
 
 		for (timeline in timelineItem.timelineGroup) {
-			for (keyframe in timeline.keyframes) {
-				if (keyframe == dragged || keyframe.isSelected) continue
+			for (keyframeItem in timeline.keyframes) {
+				if (keyframeItem == dragged || keyframeItem.isSelected) continue
 
-				val time = keyframe.time.toDouble()
+				val time = keyframeItem.time.toDouble()
 				if (!snapLines.contains(time)) snapLines.add(time)
-				if (keyframe.duration > 0f) {
-					val time = keyframe.endTime.toDouble()
+				if (keyframeItem.duration > 0f) {
+					val time = keyframeItem.endTime.toDouble()
 					if (!snapLines.contains(time)) snapLines.add(time)
 				}
 			}
@@ -494,94 +488,13 @@ class Timeline(val timelineItem: TimelineItem) : Canvas(canvasWidth = 1000, canv
 
 		cursor = Cursor.AUTO
 
-
 		if (leftMouseDown) {
 			if (isDraggingItems) {
-				val dragItems = draggedActions
-				val dragItem = draggedAction!!
-
-				// do time change
-				val newTime = clickPos / pixelsASecond - dragItem.actionStartOffset
-				var roundedTime = snap(newTime)
-
-				if (dragItem.keyframe.duration > 0f && !ctrlDown) {
-					val endTime = newTime + dragItem.keyframe.duration
-					val snapped = snap(endTime)
-					roundedTime += snapped - endTime
-				}
-
-				val diff = roundedTime - dragItem.originalPosition
-
-				for (item in dragItems) {
-					item.keyframe.time = (item.originalPosition + diff).toFloat()
-				}
-
-				// do timeline change
-				val timelineGroup = timelineItem.timelineGroup.toList()
-				val currentTimelineIndex = timelineGroup.indexOf(timelineItem)
-				if (currentTimelineIndex != timelineGroup.indexOf(dragItem.keyframe.timelineItem)) {
-					val idealChange = currentTimelineIndex - dragItem.startTimelineIndex
-
-					// move items
-					for (item in dragItems) {
-						val itemTimelineIndex = item.startTimelineIndex
-
-						for (i in 0 until idealChange.absoluteValue+1) {
-							val signedI = idealChange.sign
-							val index = itemTimelineIndex + (idealChange - signedI)
-							val targetTimeline = timelineGroup[index]
-
-							if (targetTimeline.def.contentsMap.values.contains(item.keyframe.item.def)) {
-								item.keyframe.timelineItem.children.remove(item.keyframe.item)
-								targetTimeline.children.add(item.keyframe.item)
-							}
-						}
-					}
-				}
-
-				cursor = Cursor.MOVE
+				onDragkeyframeItems(clickPos, pixelsASecond)
 			} else if (isPanning) {
-				timelineItem.leftPad += deltaX
-
-				if (timelineItem.leftPad > 10) timelineItem.leftPad = 10.0
-
-				cursor = Cursor.ALLSCROLL
-
-				for (timeline in timelineItem.timelineGroup) {
-					timeline.leftPad = timelineItem.leftPad
-					timeline.timeline.redraw()
-				}
-
-				val el = getElement() as? Element
-				if (el != null) {
-					el.setPointerCapture(pointerId)
-				}
+				onPan(deltaX, pointerId)
 			} else if (isResizing) {
-
-				val resizeItem = resizeItem!!
-				if (resizingLeft) {
-					val newTime = clickPos / pixelsASecond
-					var roundedTime = snap(newTime)
-
-					val oldEnd = resizeItem.endTime.toDouble()
-
-					if (roundedTime > oldEnd) roundedTime = oldEnd
-					resizeItem.time = roundedTime.toFloat()
-
-					resizeItem.duration = (oldEnd - resizeItem.time).toFloat()
-				} else {
-					val newTime = clickPos / pixelsASecond
-					val roundedTime = snap(newTime)
-
-					resizeItem.duration = (roundedTime - resizeItem.time).toFloat()
-				}
-
-				cursor = Cursor.EWRESIZE
-
-				val el = getElement() as? Element
-				if (el != null) {
-					el.setPointerCapture(pointerId)
-				}
+				onResizekeyframeItems(clickPos, pixelsASecond, pointerId)
 			}
 		}
 		else {
@@ -601,7 +514,98 @@ class Timeline(val timelineItem: TimelineItem) : Canvas(canvasWidth = 1000, canv
 		redraw()
 	}
 
-	fun endDrag() {
+	private fun onDragkeyframeItems(clickPos: Double, pixelsASecond: Double) {
+		val dragItems = draggedActions
+		val dragItem = draggedAction!!
+
+		// do time change
+		val newTime = clickPos / pixelsASecond - dragItem.actionStartOffset
+		var roundedTime = snap(newTime)
+
+		if (dragItem.keyframeItem.duration > 0f && !ctrlDown) {
+			val endTime = newTime + dragItem.keyframeItem.duration
+			val snapped = snap(endTime)
+			roundedTime += snapped - endTime
+		}
+
+		val diff = roundedTime - dragItem.originalPosition
+
+		for (item in dragItems) {
+			item.keyframeItem.time = (item.originalPosition + diff).toFloat()
+		}
+
+		// do timeline change
+		val timelineGroup = timelineItem.timelineGroup.toList()
+		val currentTimelineIndex = timelineGroup.indexOf(timelineItem)
+		if (currentTimelineIndex != timelineGroup.indexOf(dragItem.keyframeItem.timelineItem)) {
+			val idealChange = currentTimelineIndex - dragItem.startTimelineIndex
+
+			// move items
+			for (item in dragItems) {
+				val itemTimelineIndex = item.startTimelineIndex
+
+				for (i in 0 until idealChange.absoluteValue+1) {
+					val signedI = idealChange.sign * i
+					val index = itemTimelineIndex + (idealChange - signedI)
+					val targetTimeline = timelineGroup[index]
+
+					if (targetTimeline.def.contentsMap.values.contains(item.keyframeItem.def)) {
+						item.keyframeItem.removeFromCollection()
+						targetTimeline.children.add(item.keyframeItem)
+					}
+				}
+			}
+		}
+
+		cursor = Cursor.MOVE
+	}
+
+	private fun onResizekeyframeItems(clickPos: Double, pixelsASecond: Double, pointerId: Int) {
+		val resizeItem = resizeItem!!
+		if (resizingLeft) {
+			val newTime = clickPos / pixelsASecond
+			var roundedTime = snap(newTime)
+
+			val oldEnd = resizeItem.endTime.toDouble()
+
+			if (roundedTime > oldEnd) roundedTime = oldEnd
+			resizeItem.time = roundedTime.toFloat()
+
+			resizeItem.duration = (oldEnd - resizeItem.time).toFloat()
+		} else {
+			val newTime = clickPos / pixelsASecond
+			val roundedTime = snap(newTime)
+
+			resizeItem.duration = (roundedTime - resizeItem.time).toFloat()
+		}
+
+		cursor = Cursor.EWRESIZE
+
+		val el = getElement() as? Element
+		if (el != null) {
+			el.setPointerCapture(pointerId)
+		}
+	}
+
+	private fun onPan(deltaX: Double, pointerId: Int) {
+		timelineItem.leftPad += deltaX
+
+		if (timelineItem.leftPad > 10) timelineItem.leftPad = 10.0
+
+		cursor = Cursor.ALLSCROLL
+
+		for (timeline in timelineItem.timelineGroup) {
+			timeline.leftPad = timelineItem.leftPad
+			timeline.timeline.redraw()
+		}
+
+		val el = getElement() as? Element
+		if (el != null) {
+			el.setPointerCapture(pointerId)
+		}
+	}
+
+	private fun endDrag() {
 		val wasDragging = isResizing || isDraggingItems
 		isResizing = false
 		resizeItem = null
@@ -614,7 +618,7 @@ class Timeline(val timelineItem: TimelineItem) : Canvas(canvasWidth = 1000, canv
 
 		if (wasDragging) {
 			for (timeline in timelineItem.timelineGroup) {
-				timeline.children.sortBy { timeline.getKeyframe(it)?.time ?: 0f }
+				timeline.children.sortBy { (it as? KeyframeItem)?.time ?: 0f }
 			}
 		}
 	}
@@ -629,4 +633,4 @@ class Timeline(val timelineItem: TimelineItem) : Canvas(canvasWidth = 1000, canv
 	}
 }
 
-class DragAction(val keyframe: Keyframe, val originalPosition: Double, val actionStartOffset: Double, val startTimelineIndex: Int)
+class DragAction(var keyframeItem: KeyframeItem, val originalPosition: Double, val actionStartOffset: Double, val startTimelineIndex: Int)

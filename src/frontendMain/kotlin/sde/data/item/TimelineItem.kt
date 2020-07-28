@@ -20,15 +20,12 @@ import kotlin.browser.window
 
 class TimelineItem(definition: TimelineDefinition, document: DataDocument) : AbstractCollectionItem<TimelineDefinition>(definition, document)
 {
-	private val keyframeMap = HashMap<KeyframeItem, Keyframe>()
-
-	val keyframes: Sequence<Keyframe>
+	val keyframes: Sequence<KeyframeItem>
 		get() {
 			return sequence {
 				for (child in children) {
-					val keyframe = getKeyframe(child)
-					if (keyframe != null) {
-						yield(keyframe!!)
+					if (child is KeyframeItem) {
+						yield(child!!)
 					}
 				}
 			}
@@ -104,28 +101,17 @@ class TimelineItem(definition: TimelineDefinition, document: DataDocument) : Abs
 	var timeline: Timeline = Timeline(this)
 	init {
 	    registerListener("childEvent") {
-
 		    if (isVisible())
 		    {
 			    timeline.redraw()
 		    }
 		}
-	}
-
-	fun getKeyframe(item: DataItem): Keyframe?
-	{
-		if (item is KeyframeItem) {
-
-			var keyframe = keyframeMap[item]
-			if (keyframe == null) {
-				keyframe = Keyframe(item, this)
-				keyframeMap[item] = keyframe
+		children.onUpdate.add {
+			if (isVisible())
+			{
+				timeline.redraw()
 			}
-
-			return keyframe
 		}
-
-		return null
 	}
 
 	override fun getEditorComponent(): Component {
@@ -152,67 +138,5 @@ class TimelineItem(definition: TimelineDefinition, document: DataDocument) : Abs
 
 			}
 		}
-	}
-}
-
-class Keyframe(val item: KeyframeItem, val timelineItem: TimelineItem)
-{
-	val timeItem = item.children.firstOrNull { it.def.name == "Time" } as? NumberItem ?: throw Exception("Unable to find a Time child on ${item.def.name}")
-	val durationItem = item.children.firstOrNull { it.def.name == "Duration" } as? NumberItem
-
-	var time: Float
-		get() = timeItem.value
-		set(value) {
-			timeItem.value = value
-		}
-
-	var duration: Float
-		get() = durationItem?.value ?: 0f
-		set(value) {
-			durationItem?.value = value
-		}
-
-	val endTime: Float
-		get() = time + duration
-
-	val colours: List<ColourItem>
-		get() = item.children.filterIsInstance<ColourItem>()
-
-	val numbers: List<NumberItem>
-		get() = item.children.filterIsInstance<NumberItem>().filter { it != timeItem && it != durationItem }
-
-	val file: FileItem?
-		get() = item.children.firstOrNull { it is FileItem } as? FileItem
-
-	val isDurationLocked: Boolean
-		get() {
-			if (durationItem == null) return true
-			return false
-		}
-
-	var isSelected = false
-
-	var cachedImage: CanvasImageSource? = null
-	var cachedImagePath: String? = null
-	fun getImagePreview(completionFunc: ()->Unit): CanvasImageSource? {
-		val file = file ?: return null
-
-		GlobalScope.launch {
-			val fullPath = file.getFullPath()
-
-			if (cachedImagePath != fullPath) {
-				cachedImage = null
-
-				if (fullPath.endsWith(".png")) {
-					val blob = ImageCache.getImageBlob(file.getFullPath())
-					cachedImage = window.createImageBitmap(blob, ImageBitmapOptions()).await()
-					cachedImagePath = fullPath
-
-					completionFunc.invoke()
-				}
-			}
-		}
-
-		return cachedImage
 	}
 }
