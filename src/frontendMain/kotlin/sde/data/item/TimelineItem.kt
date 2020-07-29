@@ -116,7 +116,7 @@ class TimelineItem(definition: TimelineDefinition, document: DataDocument) : Abs
 
 	override fun getEditorComponent(): Component {
 		return Div {
-			height = CssSize(50, UNIT.px)
+			height = CssSize(60, UNIT.px)
 			width = CssSize(100, UNIT.perc)
 
 			document.scope?.launch {

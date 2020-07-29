@@ -84,8 +84,7 @@ class KeyframeItem(definition: KeyframeDefinition, document: DataDocument) : Abs
 				cachedImage = null
 
 				if (fullPath.endsWith(".png")) {
-					val blob = ImageCache.getImageBlob(file.getFullPath())
-					cachedImage = window.createImageBitmap(blob, ImageBitmapOptions()).await()
+					cachedImage = ImageCache.getImageBitmap(file.getFullPath())
 					cachedImagePath = fullPath
 
 					completionFunc.invoke()

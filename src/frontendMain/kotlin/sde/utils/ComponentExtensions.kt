@@ -1,8 +1,11 @@
 package sde.utils
 
 import com.github.snabbdom.VNode
+import kotlinx.coroutines.await
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
+import org.w3c.dom.ImageBitmap
+import org.w3c.dom.ImageBitmapOptions
 import org.w3c.dom.url.URL
 import org.w3c.files.Blob
 import org.w3c.files.BlobPropertyBag
@@ -13,6 +16,7 @@ import pl.treksoft.kvision.core.Widget
 import pl.treksoft.kvision.core.onEvent
 import pl.treksoft.kvision.html.Image
 import sde.Services
+import kotlin.browser.window
 
 fun JQuery.hover(funcIn: (JQuery)->Unit, funcOut: (JQuery)->Unit)
 {
@@ -46,8 +50,9 @@ object ImageCache {
 	private val mutex = Mutex()
 	private val imageBlobCache = HashMap<String, Blob>()
 	private val imageUrlCache = HashMap<String, String>()
+	private val imageBitmapCache = HashMap<String, ImageBitmap>()
 
-	suspend fun getImageBlob(path: String): Blob {
+	private suspend fun getImageBlob(path: String): Blob {
 		val existing = imageBlobCache[path]
 		if (existing != null) {
 			return existing
@@ -68,6 +73,18 @@ object ImageCache {
 		}
 	}
 
+	suspend fun getImageBitmap(path: String): ImageBitmap {
+		val existing = imageBitmapCache[path]
+		if (existing != null) {
+			return existing
+		}
+
+		val blob = getImageBlob(path)
+		val image = window.createImageBitmap(blob, ImageBitmapOptions()).await()
+		imageBitmapCache[path] = image
+
+		return image
+	}
 
 	suspend fun getImageUrl(path: String): String {
 		val existing = imageUrlCache[path]
