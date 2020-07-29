@@ -481,9 +481,10 @@ class Timeline(val timelineItem: TimelineItem) : Canvas(canvasWidth = 1000, canv
 				}
 			}
 		} else {
-			if (mouseY <= 15.0 && clickItem.isSelected) {
+			val withinBox = (mouseX - clickItem.time * pixelsASecond) <= 20
+			if (withinBox && mouseY <= 15.0 && clickItem.isSelected) {
 				clickItem.removeFromCollection()
-			} else if (mouseY >= actualHeight-16 && clickItem.isSelected) {
+			} else if (withinBox && mouseY >= actualHeight-16 && clickItem.isSelected) {
 				Toast.success("Edit")
 			} else {
 				clickItem.isSelected = true
