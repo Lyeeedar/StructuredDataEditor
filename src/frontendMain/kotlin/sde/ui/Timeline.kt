@@ -1,9 +1,16 @@
 package sde.ui
 
 import org.w3c.dom.Element
+import org.w3c.dom.events.MouseEvent
 import pl.treksoft.kvision.core.Cursor
 import pl.treksoft.kvision.core.onEvent
+import pl.treksoft.kvision.dropdown.ContextMenu
+import pl.treksoft.kvision.dropdown.header
 import pl.treksoft.kvision.html.Canvas
+import pl.treksoft.kvision.html.button
+import pl.treksoft.kvision.html.h3
+import pl.treksoft.kvision.modal.Modal
+import pl.treksoft.kvision.panel.vPanel
 import pl.treksoft.kvision.toast.Toast
 import sde.data.item.KeyframeItem
 import sde.data.item.TimelineItem
@@ -69,7 +76,10 @@ class Timeline(val timelineItem: TimelineItem) : Canvas(canvasWidth = 1000, canv
 				redraw()
 			}
 			pointerdown = {
-				onMouseDown()
+				onMouseDown(it)
+
+				it.stopPropagation()
+				it.preventDefault()
 			}
 			keydown = {
 				if (it.key == "Control") {
@@ -304,13 +314,13 @@ class Timeline(val timelineItem: TimelineItem) : Canvas(canvasWidth = 1000, canv
 					val fontHeight = 10.0
 
 					context2D.fillStyle = "rgb(${keyframeItem.def.background})"
-					context2D.fillRect(keyframeItem.time * pixelsASecond + timelineItem.leftPad, fontHeight, width, actualHeight - 15 - fontHeight)
+					context2D.fillRect(keyframeItem.time * pixelsASecond + timelineItem.leftPad, fontHeight + 5, width, actualHeight - 15 - fontHeight)
 
 					context2D.strokeStyle = col
-					context2D.strokeRect(keyframeItem.time * pixelsASecond + timelineItem.leftPad, fontHeight, width, actualHeight - 15 - fontHeight)
+					context2D.strokeRect(keyframeItem.time * pixelsASecond + timelineItem.leftPad, fontHeight + 5, width, actualHeight - 15 - fontHeight)
 
 					context2D.fillStyle = "white"
-					context2D.fillText(name, max(0.0, (keyframeItem.time * pixelsASecond + timelineItem.leftPad + width / 2) - (textSize.width / 2.0)), 0.0)
+					context2D.fillText(name, max(0.0, (keyframeItem.time * pixelsASecond + timelineItem.leftPad + width / 2) - (textSize.width / 2.0)), fontHeight)
 				} else {
 					context2D.fillStyle = "rgb(${keyframeItem.def.background})"
 					context2D.fillRect(keyframeItem.time * pixelsASecond + timelineItem.leftPad, 5.0, width, actualHeight - 20)
@@ -406,7 +416,7 @@ class Timeline(val timelineItem: TimelineItem) : Canvas(canvasWidth = 1000, canv
 		}
 	}
 
-	private fun onMouseDown() {
+	private fun onMouseDown(mouseEvent: MouseEvent) {
 		val pixelsASecond = actualWidth / timelineItem.timelineRange
 
 		val clickPos = mouseX - timelineItem.leftPad
@@ -417,7 +427,26 @@ class Timeline(val timelineItem: TimelineItem) : Canvas(canvasWidth = 1000, canv
 
 		if (clickItem == null) {
 			if (mouseY <= 15.0) {
-				Toast.success("Add")
+				val menu = Modal("Add keyframe") {
+					vPanel {
+						for (group in timelineItem.def.contents.sortedBy { it.first }) {
+							h3(group.first)
+
+							for (def in group.second.sortedBy { it.name }) {
+								button(def.name) {
+									onClick {
+										this@Modal.hide()
+
+										val newItem = timelineItem.create(def) as KeyframeItem
+										newItem.time = (clickPos / pixelsASecond).toFloat()
+										timelineItem.children.sortBy { (it as? KeyframeItem)?.time ?: 0f }
+									}
+								}
+							}
+						}
+					}
+				}
+				menu.show()
 			} else {
 				isPanning = true
 
@@ -429,7 +458,7 @@ class Timeline(val timelineItem: TimelineItem) : Canvas(canvasWidth = 1000, canv
 			}
 		} else {
 			if (mouseY <= 15.0 && clickItem.isSelected) {
-				Toast.success("Remove")
+				clickItem.removeFromCollection()
 			} else if (mouseY >= actualHeight-16 && clickItem.isSelected) {
 				Toast.success("Edit")
 			} else {
@@ -555,11 +584,11 @@ class Timeline(val timelineItem: TimelineItem) : Canvas(canvasWidth = 1000, canv
 
 		if (leftMouseDown) {
 			if (isDraggingItems) {
-				onDragkeyframeItems(clickPos, pixelsASecond)
+				onDragKeyframeItems(clickPos, pixelsASecond)
 			} else if (isPanning) {
 				onPan(deltaX, pointerId)
 			} else if (isResizing) {
-				onResizekeyframeItems(clickPos, pixelsASecond, pointerId)
+				onResizeKeyframeItems(clickPos, pixelsASecond, pointerId)
 			}
 		}
 		else {
@@ -577,7 +606,7 @@ class Timeline(val timelineItem: TimelineItem) : Canvas(canvasWidth = 1000, canv
 		}
 	}
 
-	private fun onDragkeyframeItems(clickPos: Double, pixelsASecond: Double) {
+	private fun onDragKeyframeItems(clickPos: Double, pixelsASecond: Double) {
 		val dragItems = draggedActions
 		val dragItem = draggedAction!!
 
@@ -623,7 +652,7 @@ class Timeline(val timelineItem: TimelineItem) : Canvas(canvasWidth = 1000, canv
 		cursor = Cursor.MOVE
 	}
 
-	private fun onResizekeyframeItems(clickPos: Double, pixelsASecond: Double, pointerId: Int) {
+	private fun onResizeKeyframeItems(clickPos: Double, pixelsASecond: Double, pointerId: Int) {
 		val resizeItem = resizeItem!!
 		if (resizingLeft) {
 			val newTime = clickPos / pixelsASecond

@@ -74,13 +74,19 @@ abstract class AbstractCollectionItem<D: AbstractCollectionDefinition<D, *>>(def
 		}
 	}
 
-	fun create() {
-		val newChild = selectedDefinition.createItem(document)
+	fun create(): DataItem {
+		return create(selectedDefinition)
+	}
+
+	fun create(def: DataDefinition): DataItem {
+		val newChild = def.createItem(document)
 		if (newChild is AbstractStructItem<*> && newChild.children.size == 0) {
 			newChild.createContents()
 		}
 
 		document.undoRedoManager.applyDoUndo({ children.add(newChild) }, { children.remove(newChild) }, "Add ${newChild.name} to ${def.name}")
+
+		return newChild
 	}
 
 	override fun getEditorComponent(): Component
