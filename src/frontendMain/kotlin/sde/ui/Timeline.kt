@@ -218,10 +218,10 @@ class Timeline(val timelineItem: TimelineItem) : Canvas(canvasWidth = 1000, canv
 				val nextH = (actualHeight - 20) - (actualHeight - 25) * nextAlpha
 
 				val thisDrawPos = thiskeyframeItem.time * pixelsASecond + timelineItem.leftPad
-				val nextDrawPos = thiskeyframeItem.time * pixelsASecond + timelineItem.leftPad
+				val nextDrawPos = nextkeyframeItem.time * pixelsASecond + timelineItem.leftPad
 
 				context2D.strokeStyle = col
-				context2D.lineWidth = 1.0
+				context2D.lineWidth = 3.0
 				context2D.beginPath()
 				context2D.moveTo(thisDrawPos, thisH)
 				context2D.lineTo(nextDrawPos, nextH)
