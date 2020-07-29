@@ -64,6 +64,7 @@ class Timeline(val timelineItem: TimelineItem) : Canvas(canvasWidth = 1000, canv
 			}
 			pointerleave = {
 				isMouseOver = false
+				mouseOverItem = null
 				redraw()
 			}
 			pointermove = {
@@ -485,7 +486,14 @@ class Timeline(val timelineItem: TimelineItem) : Canvas(canvasWidth = 1000, canv
 			if (withinBox && mouseY <= 15.0 && clickItem.isSelected) {
 				clickItem.removeFromCollection()
 			} else if (withinBox && mouseY >= actualHeight-16 && clickItem.isSelected) {
-				Toast.success("Edit")
+				val modal = Modal("Edit ${clickItem.name}") {
+					val editor = DataItemEditor(timelineItem.document.scope!!)
+					clickItem.isExpanded = true
+					editor.rootItems.add(clickItem)
+					editor.update()
+					add(editor)
+				}
+				modal.show()
 			} else {
 				clickItem.isSelected = true
 				lastSelectedItem = clickItem
