@@ -179,6 +179,7 @@ class Timeline(val timelineItem: TimelineItem) : Canvas(canvasWidth = 1000, canv
 				context2D.fillRect(thisDrawPos-5, (drawPos+lineHeight/2) - 5, 10.0, 10.0)
 
 				context2D.strokeStyle = borderDarkColour
+				context2D.lineWidth = 1.0
 				context2D.strokeRect(thisDrawPos-5, (drawPos+lineHeight/2) - 5, 10.0, 10.0)
 			}
 		}
@@ -216,6 +217,7 @@ class Timeline(val timelineItem: TimelineItem) : Canvas(canvasWidth = 1000, canv
 				val nextDrawPos = thiskeyframeItem.time * pixelsASecond + timelineItem.leftPad
 
 				context2D.strokeStyle = col
+				context2D.lineWidth = 3.0
 				context2D.beginPath()
 				context2D.moveTo(thisDrawPos, thisH)
 				context2D.lineTo(nextDrawPos, nextH)
@@ -237,6 +239,7 @@ class Timeline(val timelineItem: TimelineItem) : Canvas(canvasWidth = 1000, canv
 				context2D.fillRect(thisDrawPos-5, thisH - 5, 10.0, 10.0)
 
 				context2D.strokeStyle = borderDarkColour
+				context2D.lineWidth = 1.0
 				context2D.strokeRect(thisDrawPos-5, thisH - 5, 10.0, 10.0)
 			}
 		}
@@ -255,11 +258,13 @@ class Timeline(val timelineItem: TimelineItem) : Canvas(canvasWidth = 1000, canv
 		while (tpos < actualWidth) {
 			var time = round(((tpos - timelineItem.leftPad) / pixelsASecond) / bestStep) * bestStep
 
+			context2D.lineWidth = 1.0
+			context2D.font = "10px Arial"
+
 			val timeText = time.toString().split("0000")[0]
 			val textSize = context2D.measureText(timeText)
 			val fontHeight = 10
 
-			context2D.font = "10px Arial"
 			context2D.fillStyle = "gray"
 			context2D.fillText(timeText, tpos - (textSize.width / 2.0), actualHeight - 3)
 
@@ -279,6 +284,7 @@ class Timeline(val timelineItem: TimelineItem) : Canvas(canvasWidth = 1000, canv
 				val mpos = (tpos - indicatorStep) + i * minorStep + minorStep
 
 				context2D.strokeStyle = borderDarkColour
+				context2D.lineWidth = 1.0
 				context2D.beginPath()
 				context2D.moveTo(mpos, 20.0)
 				context2D.lineTo(mpos, actualHeight - 20)
@@ -304,11 +310,13 @@ class Timeline(val timelineItem: TimelineItem) : Canvas(canvasWidth = 1000, canv
 				context2D.drawImage(preview, keyframeItem.time * pixelsASecond + timelineItem.leftPad, 5.0, width, actualHeight - 20)
 
 				context2D.strokeStyle = col
+				context2D.lineWidth = thickness.toDouble()
 				context2D.strokeRect(keyframeItem.time * pixelsASecond + timelineItem.leftPad, 5.0, width, actualHeight - 20)
 			} else {
 				if (timelineItem.def.contentsMap.size > 1) {
 					val name = keyframeItem.def.name
 
+					context2D.lineWidth = 1.0
 					context2D.font = "10px Arial"
 					val textSize = context2D.measureText(name)
 					val fontHeight = 10.0
@@ -317,6 +325,7 @@ class Timeline(val timelineItem: TimelineItem) : Canvas(canvasWidth = 1000, canv
 					context2D.fillRect(keyframeItem.time * pixelsASecond + timelineItem.leftPad, fontHeight + 5, width, actualHeight - 15 - fontHeight)
 
 					context2D.strokeStyle = col
+					context2D.lineWidth = thickness.toDouble()
 					context2D.strokeRect(keyframeItem.time * pixelsASecond + timelineItem.leftPad, fontHeight + 5, width, actualHeight - 15 - fontHeight)
 
 					context2D.fillStyle = "white"
@@ -326,6 +335,7 @@ class Timeline(val timelineItem: TimelineItem) : Canvas(canvasWidth = 1000, canv
 					context2D.fillRect(keyframeItem.time * pixelsASecond + timelineItem.leftPad, 5.0, width, actualHeight - 20)
 
 					context2D.strokeStyle = col
+					context2D.lineWidth = thickness.toDouble()
 					context2D.strokeRect(keyframeItem.time * pixelsASecond + timelineItem.leftPad, 5.0, width, actualHeight - 20)
 				}
 			}
@@ -344,6 +354,7 @@ class Timeline(val timelineItem: TimelineItem) : Canvas(canvasWidth = 1000, canv
 				context2D.fillRect(x, actualHeight - 16, 14.0, 14.0)
 
 				context2D.strokeStyle = borderNormalColour
+				context2D.lineWidth = 1.0
 				context2D.strokeRect(x, actualHeight - 16, 14.0, 14.0)
 
 				context2D.font = "bold 12px Arial"
@@ -355,6 +366,7 @@ class Timeline(val timelineItem: TimelineItem) : Canvas(canvasWidth = 1000, canv
 				context2D.fillRect(x, 2.0, 14.0, 14.0)
 
 				context2D.strokeStyle = borderNormalColour
+				context2D.lineWidth = 1.0
 				context2D.strokeRect(x, 2.0, 14.0, 14.0)
 
 				context2D.font = "bold 14px Arial"
@@ -369,6 +381,7 @@ class Timeline(val timelineItem: TimelineItem) : Canvas(canvasWidth = 1000, canv
 			context2D.fillRect(mouseX - 7, 2.0, 14.0, 14.0)
 
 			context2D.strokeStyle = borderNormalColour
+			context2D.lineWidth = 1.0
 			context2D.strokeRect(mouseX - 7, 2.0, 14.0, 14.0)
 
 			context2D.font = "bold 14px Arial"
