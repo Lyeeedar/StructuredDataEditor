@@ -197,6 +197,10 @@ class Timeline(val timelineItem: TimelineItem) : Canvas(canvasWidth = 1000, canv
 			}
 		}
 
+		if (min == max) {
+			max += 1.0f
+		}
+
 		for (i in 0 until numNumbers) {
 			val col = trackColours[i]
 
@@ -217,7 +221,7 @@ class Timeline(val timelineItem: TimelineItem) : Canvas(canvasWidth = 1000, canv
 				val nextDrawPos = thiskeyframeItem.time * pixelsASecond + timelineItem.leftPad
 
 				context2D.strokeStyle = col
-				context2D.lineWidth = 3.0
+				context2D.lineWidth = 1.0
 				context2D.beginPath()
 				context2D.moveTo(thisDrawPos, thisH)
 				context2D.lineTo(nextDrawPos, nextH)
@@ -440,26 +444,33 @@ class Timeline(val timelineItem: TimelineItem) : Canvas(canvasWidth = 1000, canv
 
 		if (clickItem == null) {
 			if (mouseY <= 15.0) {
-				val menu = Modal("Add keyframe") {
-					vPanel {
-						for (group in timelineItem.def.contents.sortedBy { it.first }) {
-							h3(group.first)
+				if (timelineItem.def.contentsMap.size == 1) {
+					val def = timelineItem.def.contentsMap.values.first()
+					val newItem = timelineItem.create(def) as KeyframeItem
+					newItem.time = (clickPos / pixelsASecond).toFloat()
+					timelineItem.children.sortBy { (it as? KeyframeItem)?.time ?: 0f }
+				} else {
+					val menu = Modal("Add keyframe") {
+						vPanel {
+							for (group in timelineItem.def.contents.sortedBy { it.first }) {
+								h3(group.first)
 
-							for (def in group.second.sortedBy { it.name }) {
-								button(def.name) {
-									onClick {
-										this@Modal.hide()
+								for (def in group.second.sortedBy { it.name }) {
+									button(def.name) {
+										onClick {
+											this@Modal.hide()
 
-										val newItem = timelineItem.create(def) as KeyframeItem
-										newItem.time = (clickPos / pixelsASecond).toFloat()
-										timelineItem.children.sortBy { (it as? KeyframeItem)?.time ?: 0f }
+											val newItem = timelineItem.create(def) as KeyframeItem
+											newItem.time = (clickPos / pixelsASecond).toFloat()
+											timelineItem.children.sortBy { (it as? KeyframeItem)?.time ?: 0f }
+										}
 									}
 								}
 							}
 						}
 					}
+					menu.show()
 				}
-				menu.show()
 			} else {
 				isPanning = true
 
