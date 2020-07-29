@@ -23,7 +23,6 @@ class DataDocumentPage(val data: DataDocument, pageManager: PageManager) : Abstr
 
 	init
 	{
-		data.startChangeWatcher(getPageScope())
 		data.scope = getPageScope()
 	}
 

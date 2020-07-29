@@ -23,101 +23,15 @@ class DataDocument(val path: String)
 
 	val undoRedoManager = UndoRedoManager()
 
-	private fun getVisibleItems(): Sequence<DataItem>
-	{
-		return sequence {
-			root.depth = 0
-			yield(root)
-
-			if (root.isExpanded)
-			{
-				for (item in getVisibleItems(root))
-				{
-					yield(item)
-				}
-			}
-		}
-	}
-
-	private fun getVisibleItems(current: CompoundDataItem, depth: Int = 1): Sequence<DataItem>
-	{
-		return sequence {
-			for (child in current.children)
-			{
-				child.depth = depth
-				yield(child)
-
-				if (child is CompoundDataItem && child.isExpanded)
-				{
-					for (item in getVisibleItems(child, depth+1))
-					{
-						yield(item)
-					}
-				}
-			}
-		}
-	}
-
-	private val component = Div()
-	var lastRenderedID = 0
-
-	var updateQueued = false
-	fun updateComponent()
-	{
-		updateQueued = true
-	}
-
-	fun startChangeWatcher(scope: CoroutineScope)
-	{
-		scope.launch {
-			while (true)
-			{
-				delay(250)
-
-				if (updateQueued)
-				{
-					updateQueued = false
-
-					doUpdateComponent()
-				}
-			}
-		}
-	}
-
-	private fun doUpdateComponent()
-	{
-		lastRenderedID++
-		component.removeAll()
-
-		val visibleItems = getVisibleItems().toList()
-
-		var sensibleHeaderWidth = 150
-		for (item in visibleItems)
-		{
-			val indentation = item.depth * 14
-			val nameLength = item.name.length * 8
-
-			val itemWidth = indentation + nameLength + 16 + 25 // expander and padding
-
-			if (itemWidth > sensibleHeaderWidth)
-			{
-				sensibleHeaderWidth = itemWidth
-			}
-
-			item.renderedID = lastRenderedID
-		}
-
-		component.add(VPanel {
-			for (item in visibleItems)
-			{
-				add(item.getEditorRow(sensibleHeaderWidth))
-			}
-		})
-	}
+	val editor: DataItemEditor by lazy { DataItemEditor(scope!!) }
 
 	fun getComponent(): Component
 	{
-		updateComponent()
-		return component
+		val editor = editor
+		editor.rootItems.clear()
+		editor.rootItems.add(root)
+		editor.update()
+
+		return editor
 	}
 }

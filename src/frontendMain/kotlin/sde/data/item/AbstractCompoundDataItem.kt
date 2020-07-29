@@ -78,7 +78,7 @@ abstract class AbstractCompoundDataItem<D: AbstractCompoundDefinition<*, *>>(def
 	init
 	{
 		children.onUpdate.add {
-			document.updateComponent()
+			document.editor.update()
 
 			for (item in children) {
 				item.parent = this
