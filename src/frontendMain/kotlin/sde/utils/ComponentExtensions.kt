@@ -50,7 +50,6 @@ object ImageCache {
 	private val mutex = Mutex()
 	private val imageBlobCache = HashMap<String, Blob>()
 	private val imageUrlCache = HashMap<String, String>()
-	private val imageBitmapCache = HashMap<String, ImageBitmap>()
 
 	private suspend fun getImageBlob(path: String): Blob {
 		val existing = imageBlobCache[path]
@@ -71,19 +70,6 @@ object ImageCache {
 
 			return blob
 		}
-	}
-
-	suspend fun getImageBitmap(path: String): ImageBitmap {
-		val existing = imageBitmapCache[path]
-		if (existing != null) {
-			return existing
-		}
-
-		val blob = getImageBlob(path)
-		val image = window.createImageBitmap(blob, ImageBitmapOptions()).await()
-		imageBitmapCache[path] = image
-
-		return image
 	}
 
 	suspend fun getImageUrl(path: String): String {

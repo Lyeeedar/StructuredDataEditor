@@ -1,6 +1,7 @@
 package sde.ui
 
 import org.w3c.dom.Element
+import org.w3c.dom.Image
 import org.w3c.dom.events.MouseEvent
 import pl.treksoft.kvision.core.Cursor
 import pl.treksoft.kvision.core.onEvent
@@ -495,6 +496,14 @@ class Timeline(val timelineItem: TimelineItem) : Canvas(canvasWidth = 1000, canv
 				}
 				modal.show()
 			} else {
+				if (!clickItem.isSelected) {
+					for (timeline in timelineItem.timelineGroup) {
+						for (keyframeItem in timeline.keyframes) {
+							keyframeItem.isSelected = false
+						}
+					}
+				}
+
 				clickItem.isSelected = true
 				lastSelectedItem = clickItem
 

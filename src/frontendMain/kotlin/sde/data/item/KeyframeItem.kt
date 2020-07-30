@@ -4,6 +4,7 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.await
 import kotlinx.coroutines.launch
 import org.w3c.dom.CanvasImageSource
+import org.w3c.dom.Image
 import org.w3c.dom.ImageBitmapOptions
 import sde.data.DataDocument
 import sde.data.definition.KeyframeDefinition
@@ -72,22 +73,27 @@ class KeyframeItem(definition: KeyframeDefinition, document: DataDocument) : Abs
 			timelineItem.timeline.redraw()
 		}
 
-	var cachedImage: CanvasImageSource? = null
+	var cachedImage: Image? = null
 	var cachedImagePath: String? = null
 	fun getImagePreview(completionFunc: ()->Unit): CanvasImageSource? {
 		val file = file ?: return null
 
-		GlobalScope.launch {
+		document.scope?.launch {
 			val fullPath = file.getFullPath()
 
 			if (cachedImagePath != fullPath) {
 				cachedImage = null
+				cachedImagePath = ""
 
 				if (fullPath.endsWith(".png")) {
-					cachedImage = ImageCache.getImageBitmap(file.getFullPath())
+					val url = ImageCache.getImageUrl(file.getFullPath())
+					val image = Image(40, 40)
+					image.src = url
+					image.onload = {
+						completionFunc.invoke()
+					}
+					cachedImage = image
 					cachedImagePath = fullPath
-
-					completionFunc.invoke()
 				}
 			}
 		}

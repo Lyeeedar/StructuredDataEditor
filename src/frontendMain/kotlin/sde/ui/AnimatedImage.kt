@@ -10,27 +10,25 @@ import pl.treksoft.kvision.html.Div
 import pl.treksoft.kvision.html.Image
 import sde.utils.*
 
-class AnimatedImage(val loadScope: CoroutineScope, val size: Int = 24, val imagePaths: List<String>) : Div()
+class AnimatedImage(val loadScope: CoroutineScope, val size: Int = 24, val imagePaths: List<String>) : Image("")
 {
-	val image: Image
 	val images = ArrayList<String>()
 	val updateJob: Job
 
 	init
 	{
-		image = Image("").apply {
-			width = CssSize(size, UNIT.px)
-			height = CssSize(size, UNIT.px)
+		visible = false
+		width = CssSize(size, UNIT.px)
+		height = CssSize(size, UNIT.px)
 
-			afterInsert {
-				val el = it
-				it.hover({
-					el.css("transform", "scale(10)")
-				}, {
-					el.css("transform", "scale(1)")
-				})
-				el.css("image-rendering", "crisp-edges")
-			}
+		afterInsert {
+			val el = it
+			it.hover({
+				         el.css("transform", "scale(10)")
+			         }, {
+				         el.css("transform", "scale(1)")
+			         })
+			el.css("image-rendering", "crisp-edges")
 		}
 
 		val loadJob = loadScope.launch {
@@ -43,7 +41,7 @@ class AnimatedImage(val loadScope: CoroutineScope, val size: Int = 24, val image
 		updateJob = loadScope.launch {
 			loadJob.join()
 			if (images.size > 0) {
-				add(image)
+				visible = true
 
 				if (images.size > 1)
 				{
@@ -52,7 +50,7 @@ class AnimatedImage(val loadScope: CoroutineScope, val size: Int = 24, val image
 					{
 						val img = images[i]
 
-						image.src = img
+						src = img
 
 						i++
 						if (i >= images.size)
@@ -63,7 +61,7 @@ class AnimatedImage(val loadScope: CoroutineScope, val size: Int = 24, val image
 						delay(500)
 					}
 				} else {
-					image.src = images[0]
+					src = images[0]
 				}
 			}
 		}
