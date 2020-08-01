@@ -23,7 +23,7 @@ class DataDocument(val path: String)
 
 	val undoRedoManager = UndoRedoManager()
 
-	val editor: DataItemEditor by lazy { DataItemEditor(scope!!) }
+	val editor: DataItemEditor by lazy { DataItemEditor(scope ?: MainScope()) }
 
 	fun getComponent(): Component
 	{
