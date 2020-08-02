@@ -1,22 +1,47 @@
 package sde.ui.Graph
 
 import org.w3c.dom.CanvasRenderingContext2D
+import pl.treksoft.kvision.html.Align
 import sde.data.definition.AbstractCompoundDefinition
 import sde.data.definition.AbstractDataDefinition
 import sde.data.definition.IGraphNodeDefinition
 import sde.data.item.*
 import sde.ui.*
+import kotlin.math.max
 
 class GraphNode<T, D>(val node: T) : IGraphContents where T : AbstractCompoundDataItem<D>, T: IGraphNodeItem, D: AbstractCompoundDefinition<D, T>, D: IGraphNodeDefinition
 {
+    private val margin = 2.0
+    private val headerFontSize = 14
     private val dataItemCache = HashMap<DataItem, AbstractGraphNodeDataItem>()
 
     override fun draw(context2D: CanvasRenderingContext2D) {
         val items = getGraphDataItems().toList()
-        val bounds = getBounds(items)
+        val bounds = getBounds(context2D, items)
 
-        context2D.fillRect(backgroundDarkColour, bounds)
+        val headerBounds = context2D.measureText(headerFontSize, node.name)
+        headerBounds.x = bounds.x + margin
+        headerBounds.y = bounds.y + margin
+
+        // background
+        context2D.fillRect(backgroundReallyDarkColour, bounds)
         context2D.strokeRect(borderDarkColour, 1.0, bounds)
+
+        // header
+        context2D.drawText(headerFontSize, "white", node.name, headerBounds, Align.CENTER)
+
+        // items
+        val x = bounds.x + margin
+        var y = bounds.y + margin * 2 + headerBounds.height
+        val width = bounds.width - margin * 2
+
+        for (item in items) {
+            val height = item.getHeight(context2D)
+            val itemBounds = BoundingBox(x, y, width, height)
+            item.draw(context2D, itemBounds)
+
+            y += height + margin
+        }
     }
 
     fun getDataItems(node: CompoundDataItem = this.node): Sequence<DataItem> {
@@ -45,10 +70,25 @@ class GraphNode<T, D>(val node: T) : IGraphContents where T : AbstractCompoundDa
     }
 
     fun getGraphDataItem(node: DataItem): AbstractGraphNodeDataItem? {
-        return null
+        val existing = dataItemCache[node]
+        if (existing != null) {
+            return existing
+        }
+
+        val graphItem = AbstractGraphNodeDataItem.create(node)
+        dataItemCache[node] = graphItem
+        return graphItem
     }
 
-    fun getBounds(items: List<AbstractGraphNodeDataItem> = getGraphDataItems().toList()): BoundingBox {
-        return BoundingBox(node.nodePositionX, node.nodePositionY, items.map { it.getWidth() }.max()!!, items.sumByDouble { it.getHeight() + 2.0 })
+    fun getBounds(context2D: CanvasRenderingContext2D, items: List<AbstractGraphNodeDataItem> = getGraphDataItems().toList()): BoundingBox {
+        val itemsWidth = items.map { it.getWidth(context2D) }.max() ?: 0.0
+        val itemsHeight = items.sumByDouble { it.getHeight(context2D) + margin }
+
+        val headerBounds = context2D.measureText(headerFontSize, node.name)
+
+        val width = margin * 2 + max(itemsWidth, headerBounds.width)
+        val height = margin * 2 + itemsHeight + headerBounds.height + margin
+
+        return BoundingBox(node.nodePositionX, node.nodePositionY, width, height)
     }
 }

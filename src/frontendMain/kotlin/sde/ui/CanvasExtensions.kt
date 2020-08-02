@@ -2,6 +2,7 @@ package sde.ui
 
 import org.w3c.dom.CanvasImageSource
 import org.w3c.dom.CanvasRenderingContext2D
+import pl.treksoft.kvision.html.Align
 
 class BoundingBox(var x: Double, var y: Double, var width: Double, var height: Double)
 
@@ -18,4 +19,26 @@ fun CanvasRenderingContext2D.strokeRect(colour: dynamic, thickness: Double, boun
 
 fun CanvasRenderingContext2D.drawImage(imageSource: CanvasImageSource, bounds: BoundingBox) {
     this.drawImage(imageSource, bounds.x, bounds.y, bounds.width, bounds.height)
+}
+
+fun CanvasRenderingContext2D.drawText(size: Int, colour: dynamic, text: String, bounds: BoundingBox, align: Align) {
+    this.font = "${size}px Arial"
+    this.lineWidth = 1.0
+    this.fillStyle = colour
+
+    val measured = this.measureText(text)
+
+    when (align) {
+        Align.LEFT -> this.fillText(text, bounds.x, bounds.y)
+        Align.RIGHT -> this.fillText(text, bounds.x+bounds.width - measured.width, bounds.y)
+        else -> this.fillText(text, bounds.x + bounds.width * 0.5 - measured.width * 0.5, bounds.y)
+    }
+}
+
+fun CanvasRenderingContext2D.measureText(size: Int, text: String): BoundingBox {
+    this.font = "${size}px Arial"
+    this.lineWidth = 1.0
+    val measured = this.measureText(text)
+
+    return BoundingBox(0.0, 0.0, measured.width, size.toDouble())
 }
