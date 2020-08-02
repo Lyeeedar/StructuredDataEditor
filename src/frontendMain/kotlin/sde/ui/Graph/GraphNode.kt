@@ -5,9 +5,7 @@ import sde.data.definition.AbstractCompoundDefinition
 import sde.data.definition.AbstractDataDefinition
 import sde.data.definition.IGraphNodeDefinition
 import sde.data.item.*
-import sde.ui.BoundingBox
-import sde.ui.backgroundDarkColour
-import sde.ui.borderDarkColour
+import sde.ui.*
 
 class GraphNode<T, D>(val node: T) : IGraphContents where T : AbstractCompoundDataItem<D>, T: IGraphNodeItem, D: AbstractCompoundDefinition<D, T>, D: IGraphNodeDefinition
 {
@@ -17,12 +15,8 @@ class GraphNode<T, D>(val node: T) : IGraphContents where T : AbstractCompoundDa
         val items = getGraphDataItems().toList()
         val bounds = getBounds(items)
 
-        context2D.fillStyle = backgroundDarkColour
-        context2D.fillRect(bounds.x, bounds.y, bounds.width, bounds.height)
-
-        context2D.strokeStyle = borderDarkColour
-        context2D.lineWidth = thickness.toDouble()
-        context2D.strokeRect(bounds.x, bounds.y, bounds.width, bounds.height)
+        context2D.fillRect(backgroundDarkColour, bounds)
+        context2D.strokeRect(borderDarkColour, 1.0, bounds)
     }
 
     fun getDataItems(node: CompoundDataItem = this.node): Sequence<DataItem> {
