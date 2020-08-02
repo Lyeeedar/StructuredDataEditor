@@ -310,14 +310,11 @@ class Timeline(val timelineItem: TimelineItem) : Canvas(canvasWidth = 1000, canv
 
 			val preview = keyframeItem.getImagePreview { redraw() }
 			if (preview != null) {
-				context2D.fillStyle = "rgb(${keyframeItem.def.background})"
-				context2D.fillRect(keyframeItem.time * pixelsASecond + timelineItem.leftPad, 5.0, width, actualHeight - 20)
+				val bounds = BoundingBox(keyframeItem.time * pixelsASecond + timelineItem.leftPad, 5.0, width, actualHeight - 20)
 
-				context2D.drawImage(preview, keyframeItem.time * pixelsASecond + timelineItem.leftPad, 5.0, width, actualHeight - 20)
-
-				context2D.strokeStyle = col
-				context2D.lineWidth = thickness.toDouble()
-				context2D.strokeRect(keyframeItem.time * pixelsASecond + timelineItem.leftPad, 5.0, width, actualHeight - 20)
+				context2D.fillRect("rgb(${keyframeItem.def.background})", bounds)
+				context2D.drawImage(preview, bounds)
+				context2D.strokeRect(col, thickness.toDouble(), bounds)
 			} else {
 				if (timelineItem.def.contentsMap.size > 1) {
 					val name = keyframeItem.def.name
@@ -327,22 +324,18 @@ class Timeline(val timelineItem: TimelineItem) : Canvas(canvasWidth = 1000, canv
 					val textSize = context2D.measureText(name)
 					val fontHeight = 10.0
 
-					context2D.fillStyle = "rgb(${keyframeItem.def.background})"
-					context2D.fillRect(keyframeItem.time * pixelsASecond + timelineItem.leftPad, fontHeight + 5, width, actualHeight - 15 - fontHeight)
+					val bounds = BoundingBox(keyframeItem.time * pixelsASecond + timelineItem.leftPad, fontHeight + 5, width, actualHeight - 15 - fontHeight)
 
-					context2D.strokeStyle = col
-					context2D.lineWidth = thickness.toDouble()
-					context2D.strokeRect(keyframeItem.time * pixelsASecond + timelineItem.leftPad, fontHeight + 5, width, actualHeight - 15 - fontHeight)
+					context2D.fillRect("rgb(${keyframeItem.def.background})", bounds)
+					context2D.strokeRect(col, thickness.toDouble(), bounds)
 
 					context2D.fillStyle = "white"
 					context2D.fillText(name, max(0.0, (keyframeItem.time * pixelsASecond + timelineItem.leftPad + width / 2) - (textSize.width / 2.0)), fontHeight)
 				} else {
-					context2D.fillStyle = "rgb(${keyframeItem.def.background})"
-					context2D.fillRect(keyframeItem.time * pixelsASecond + timelineItem.leftPad, 5.0, width, actualHeight - 20)
+					val bounds = BoundingBox(keyframeItem.time * pixelsASecond + timelineItem.leftPad, 5.0, width, actualHeight - 20)
 
-					context2D.strokeStyle = col
-					context2D.lineWidth = thickness.toDouble()
-					context2D.strokeRect(keyframeItem.time * pixelsASecond + timelineItem.leftPad, 5.0, width, actualHeight - 20)
+					context2D.fillRect("rgb(${keyframeItem.def.background})", bounds)
+					context2D.strokeRect(col, thickness.toDouble(), bounds)
 				}
 			}
 		}
@@ -356,24 +349,18 @@ class Timeline(val timelineItem: TimelineItem) : Canvas(canvasWidth = 1000, canv
 				val x = keyframe.time * pixelsASecond + timelineItem.leftPad
 
 				// edit
-				context2D.fillStyle = backgroundNormalColour
-				context2D.fillRect(x, actualHeight - 16, 14.0, 14.0)
-
-				context2D.strokeStyle = borderNormalColour
-				context2D.lineWidth = 1.0
-				context2D.strokeRect(x, actualHeight - 16, 14.0, 14.0)
+				val editBounds = BoundingBox(x, actualHeight - 16, 14.0, 14.0)
+				context2D.fillRect(backgroundNormalColour, editBounds)
+				context2D.strokeRect(borderNormalColour, 1.0, editBounds)
 
 				context2D.font = "bold 12px Arial"
 				context2D.fillStyle = "white"
 				context2D.fillText("?", x+4, actualHeight - 5)
 
 				// remove
-				context2D.fillStyle = backgroundNormalColour
-				context2D.fillRect(x, 2.0, 14.0, 14.0)
-
-				context2D.strokeStyle = borderNormalColour
-				context2D.lineWidth = 1.0
-				context2D.strokeRect(x, 2.0, 14.0, 14.0)
+				val removeBounds = BoundingBox(x, 2.0, 14.0, 14.0)
+				context2D.fillRect(backgroundNormalColour, removeBounds)
+				context2D.strokeRect(borderNormalColour, 1.0, removeBounds)
 
 				context2D.font = "bold 14px Arial"
 				context2D.fillStyle = "red"
@@ -383,12 +370,10 @@ class Timeline(val timelineItem: TimelineItem) : Canvas(canvasWidth = 1000, canv
 
 		if (mouseOverItem == null) {
 			// add
-			context2D.fillStyle = backgroundNormalColour
-			context2D.fillRect(mouseX - 7, 2.0, 14.0, 14.0)
+			val addBounds = BoundingBox(mouseX - 7, 2.0, 14.0, 14.0)
 
-			context2D.strokeStyle = borderNormalColour
-			context2D.lineWidth = 1.0
-			context2D.strokeRect(mouseX - 7, 2.0, 14.0, 14.0)
+			context2D.fillRect(backgroundNormalColour, addBounds)
+			context2D.strokeRect(borderNormalColour, 1.0, addBounds)
 
 			context2D.font = "bold 14px Arial"
 			context2D.fillStyle = "green"
