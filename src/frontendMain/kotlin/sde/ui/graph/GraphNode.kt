@@ -1,9 +1,8 @@
-package sde.ui.Graph
+package sde.ui.graph
 
 import org.w3c.dom.CanvasRenderingContext2D
 import pl.treksoft.kvision.html.Align
 import sde.data.definition.AbstractCompoundDefinition
-import sde.data.definition.AbstractDataDefinition
 import sde.data.definition.IGraphNodeDefinition
 import sde.data.item.*
 import sde.ui.*

@@ -1,8 +1,7 @@
-package sde.ui.Graph
+package sde.ui.graph
 
 import pl.treksoft.kvision.html.Canvas
 import sde.data.DataDocument
-import sde.ui.backgroundDarkColour
 import sde.ui.backgroundReallyDarkColour
 import sde.utils.afterInsert
 

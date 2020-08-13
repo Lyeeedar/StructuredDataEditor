@@ -1,4 +1,4 @@
-package sde.ui.Graph
+package sde.ui.graph
 
 import org.w3c.dom.CanvasRenderingContext2D
 
