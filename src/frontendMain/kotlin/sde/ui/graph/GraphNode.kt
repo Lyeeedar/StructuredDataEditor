@@ -8,11 +8,14 @@ import sde.data.item.*
 import sde.ui.*
 import kotlin.math.max
 
-class GraphNode<T, D>(val node: T) : IGraphContents where T : AbstractCompoundDataItem<D>, T: IGraphNodeItem, D: AbstractCompoundDefinition<D, T>, D: IGraphNodeDefinition
+class GraphNode(val node: CompoundDataItem) : IGraphContents
 {
     private val margin = 2.0
     private val headerFontSize = 14
     private val dataItemCache = HashMap<DataItem, AbstractGraphNodeDataItem>()
+
+	val graphItem: IGraphNodeItem
+		get() = node as IGraphNodeItem
 
     override fun draw(context2D: CanvasRenderingContext2D) {
         val items = getGraphDataItems().toList()
@@ -88,6 +91,6 @@ class GraphNode<T, D>(val node: T) : IGraphContents where T : AbstractCompoundDa
         val width = margin * 2 + max(itemsWidth, headerBounds.width)
         val height = margin * 2 + itemsHeight + headerBounds.height + margin
 
-        return BoundingBox(node.nodePositionX, node.nodePositionY, width, height)
+        return BoundingBox(graphItem.nodePositionX, graphItem.nodePositionY, width, height)
     }
 }
