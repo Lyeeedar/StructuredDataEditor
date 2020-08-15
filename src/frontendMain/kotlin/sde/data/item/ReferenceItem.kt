@@ -42,6 +42,12 @@ abstract class AbstractReferenceItem<D: AbstractReferenceDefinition<D, *>>(defin
         if (item is AbstractStructItem<*> && item.children.size == 0) {
             item.createContents()
         }
+        if (item is AbstractCollectionItem<*>) {
+            item.children.onUpdate.add {
+                children.clear()
+                children.addAll(item.children)
+            }
+        }
 
         setCreatedItem(item)
     }

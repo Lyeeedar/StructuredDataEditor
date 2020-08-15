@@ -5,6 +5,9 @@ import org.w3c.dom.CanvasRenderingContext2D
 import pl.treksoft.kvision.html.Align
 
 class BoundingBox(var x: Double, var y: Double, var width: Double, var height: Double)
+{
+    constructor(bounds: BoundingBox): this(bounds.x, bounds.y, bounds.width, bounds.height)
+}
 
 fun CanvasRenderingContext2D.fillRect(colour: dynamic, bounds: BoundingBox) {
     this.fillStyle = colour
@@ -28,10 +31,12 @@ fun CanvasRenderingContext2D.drawText(size: Int, colour: dynamic, text: String, 
 
     val measured = this.measureText(text)
 
+    val drawY = bounds.y + bounds.height - size * 0.2
+
     when (align) {
-        Align.LEFT -> this.fillText(text, bounds.x, bounds.y + bounds.height)
-        Align.RIGHT -> this.fillText(text, bounds.x+bounds.width - measured.width, bounds.y + bounds.height)
-        else -> this.fillText(text, bounds.x + bounds.width * 0.5 - measured.width * 0.5, bounds.y + bounds.height)
+        Align.LEFT -> this.fillText(text, bounds.x, drawY)
+        Align.RIGHT -> this.fillText(text, bounds.x+bounds.width - measured.width, drawY)
+        else -> this.fillText(text, bounds.x + bounds.width * 0.5 - measured.width * 0.5, drawY)
     }
 }
 
