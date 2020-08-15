@@ -21,4 +21,9 @@ class TimelineDefinition : AbstractCollectionDefinition<TimelineDefinition, Time
 		return XElement(name)
 	}
 
+	override fun doParseInstanceInternal(node: XElement)
+	{
+
+	}
+
 }

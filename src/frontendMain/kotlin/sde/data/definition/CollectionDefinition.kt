@@ -23,7 +23,10 @@ abstract class AbstractCollectionDefinition<D: AbstractCollectionDefinition<D, I
 		childrenAreUnique = node.getAttributeValue("ChildrenAreUnique", childrenAreUnique)
 		minCount = node.getAttributeValue("MinCount", minCount)
 		maxCount = node.getAttributeValue("MaxCount", maxCount)
+
+		doParseInstanceInternal(node)
 	}
+	protected abstract fun doParseInstanceInternal(node: XElement)
 
 	override fun doParseChildElement(node: XElement): Boolean
 	{
@@ -142,5 +145,10 @@ class CollectionDefinition : AbstractCollectionDefinition<CollectionDefinition, 
 	override fun saveItemInstanceInternal(item: CollectionItem): XElement
 	{
 		return XElement(name)
+	}
+
+	override fun doParseInstanceInternal(node: XElement)
+	{
+
 	}
 }

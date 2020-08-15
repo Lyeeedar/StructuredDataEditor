@@ -247,11 +247,13 @@ abstract class AbstractDataDefinition<D: AbstractDataDefinition<D, I>, I: Abstra
 				"GRAPHSTRUCT" -> GraphStructDefinition()
 
 				"COLLECTION" -> CollectionDefinition()
+				"GRAPHCOLLECTION" -> GraphCollectionDefinition()
 
 				"TIMELINE" -> TimelineDefinition()
 				"KEYFRAME" -> KeyframeDefinition()
 
 				"REFERENCE" -> ReferenceDefinition()
+				"GRAPHREFERENCE" -> GraphReferenceDefinition()
 
 				else -> throw DefinitionLoadException("Unknown definition type $type for xml '$xml")
 			}

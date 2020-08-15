@@ -20,6 +20,7 @@ abstract class AbstractStructDefinition<D: AbstractStructDefinition<D, I>, I: Ab
 	protected override fun doParseInstance(node: XElement)
 	{
 		nullable = node.getAttributeValue("Nullable", nullable)
+		doParseInstanceInternal(node)
 	}
 	protected abstract fun doParseInstanceInternal(node: XElement)
 
