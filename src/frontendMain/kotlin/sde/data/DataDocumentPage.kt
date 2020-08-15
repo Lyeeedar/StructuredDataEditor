@@ -7,6 +7,8 @@ import pl.treksoft.kvision.core.UNIT
 import pl.treksoft.kvision.html.Div
 import pl.treksoft.kvision.html.bold
 import pl.treksoft.kvision.html.span
+import pl.treksoft.kvision.panel.GridPanel
+import pl.treksoft.kvision.panel.HPanel
 import pl.treksoft.kvision.panel.VPanel
 import pl.treksoft.kvision.panel.hPanel
 import sde.pages.AbstractPage
@@ -51,17 +53,17 @@ class DataDocumentPage(val data: DataDocument, pageManager: PageManager) : Abstr
 
 	override fun createComponent(): Component
 	{
-		return Div {
+		return GridPanel(templateRows = "auto 1fr") {
 			id = "DataDocumentPage"
 
 			width = CssSize(100, UNIT.perc)
 			height = CssSize(100, UNIT.perc)
 
-			hPanel {
+			add(HPanel {
 				add(data.undoRedoManager.undoButton)
 				add(data.undoRedoManager.redoButton)
-			}
-			add(data.getComponent())
+			}, 1, 1)
+			add(data.getComponent(), 1, 2)
 		}
 	}
 
