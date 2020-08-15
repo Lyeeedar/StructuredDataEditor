@@ -41,8 +41,11 @@ class DataDocument(val path: String) : BasicObservableClass()
 	}
 	val dataItemEditor: DataItemEditor by lazy { DataItemEditor(scope ?: MainScope()) }
 	val graphEditor: Graph by lazy { Graph(this) }
+	var inserted = false
 
 	fun updateEditor() {
+		if (!inserted) return
+
 		val editor = when (selectedEditor) {
 			"data" -> {
 				dataItemEditor.rootItems.clear()
@@ -86,6 +89,8 @@ class DataDocument(val path: String) : BasicObservableClass()
 
 	fun getComponent(): Component
 	{
+		inserted = true
+
 		val buttonsDiv = HPanel()
 		buttonsDiv.add(SelectInput(value = selectedEditor, options = listOf("xml" to "xml", "data" to "data", "graph" to "graph")).apply {
 			subscribe {
