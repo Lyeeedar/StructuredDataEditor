@@ -29,9 +29,9 @@ fun CanvasRenderingContext2D.drawText(size: Int, colour: dynamic, text: String, 
     val measured = this.measureText(text)
 
     when (align) {
-        Align.LEFT -> this.fillText(text, bounds.x, bounds.y)
-        Align.RIGHT -> this.fillText(text, bounds.x+bounds.width - measured.width, bounds.y)
-        else -> this.fillText(text, bounds.x + bounds.width * 0.5 - measured.width * 0.5, bounds.y)
+        Align.LEFT -> this.fillText(text, bounds.x, bounds.y + bounds.height)
+        Align.RIGHT -> this.fillText(text, bounds.x+bounds.width - measured.width, bounds.y + bounds.height)
+        else -> this.fillText(text, bounds.x + bounds.width * 0.5 - measured.width * 0.5, bounds.y + bounds.height)
     }
 }
 

@@ -7,8 +7,9 @@ import sde.data.definition.IGraphNodeDefinition
 import sde.data.item.*
 import sde.ui.*
 import kotlin.math.max
+import kotlin.math.roundToInt
 
-class GraphNode(val node: CompoundDataItem) : IGraphContents
+class GraphNode(val node: CompoundDataItem, val graph: Graph) : IGraphContents
 {
     private val margin = 2.0
     private val headerFontSize = 14
@@ -18,6 +19,9 @@ class GraphNode(val node: CompoundDataItem) : IGraphContents
 		get() = node as IGraphNodeItem
 
     override fun draw(context2D: CanvasRenderingContext2D) {
+        val margin = margin * graph.scale
+        val headerFontSize = (headerFontSize * graph.scale).toInt()
+
         val items = getGraphDataItems().toList()
         val bounds = getBounds(context2D, items)
 
@@ -77,20 +81,21 @@ class GraphNode(val node: CompoundDataItem) : IGraphContents
             return existing
         }
 
-        val graphItem = AbstractGraphNodeDataItem.create(node)
+        val graphItem = AbstractGraphNodeDataItem.create(node, this)
         dataItemCache[node] = graphItem
         return graphItem
     }
 
     fun getBounds(context2D: CanvasRenderingContext2D, items: List<AbstractGraphNodeDataItem> = getGraphDataItems().toList()): BoundingBox {
+        val margin = margin * graph.scale
         val itemsWidth = items.map { it.getWidth(context2D) }.max() ?: 0.0
         val itemsHeight = items.sumByDouble { it.getHeight(context2D) + margin }
 
-        val headerBounds = context2D.measureText(headerFontSize, node.name)
+        val headerBounds = context2D.measureText((headerFontSize * graph.scale).toInt(), node.name)
 
         val width = margin * 2 + max(itemsWidth, headerBounds.width)
         val height = margin * 2 + itemsHeight + headerBounds.height + margin
 
-        return BoundingBox(graphItem.nodePositionX, graphItem.nodePositionY, width, height)
+        return BoundingBox(graphItem.nodePositionX + graph.offsetX, graphItem.nodePositionY + graph.offsetY, width, height)
     }
 }

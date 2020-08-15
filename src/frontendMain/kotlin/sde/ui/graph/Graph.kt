@@ -1,5 +1,9 @@
 package sde.ui.graph
 
+import org.w3c.dom.Element
+import org.w3c.dom.events.MouseEvent
+import pl.treksoft.kvision.core.Cursor
+import pl.treksoft.kvision.core.onEvent
 import pl.treksoft.kvision.html.Canvas
 import sde.data.DataDocument
 import sde.data.item.*
@@ -16,12 +20,61 @@ class Graph(val document: DataDocument) : Canvas()
     private val actualHeight: Double
         get() = (canvasHeight ?: 0).toDouble()
 
+	var offsetX = 0.0
+	var offsetY = 0.0
+	var scale = 1.0
+
+	private var mouseX = 0.0
+	private var mouseY = 0.0
+	private var isMouseOver = false
+	var isPanning = false
 
     init {
         afterInsert {
             inserted = true
             redraw()
         }
+
+		onEvent {
+			wheel = {
+				onScroll(it.deltaY)
+
+				it.stopPropagation()
+				it.preventDefault()
+			}
+			pointerenter = {
+				mouseX = it.offsetX
+				mouseY = it.offsetY
+				isMouseOver = true
+				redraw()
+			}
+			pointerleave = {
+				isMouseOver = false
+				redraw()
+			}
+			pointermove = {
+				val deltaX = it.offsetX - mouseX
+				val deltaY = it.offsetY - mouseY
+
+				mouseX = it.offsetX
+				mouseY = it.offsetY
+
+				onMouseMove(deltaX, deltaY, it.buttons, it.pointerId)
+				redraw()
+			}
+			pointerdown = {
+				onMouseDown(it)
+
+				it.stopPropagation()
+				it.preventDefault()
+			}
+			pointerup = {
+				onMouseUp()
+
+				it.stopPropagation()
+				it.preventDefault()
+			}
+		}
     }
 
 	private fun getGraphNodeItems(): Sequence<IGraphNodeItem> {
@@ -64,7 +117,7 @@ class Graph(val document: DataDocument) : Canvas()
 					var existing = nodeCache[item]
 					if (existing == null)
 					{
-						existing = GraphNode(item)
+						existing = GraphNode(item, this@Graph)
 						nodeCache[item] = existing
 					}
 
@@ -91,4 +144,47 @@ class Graph(val document: DataDocument) : Canvas()
 		    node.draw(context2D)
 	    }
     }
+
+	private fun onScroll(amount: Double) {
+		if (amount < 0) {
+			cursor = Cursor.ZOOMIN
+		} else {
+			cursor = Cursor.ZOOMOUT
+		}
+
+		scale -= scale * (amount / 60)
+
+		redraw()
+	}
+
+	private fun onMouseDown(mouseEvent: MouseEvent) {
+		isPanning = true
+	}
+
+	private fun onMouseUp() {
+		isPanning = false
+	}
+
+	private fun onMouseMove(deltaX: Double, deltaY: Double, button: Short, pointerId: Int) {
+		if (isPanning) {
+			onPan(deltaX, deltaY, pointerId)
+		} else {
+			cursor = Cursor.AUTO
+		}
+	}
+
+	private fun onPan(deltaX: Double, deltaY: Double, pointerId: Int) {
+		offsetX += deltaX
+		offsetY += deltaY
+
+		cursor = Cursor.ALLSCROLL
+
+		redraw()
+
+		val el = getElement() as? Element
+		if (el != null) {
+			el.setPointerCapture(pointerId)
+		}
+	}
+
 }
