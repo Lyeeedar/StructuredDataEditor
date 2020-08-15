@@ -128,7 +128,7 @@ abstract class AbstractDataItem<D: DataDefinition>(val def: D, val document: Dat
 	}
 
 	// ---------------------------------------- UI ----------------------------------------------
-	protected fun isVisible() = document.editor.lastRenderedID == renderedID
+	protected fun isVisible() = document.dataItemEditor.lastRenderedID == renderedID
 
 	private var editorComponentDiv = Div()
 	private var cachedEditorComponent: Component? = null
@@ -292,7 +292,7 @@ abstract class AbstractDataItem<D: DataDefinition>(val def: D, val document: Dat
 			}
 
 			if (doesUpdateDocument && isVisible()) {
-				document.editor.update()
+				document.updateEditor()
 			}
 
 			if (isUndoable)
