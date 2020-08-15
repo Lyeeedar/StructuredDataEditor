@@ -40,6 +40,7 @@ class DataDocument(val path: String) : BasicObservableClass()
 		height = CssSize(100, UNIT.perc)
 	}
 	val dataItemEditor: DataItemEditor by lazy { DataItemEditor(scope ?: MainScope()) }
+	val graphEditor: Graph by lazy { Graph(this) }
 
 	fun updateEditor() {
 		val editor = when (selectedEditor) {
@@ -56,7 +57,7 @@ class DataDocument(val path: String) : BasicObservableClass()
 				}
 			}
 			"graph" -> {
-				Graph(this).apply {
+				graphEditor.apply {
 					val graph = this
 					document.scope?.launch {
 						while (true) {

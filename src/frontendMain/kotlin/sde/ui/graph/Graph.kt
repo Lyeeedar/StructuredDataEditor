@@ -24,7 +24,19 @@ class Graph(val document: DataDocument) : Canvas()
         }
     }
 
-	fun getGraphNodeItems(item: CompoundDataItem = document.root): Sequence<IGraphNodeItem> {
+	private fun getGraphNodeItems(): Sequence<IGraphNodeItem> {
+		return sequence {
+			if (document.root is IGraphNodeItem) {
+				yield(document.root as IGraphNodeItem)
+
+				for (child in getGraphNodeItems(document.root)) {
+					yield(child)
+				}
+			}
+		}
+	}
+
+	private fun getGraphNodeItems(item: CompoundDataItem): Sequence<IGraphNodeItem> {
 		return sequence {
 			for (child in item.children) {
 				if (child is IGraphNodeItem) {
@@ -44,7 +56,7 @@ class Graph(val document: DataDocument) : Canvas()
 	}
 
 	private val nodeCache = HashMap<IGraphNodeItem, GraphNode>()
-	fun getGraphNodes(): Sequence<GraphNode> {
+	private fun getGraphNodes(): Sequence<GraphNode> {
 		return sequence {
 			for (item in getGraphNodeItems()) {
 				if (item is CompoundDataItem)
@@ -66,7 +78,7 @@ class Graph(val document: DataDocument) : Canvas()
         doRedraw()
     }
 
-    fun doRedraw() {
+    private fun doRedraw() {
         if (!inserted) return
 
         context2D.clearRect(0.0, 0.0, actualWidth, actualHeight)
