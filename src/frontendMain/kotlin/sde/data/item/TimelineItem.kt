@@ -133,10 +133,6 @@ class TimelineItem(definition: TimelineDefinition, document: DataDocument) : Abs
 					break
 				}
 			}
-
-			afterInsert {
-
-			}
 		}
 	}
 }

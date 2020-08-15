@@ -1,6 +1,7 @@
 package sde
 
 import kotlinx.coroutines.*
+import org.w3c.dom.HTMLElement
 import pl.treksoft.kvision.Application
 import pl.treksoft.kvision.core.CssSize
 import pl.treksoft.kvision.core.UNIT
@@ -11,6 +12,7 @@ import pl.treksoft.kvision.panel.root
 import pl.treksoft.kvision.progress.progressBar
 import pl.treksoft.kvision.startApplication
 import sde.pages.PageManager
+import kotlin.browser.document
 
 class App : Application() {
 
@@ -29,10 +31,9 @@ class App : Application() {
                     "pl" to pl.treksoft.kvision.require("i18n/messages-pl.json")
                 )
             )
-        val root = root("kvapp") {
+        val root = root("kvapp", addRow = false) {
 			width = CssSize(100, UNIT.perc)
 			height = CssSize(100, UNIT.perc)
-
         }
 	    createPages(root)
     }

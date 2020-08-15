@@ -136,6 +136,8 @@ class ProjectExplorerPage(val projectDef: ProjectDef, pageManager: PageManager) 
 	{
 		updateProjectItemsComponent()
 		return GridPanel(templateRows = "auto auto 1fr") {
+			id = "ProjectExplorerPage"
+
 			add(failedLoadBanner, 1, 1)
 
 			add(HPanel(wrap = FlexWrap.WRAP) {

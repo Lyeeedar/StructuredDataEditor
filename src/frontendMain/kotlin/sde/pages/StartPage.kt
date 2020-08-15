@@ -44,6 +44,8 @@ class StartPage(pageManager: PageManager) : AbstractPage(pageManager)
 	override fun createComponent(): Component
 	{
 		return Div {
+			id = "StartPage"
+
 			h1("Structured Data Editor")
 
 			// boxes

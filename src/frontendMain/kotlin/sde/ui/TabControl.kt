@@ -19,6 +19,7 @@ class TabControl : DockPanel()
         border = Border(CssSize(1, UNIT.px), BorderStyle.SOLID, borderDarkColour)
     }
     val bodyPanel = Div() {
+	    id = "TabBody"
         width = CssSize(100, UNIT.perc)
         height = CssSize(100, UNIT.perc)
         border = Border(CssSize(1, UNIT.px), BorderStyle.SOLID, borderDarkColour)
@@ -28,6 +29,8 @@ class TabControl : DockPanel()
     val tabs = ArrayList<Tab>()
 
     init {
+	    id = "TabControl"
+
         width = CssSize(100, UNIT.perc)
         height = CssSize(100, UNIT.perc)
 
@@ -42,6 +45,8 @@ class TabControl : DockPanel()
     fun addTab(header: Component, body: Component, key: Any, closeable: Boolean = true, onClosing: (()->Boolean)? = null, onClosed: (()->Unit)? = null, onFocused: (()->Unit)? = null) {
         val tab = Tab(header, body, key, closeable, onClosing, onClosed, onFocused)
         tab.tabHeader = DockPanel {
+	        id = "TabHeader"
+
             marginTop = CssSize(1, UNIT.px)
             marginLeft = CssSize(1, UNIT.px)
             marginRight = CssSize(1, UNIT.px)

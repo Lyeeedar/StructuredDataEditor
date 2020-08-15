@@ -5,6 +5,7 @@ import pl.treksoft.kvision.core.*
 import pl.treksoft.kvision.form.select.SelectInput
 import pl.treksoft.kvision.form.select.SelectOptGroup
 import pl.treksoft.kvision.form.text.TextArea
+import pl.treksoft.kvision.form.text.TextAreaInput
 import pl.treksoft.kvision.html.*
 import pl.treksoft.kvision.panel.*
 import pl.treksoft.kvision.require
@@ -31,7 +32,12 @@ class DataDocument(val path: String) : BasicObservableClass()
 
 	var selectedEditor: String by obs("data", DataDocument::selectedEditor.name).get()
 
-	val editorDiv = Div()
+	val editorDiv = Div().apply {
+		id = "Editor"
+
+		width = CssSize(100, UNIT.perc)
+		height = CssSize(100, UNIT.perc)
+	}
 	val dataItemEditor: DataItemEditor by lazy { DataItemEditor(scope ?: MainScope()) }
 
 	fun updateEditor() {
@@ -43,7 +49,10 @@ class DataDocument(val path: String) : BasicObservableClass()
 				dataItemEditor
 			}
 			"xml" -> {
-				TextArea(value = root.def.saveItem(root).toString())
+				TextAreaInput(value = root.def.saveItem(root).toString()).apply {
+					width = CssSize(100, UNIT.perc)
+					height = CssSize(100, UNIT.perc)
+				}
 			}
 			"graph" -> {
 				Graph(this)
@@ -69,9 +78,13 @@ class DataDocument(val path: String) : BasicObservableClass()
 			}
 		})
 
-		val div = DockPanel()
-		div.add(buttonsDiv, Side.UP)
-		div.add(editorDiv)
+		val div = GridPanel(templateRows = "auto 1fr").apply {
+			id = "DataDocument"
+
+			height = CssSize(100, UNIT.perc)
+		}
+		div.add(buttonsDiv, 1, 1)
+		div.add(editorDiv, 1, 2)
 
 		updateEditor()
 

@@ -2,6 +2,8 @@ package sde.data
 
 import pl.treksoft.kvision.core.Color
 import pl.treksoft.kvision.core.Component
+import pl.treksoft.kvision.core.CssSize
+import pl.treksoft.kvision.core.UNIT
 import pl.treksoft.kvision.html.Div
 import pl.treksoft.kvision.html.bold
 import pl.treksoft.kvision.html.span
@@ -50,6 +52,11 @@ class DataDocumentPage(val data: DataDocument, pageManager: PageManager) : Abstr
 	override fun createComponent(): Component
 	{
 		return Div {
+			id = "DataDocumentPage"
+
+			width = CssSize(100, UNIT.perc)
+			height = CssSize(100, UNIT.perc)
+
 			hPanel {
 				add(data.undoRedoManager.undoButton)
 				add(data.undoRedoManager.redoButton)
