@@ -114,17 +114,38 @@ class Graph(val document: DataDocument) : Canvas()
 			for (item in getGraphNodeItems()) {
 				if (item is CompoundDataItem)
 				{
-					var existing = nodeCache[item]
-					if (existing == null)
-					{
-						existing = GraphNode(item, this@Graph)
-						nodeCache[item] = existing
-					}
-
-					yield(existing!!)
+					yield(getGraphNode(item))
 				}
 			}
 		}
+	}
+	private fun getGraphNode(item: CompoundDataItem): GraphNode {
+		var node = nodeCache[item as IGraphNodeItem]
+		if (node == null)
+		{
+			node = GraphNode(item, this@Graph)
+			nodeCache[item] = node
+		}
+
+		if (node.graphItem.nodePositionX == Double.MAX_VALUE || node.graphItem.nodePositionY == Double.MAX_VALUE) {
+			val parent = getGraphParent(item)
+			if (parent == null) {
+				node.graphItem.nodePositionX = 0.0
+				node.graphItem.nodePositionY = 0.0
+			} else {
+				node.graphItem.nodePositionX = parent.nodePositionX + 100
+				node.graphItem.nodePositionY = parent.nodePositionY
+			}
+		}
+
+		return node
+	}
+	private fun getGraphParent(node: CompoundDataItem): IGraphNodeItem? {
+		val parent = node.parent ?: return null
+		if (parent is IGraphNodeItem) {
+			return parent
+		}
+		return getGraphParent(parent)
 	}
 
     fun redraw() {
