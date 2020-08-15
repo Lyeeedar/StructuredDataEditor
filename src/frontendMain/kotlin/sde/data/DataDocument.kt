@@ -1,6 +1,7 @@
 package sde.data
 
 import kotlinx.coroutines.*
+import org.w3c.dom.HTMLElement
 import pl.treksoft.kvision.core.*
 import pl.treksoft.kvision.form.select.SelectInput
 import pl.treksoft.kvision.form.select.SelectOptGroup
@@ -55,7 +56,25 @@ class DataDocument(val path: String) : BasicObservableClass()
 				}
 			}
 			"graph" -> {
-				Graph(this)
+				Graph(this).apply {
+					val graph = this
+					document.scope?.launch {
+						while (true) {
+							val el = editorDiv.getElement() as? HTMLElement ?: continue
+
+							if (graph.canvasWidth != el.offsetWidth) {
+								graph.canvasWidth = el.offsetWidth - 10
+							}
+							if (graph.canvasHeight != el.offsetHeight) {
+								graph.canvasHeight = el.offsetHeight - 10
+							}
+
+							graph.redraw()
+
+							break
+						}
+					}
+				}
 			}
 			else -> Div()
 		}

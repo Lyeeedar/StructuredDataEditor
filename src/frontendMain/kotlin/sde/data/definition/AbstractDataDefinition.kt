@@ -241,6 +241,7 @@ abstract class AbstractDataDefinition<D: AbstractDataDefinition<D, I>, I: Abstra
 				"FILE" -> FileDefinition()
 				"NUMBER" -> NumberDefinition()
 				"STRING" -> StringDefinition()
+				"MULTILINESTRING" -> MultilineStringDefinition()
 				"VECTOR" -> VectorDefinition()
 
 				"STRUCT" -> StructDefinition()
