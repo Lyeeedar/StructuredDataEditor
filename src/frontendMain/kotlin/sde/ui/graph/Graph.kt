@@ -129,12 +129,14 @@ class Graph(val document: DataDocument) : Canvas()
 
 		if (node.graphItem.nodePositionX == Double.MAX_VALUE || node.graphItem.nodePositionY == Double.MAX_VALUE) {
 			val parent = getGraphParent(item)
-			if (parent == null) {
-				node.graphItem.nodePositionX = 0.0
-				node.graphItem.nodePositionY = 0.0
-			} else {
-				node.graphItem.nodePositionX = parent.nodePositionX + 100
-				node.graphItem.nodePositionY = parent.nodePositionY
+			item.document.undoRedoManager.disableUndoScope {
+				if (parent == null) {
+					node.graphItem.nodePositionX = 0.0
+					node.graphItem.nodePositionY = 0.0
+				} else {
+					node.graphItem.nodePositionX = parent.nodePositionX + 100
+					node.graphItem.nodePositionY = parent.nodePositionY
+				}
 			}
 		}
 
