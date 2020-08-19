@@ -256,6 +256,8 @@ abstract class AbstractDataDefinition<D: AbstractDataDefinition<D, I>, I: Abstra
 				"REFERENCE" -> ReferenceDefinition()
 				"GRAPHREFERENCE" -> GraphReferenceDefinition()
 
+				"CONST" -> ConstDefinition()
+
 				else -> throw DefinitionLoadException("Unknown definition type $type for xml '$xml")
 			}
 			def.srcFile = srcFile
