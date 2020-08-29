@@ -43,7 +43,7 @@ class BooleanDefinitionTest
         assertTrue(def is BooleanDefinition)
 
         val dataDoc = DataDocument("")
-        val data = def.loadItem(dataDoc, dataXml.root)
+        val data = dataDoc.loadItem(def, dataXml.root)
 
         assertTrue(data is BooleanItem)
         assertEquals(true, data.value)
@@ -62,7 +62,9 @@ class BooleanDefinitionTest
 		""".trimIndent().parseXml().toXDocument()
 
         val def = AbstractDataDefinition.load(defXml, "")
-        val data = def.loadItem(DataDocument(""), dataXml.root)
+
+	    val dataDoc = DataDocument("")
+	    val data = dataDoc.loadItem(def, dataXml.root)
 
         assertTrue(data is BooleanItem)
 

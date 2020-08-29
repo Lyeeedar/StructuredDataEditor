@@ -89,7 +89,7 @@ class GraphStructDefinitionTest
 		val def = AbstractDataDefinition.load(xml, "")
 
 		val dataDoc = DataDocument("")
-		val data = def.loadItem(dataDoc, dataXml.root)
+		val data = dataDoc.loadItem(def, dataXml.root)
 
 		assertTrue(data is GraphStructItem)
 		assertEquals("Block", data.name)
@@ -123,7 +123,7 @@ class GraphStructDefinitionTest
 		val def = AbstractDataDefinition.load(xml, "")
 
 		val dataDoc = DataDocument("")
-		val data = def.loadItem(dataDoc, dataXml.root)
+		val data = dataDoc.loadItem(def, dataXml.root)
 
 		assertEquals("""
 			<Block meta:X="240" meta:Y="0" GUID="mahguid">
@@ -159,7 +159,7 @@ class GraphStructDefinitionTest
 		assertEquals(1, def.contents[1].second.size)
 
 		val dataDoc = DataDocument("")
-		val data = def.loadItem(dataDoc, dataXml.root)
+		val data = dataDoc.loadItem(def, dataXml.root)
 
 		assertTrue(data is GraphStructItem)
 		assertEquals("Block", data.name)
@@ -401,12 +401,91 @@ class GraphStructDefinitionTest
 		val defRaw = getDefFile()
 		val parsed = defRaw.parseProjectAndResolve()
 
-		val behaviourTreeDef = parsed["BehaviourTree"]
-		assertNotNull(behaviourTreeDef)
+		val def = parsed["BehaviourTree"]
+		assertNotNull(def)
 
-		val document = DataDocument("")
-		val loaded = behaviourTreeDef.loadItem(document, dataXml.root)
+		val dataDoc = DataDocument("")
+		val data = dataDoc.loadItem(def, dataXml.root)
 
-		assertTrue(loaded is GraphStructItem)
+		assertTrue(data is GraphStructItem)
+	}
+
+	@Test
+	fun saveLarge() {
+		val dataRaw = """
+			<BehaviourTree meta:X="0" meta:Y="0" GUID="d0c70fe6-69bf-4558-a133-f017c5ce17c4" xmlns:meta="Editor">
+				<NodeMap>
+					<RunOneRandomly meta:X="240" meta:Y="0" GUID="9c535ca3-cc30-490a-adf2-b299f9395c45">
+						<!--25% chance to explore-->
+						<Wait>
+							<classID>Wait</classID>
+							<Count>1</Count>
+						</Wait>
+						<Wait>
+							<classID>Wait</classID>
+							<Count>1</Count>
+						</Wait>
+						<Wait>
+							<classID>Wait</classID>
+							<Count>1</Count>
+						</Wait>
+						<Node>
+							<classID>Node</classID>
+							<Node meta:RefKey="RunUntilNotCompleted">875dbd75-563f-4f6b-95aa-5028fded4b69</Node>
+						</Node>
+					</RunOneRandomly>
+					<RunUntilNotCompleted meta:X="555" meta:Y="0" GUID="875dbd75-563f-4f6b-95aa-5028fded4b69">
+						<!--Set explore pos if not set-->
+						<Branch>
+							<classID>Branch</classID>
+							<Branches>
+								<ConditionAndNode>
+									<Condition>explorePos==0</Condition>
+									<Node meta:RefKey="RunUntilNotCompleted">004dd7df-8f40-4bac-b359-87a520903c1d</Node>
+								</ConditionAndNode>
+							</Branches>
+						</Branch>
+						<!--Move to explore pos, then clear-->
+						<MoveTo>
+							<classID>MoveTo</classID>
+							<Key>explorePos</Key>
+						</MoveTo>
+						<ClearValue>
+							<classID>ClearValue</classID>
+							<Key>explorePos</Key>
+						</ClearValue>
+					</RunUntilNotCompleted>
+					<RunUntilNotCompleted meta:X="1050" meta:Y="0" GUID="004dd7df-8f40-4bac-b359-87a520903c1d">
+						<!--Select random tile-->
+						<GetAllVisible>
+							<classID>GetAllVisible</classID>
+							<Type>Tiles</Type>
+							<Key>tiles</Key>
+						</GetAllVisible>
+						<PickOneFrom>
+							<classID>PickOneFrom</classID>
+							<Input>tiles</Input>
+							<Output>explorePos</Output>
+							<Condition>random</Condition>
+						</PickOneFrom>
+					</RunUntilNotCompleted>
+				</NodeMap>
+				<Root meta:RefKey="RunOneRandomly">9c535ca3-cc30-490a-adf2-b299f9395c45</Root>
+			</BehaviourTree>
+		""".trimIndent()
+		val dataXml = dataRaw.parseXml().toXDocument()
+
+		val defRaw = getDefFile()
+		val parsed = defRaw.parseProjectAndResolve()
+
+		val def = parsed["BehaviourTree"]
+		assertNotNull(def)
+
+		val dataDoc = DataDocument("")
+		val data = dataDoc.loadItem(def, dataXml.root)
+
+		assertTrue(data is GraphStructItem)
+
+		assertEquals(dataRaw, data.def.saveItem(data).toString())
 	}
 }

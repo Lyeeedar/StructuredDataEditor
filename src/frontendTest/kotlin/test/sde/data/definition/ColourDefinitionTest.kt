@@ -42,8 +42,8 @@ class ColourDefinitionTest
 
         assertTrue(def is ColourDefinition)
 
-        val dataDoc = DataDocument("")
-        val data = def.loadItem(dataDoc, dataXml.root)
+	    val dataDoc = DataDocument("")
+	    val data = dataDoc.loadItem(def, dataXml.root)
 
         assertTrue(data is ColourItem)
         assertEquals("125,178,100", data.value)
@@ -62,7 +62,9 @@ class ColourDefinitionTest
 		""".trimIndent().parseXml().toXDocument()
 
         val def = AbstractDataDefinition.load(defXml, "")
-        val data = def.loadItem(DataDocument(""), dataXml.root)
+
+	    val dataDoc = DataDocument("")
+	    val data = dataDoc.loadItem(def, dataXml.root)
 
         assertTrue(data is ColourItem)
 

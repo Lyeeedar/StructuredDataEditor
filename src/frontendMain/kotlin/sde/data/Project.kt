@@ -68,7 +68,7 @@ class Project(val def: ProjectDef, val page: ProjectExplorerPage)
 		val data = DataDocument(path)
 		data.project = page.project
 
-		val item = def.loadItem(data, xml.root)
+		val item = data.loadItem(def, xml.root)
 
 		data.root = item as CompoundDataItem
 

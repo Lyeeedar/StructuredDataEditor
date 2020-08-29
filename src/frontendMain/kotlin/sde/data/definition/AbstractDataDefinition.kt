@@ -45,11 +45,7 @@ abstract class AbstractDataDefinition<D: AbstractDataDefinition<D, I>, I: Abstra
 
 			for (child in children) {
 				yield(child)
-
-				val childDescendants = child.descendants()
-				for (cd in childDescendants) {
-					yield(cd)
-				}
+				yieldAll(child.descendants())
 			}
 		}
 	}

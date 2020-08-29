@@ -36,7 +36,7 @@ abstract class AbstractReferenceDefinition<D: AbstractReferenceDefinition<D, I>,
 
     protected override fun loadItemInstance(document: DataDocument, xml: XElement): I
     {
-        val item = loadItemInstanceInternal(document)
+        val item = loadItemInstanceInternal(document, xml)
 
         val refKey = xml.getAttributeValue("meta:RefKey", "---")
         val def = contentsMap[refKey]
@@ -53,7 +53,7 @@ abstract class AbstractReferenceDefinition<D: AbstractReferenceDefinition<D, I>,
 
         return item
     }
-    protected abstract fun loadItemInstanceInternal(document: DataDocument): I
+    protected abstract fun loadItemInstanceInternal(document: DataDocument, xml: XElement): I
 
     protected override fun saveItemInstance(item: I): XElement
     {
@@ -84,7 +84,7 @@ class ReferenceDefinition : AbstractReferenceDefinition<ReferenceDefinition, Ref
         return ReferenceItem(this, document)
     }
 
-    override fun loadItemInstanceInternal(document: DataDocument): ReferenceItem {
+    override fun loadItemInstanceInternal(document: DataDocument, xml: XElement): ReferenceItem {
         return ReferenceItem(this, document)
     }
 

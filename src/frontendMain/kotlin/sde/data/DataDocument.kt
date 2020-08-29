@@ -11,6 +11,8 @@ import pl.treksoft.kvision.html.*
 import pl.treksoft.kvision.panel.*
 import pl.treksoft.kvision.require
 import pl.treksoft.kvision.toast.Toast
+import sde.data.definition.AbstractCompoundDefinition
+import sde.data.definition.DataDefinition
 import sde.data.item.CompoundDataItem
 import sde.data.item.DataItem
 import sde.data.item.EnumItem
@@ -18,6 +20,7 @@ import sde.data.item.IRemovable
 import sde.pages.AbstractPage
 import sde.ui.*
 import sde.ui.graph.Graph
+import sde.util.XElement
 import sde.utils.BasicObservableClass
 import sde.utils.UndoRedoManager
 import sde.utils.getFileName
@@ -114,5 +117,15 @@ class DataDocument(val path: String) : BasicObservableClass()
 		updateEditor()
 
 		return div
+	}
+
+	fun loadItem(rootDef: DataDefinition, rootData: XElement): DataItem {
+		val root = rootDef.loadItem(this, rootData)
+
+		for (item in root.descendants()) {
+			item.postLoad(item)
+		}
+
+		return root
 	}
 }

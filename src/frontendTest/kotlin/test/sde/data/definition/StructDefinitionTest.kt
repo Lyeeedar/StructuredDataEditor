@@ -91,7 +91,7 @@ class StructDefinitionTest
 		val def = AbstractDataDefinition.load(xml, "")
 
 		val dataDoc = DataDocument("")
-		val data = def.loadItem(dataDoc, dataXml.root)
+		val data = dataDoc.loadItem(def, dataXml.root)
 
 		assertTrue(data is StructItem)
 		assertEquals("Block", data.name)
@@ -122,7 +122,7 @@ class StructDefinitionTest
 		val def = AbstractDataDefinition.load(xml, "")
 
 		val dataDoc = DataDocument("")
-		val data = def.loadItem(dataDoc, dataXml.root)
+		val data = dataDoc.loadItem(def, dataXml.root)
 
 		assertEquals("""
 			<Block>
@@ -158,7 +158,7 @@ class StructDefinitionTest
 		assertEquals(1, def.contents[1].second.size)
 
 		val dataDoc = DataDocument("")
-		val data = def.loadItem(dataDoc, dataXml.root)
+		val data = dataDoc.loadItem(def, dataXml.root)
 
 		assertTrue(data is StructItem)
 		assertEquals("Block", data.name)

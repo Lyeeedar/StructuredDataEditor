@@ -42,8 +42,8 @@ class StringDefinitionTest
 
         assertTrue(def is StringDefinition)
 
-        val dataDoc = DataDocument("")
-        val data = def.loadItem(dataDoc, dataXml.root)
+	    val dataDoc = DataDocument("")
+	    val data = dataDoc.loadItem(def, dataXml.root)
 
         assertTrue(data is StringItem)
         assertEquals("true", data.value)
@@ -62,7 +62,9 @@ class StringDefinitionTest
 		""".trimIndent().parseXml().toXDocument()
 
         val def = AbstractDataDefinition.load(defXml, "")
-        val data = def.loadItem(DataDocument(""), dataXml.root)
+
+	    val dataDoc = DataDocument("")
+	    val data = dataDoc.loadItem(def, dataXml.root)
 
         assertTrue(data is StringItem)
 

@@ -141,7 +141,7 @@ class ReferenceDefinitionTest
 		assertNotNull(def)
 
 		val dataDoc = DataDocument("")
-		val data = def.loadItem(dataDoc, dataXml.root)
+		val data = dataDoc.loadItem(def, dataXml.root)
 
 		assertTrue(data is ReferenceItem)
 		assertEquals("Ref (Block2)", data.name)

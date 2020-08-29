@@ -46,7 +46,7 @@ class NumberDefinitionTest
 		assertTrue(def is NumberDefinition)
 
 		val dataDoc = DataDocument("")
-		val data = def.loadItem(dataDoc, dataXml.root)
+		val data = dataDoc.loadItem(def, dataXml.root)
 
 		assertTrue(data is NumberItem)
 		assertEquals(10.0f, data.value)
@@ -65,7 +65,9 @@ class NumberDefinitionTest
 		""".trimIndent().parseXml().toXDocument()
 
 		val def = AbstractDataDefinition.load(defXml, "")
-		val data = def.loadItem(DataDocument(""), dataXml.root)
+
+		val dataDoc = DataDocument("")
+		val data = dataDoc.loadItem(def, dataXml.root)
 
 		assertTrue(data is NumberItem)
 

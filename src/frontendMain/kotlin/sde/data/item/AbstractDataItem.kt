@@ -127,6 +127,28 @@ abstract class AbstractDataItem<D: DataDefinition>(val def: D, val document: Dat
 		}, "Remove $name from ${collection.name}")
 	}
 
+	fun descendants(): Sequence<DataItem> {
+		return sequence {
+			val children = ArrayList<DataItem>()
+			val thisRef = this@AbstractDataItem
+
+			if (thisRef is ReferenceItem && thisRef.createdItem != null) {
+				children.add(thisRef.createdItem!!)
+			} else if (thisRef is CompoundDataItem) {
+				children.addAll(thisRef.children)
+			}
+
+			for (child in children) {
+				yield(child)
+				yieldAll(child.descendants())
+			}
+		}
+	}
+
+	open fun postLoad(root: DataItem) {
+
+	}
+
 	// ---------------------------------------- UI ----------------------------------------------
 	protected fun isVisible() = document.dataItemEditor.lastRenderedID == renderedID
 

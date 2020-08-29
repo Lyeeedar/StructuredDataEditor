@@ -94,7 +94,7 @@ class TimelineDefinitionTest {
 		def.resolve__test()
 
 		val dataDoc = DataDocument("")
-		val data = def.loadItem(dataDoc, dataXml.root)
+		val data = dataDoc.loadItem(def, dataXml.root)
 
 		assertTrue(data is TimelineItem)
 		assertEquals("Number (2)", data.name)
@@ -133,7 +133,7 @@ class TimelineDefinitionTest {
 		def.resolve__test()
 
 		val dataDoc = DataDocument("")
-		val data = def.loadItem(dataDoc, dataXml.root)
+		val data = dataDoc.loadItem(def, dataXml.root)
 
 		assertEquals("""
 			<Number>

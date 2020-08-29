@@ -49,7 +49,7 @@ class VectorDefinitionTest
 		assertTrue(def is VectorDefinition)
 
 		val dataDoc = DataDocument("")
-		val data = def.loadItem(dataDoc, dataXml.root)
+		val data = dataDoc.loadItem(def, dataXml.root)
 
 		assertTrue(data is VectorItem)
 		assertEquals(10.0f, data.value1)
@@ -70,7 +70,9 @@ class VectorDefinitionTest
 		""".trimIndent().parseXml().toXDocument()
 
 		val def = AbstractDataDefinition.load(defXml, "")
-		val data = def.loadItem(DataDocument(""), dataXml.root)
+
+		val dataDoc = DataDocument("")
+		val data = dataDoc.loadItem(def, dataXml.root)
 
 		assertTrue(data is VectorItem)
 

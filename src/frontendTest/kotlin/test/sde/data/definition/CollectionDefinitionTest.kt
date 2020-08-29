@@ -93,7 +93,7 @@ class CollectionDefinitionTest
 		def.resolve__test()
 
 		val dataDoc = DataDocument("")
-		val data = def.loadItem(dataDoc, dataXml.root)
+		val data = dataDoc.loadItem(def, dataXml.root)
 
 		assertTrue(data is CollectionItem)
 		assertEquals("Block (4)", data.name)
@@ -138,7 +138,7 @@ class CollectionDefinitionTest
 		def.resolve__test()
 
 		val dataDoc = DataDocument("")
-		val data = def.loadItem(dataDoc, dataXml.root)
+		val data = dataDoc.loadItem(def, dataXml.root)
 
 		assertEquals("""
 			<Block>
@@ -176,7 +176,7 @@ class CollectionDefinitionTest
 		assertEquals(1, def.contents[1].second.size)
 
 		val dataDoc = DataDocument("")
-		val data = def.loadItem(dataDoc, dataXml.root)
+		val data = dataDoc.loadItem(def, dataXml.root)
 
 		assertTrue(data is CollectionItem)
 		assertEquals("Block (2)", data.name)
