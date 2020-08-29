@@ -22,7 +22,7 @@ interface IGraphNodeDefinition
 
 class GraphNodeDefinition : IGraphNodeDefinition
 {
-	override var allowReferenceLinks: Boolean = false
+	override var allowReferenceLinks: Boolean = true
 	override var allowCircularLinks: Boolean = false
 	override var flattenData: Boolean = false
 	override var nodeStoreName: String = "Nodes"
