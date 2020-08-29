@@ -1,11 +1,8 @@
 package test.sde.data.definition
 
 import sde.data.Project
-import sde.data.definition.AbstractDataDefinition
-import sde.data.definition.DefinitionMap
 import sde.data.DataDocument
-import sde.data.definition.NumberDefinition
-import sde.data.definition.ReferenceDefinition
+import sde.data.definition.*
 import sde.data.item.ReferenceItem
 import sde.data.item.NumberItem
 import sde.data.item.BooleanItem
@@ -35,6 +32,56 @@ class ReferenceDefinitionTest
 		assertEquals(2, def.contents[0].second.size)
 		assertTrue(def.contents[0].second[0] is NumberDefinition)
 		assertEquals("Count2", def.contents[0].second[1].name)
+	}
+
+	@Test
+	fun testParse2()
+	{
+		val xml = """
+<Definitions xmlns:meta="Editor">
+	<Definition Name="Wait" Nullable="False" TextColour="206,206,2" meta:RefKey="StructDef">
+		<Const Name="classID">Wait</Const>
+		<Data Name="Count" SkipIfDefault="False" Default="1" meta:RefKey="String" />
+	</Definition>
+	
+	<Definition Name="AbstractBehaviourActionDefs" Keys="Wait" meta:RefKey="ReferenceDef" />
+	<Definition Name="AbstractBehaviourNodeDefs" Keys="Other(RunAll,RunOneRandomly),Until(RunUntilNotCompleted,RunUntilNotFailed,RunUntilState)" meta:RefKey="ReferenceDef" />
+	
+	<Definition Name="RunAll" DefKey="AbstractBehaviourActionDefs" Background="204,28,28" meta:RefKey="GraphCollectionDef">
+	</Definition>
+	<Definition Name="RunOneRandomly" DefKey="AbstractBehaviourActionDefs" Background="26,204,26" meta:RefKey="GraphCollectionDef">
+	</Definition>
+	<Definition Name="RunUntilNotCompleted" DefKey="AbstractBehaviourActionDefs" Background="49,49,204" meta:RefKey="GraphCollectionDef">
+	</Definition>
+	<Definition Name="RunUntilNotFailed" DefKey="AbstractBehaviourActionDefs" Background="53,204,53" meta:RefKey="GraphCollectionDef">
+	</Definition>
+	<Definition Name="RunUntilState" DefKey="AbstractBehaviourActionDefs" Background="78,204,204" HasAttributes="True" meta:RefKey="GraphCollectionDef">
+		<Attributes meta:RefKey="Attributes">
+			<Data Name="TargetState" EnumValues="Completed,Running,Failed" SkipIfDefault="False" meta:RefKey="Enum" />
+		</Attributes>
+	</Definition>
+</Definitions>
+		""".trimIndent()
+
+		val defs = xml.parseProjectAndResolve()
+		assertEquals(8, defs.size)
+
+		val def = defs["AbstractBehaviourNodeDefs"]
+		assertTrue(def is ReferenceDefinition)
+
+		assertEquals(5, def.referenceMap.size)
+
+		assertEquals(3, def.contents.size)
+
+		assertEquals(2, def.contents[1].second.size)
+		assertEquals("Other", def.contents[1].first)
+
+		assertEquals(3, def.contents[2].second.size)
+		assertEquals("Until", def.contents[2].first)
+
+		assertEquals(5, def.contentsMap.size)
+		assertTrue(def.contents[1].second[0] is GraphCollectionDefinition)
+		assertEquals("RunOneRandomly", def.contents[1].second[1].name)
 	}
 
 	@Test

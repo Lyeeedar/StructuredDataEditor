@@ -42,9 +42,7 @@ abstract class AbstractCompoundDefinition<D: AbstractCompoundDefinition<D, I>, I
 		if (keys.isNotBlank())
 		{
 			val parsed = keys.parseCategorisedString()
-			for (category in parsed) {
-				registerReference("Keys", category.value, category.key)
-			}
+			registerReference("Keys", parsed)
 		}
 
 		val defKey = node.getAttributeValue("DefKey", "")

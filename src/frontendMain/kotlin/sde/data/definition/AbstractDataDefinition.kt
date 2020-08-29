@@ -35,7 +35,7 @@ abstract class AbstractDataDefinition<D: AbstractDataDefinition<D, I>, I: Abstra
 	var isDef = false
 
 	val attributes = ArrayList<AbstractPrimitiveDataDefinition<*, *>>()
-	var referenceMap = HashMap<String, DefinitionReference>()
+	val referenceMap = HashMap<String, DefinitionReference>()
 
 	abstract fun children(): List<DataDefinition>
 
@@ -56,6 +56,10 @@ abstract class AbstractDataDefinition<D: AbstractDataDefinition<D, I>, I: Abstra
 
 	fun registerReference(name: String, defName: String, category: String = "")
 	{
+		if (referenceMap[name] != null) {
+			throw DefinitionLoadException("Reference '$name' already exists!")
+		}
+
 		referenceMap[name] = DefinitionReference(name, defName, category)
 	}
 
@@ -63,7 +67,27 @@ abstract class AbstractDataDefinition<D: AbstractDataDefinition<D, I>, I: Abstra
 	{
 		for (i in defNames.indices)
 		{
+			if (referenceMap[name+i] != null) {
+				throw DefinitionLoadException("Reference '${name+i}' already exists!")
+			}
+
 			referenceMap[name+i] = DefinitionReference(name, defNames[i], category)
+		}
+	}
+
+	fun registerReference(name: String, categorisedString: HashMap<String, List<String>>)
+	{
+		var i = 0
+		for (category in categorisedString) {
+			for (def in category.value) {
+				if (referenceMap[name+i] != null) {
+					throw DefinitionLoadException("Reference '${name+i}' already exists!")
+				}
+
+				referenceMap[name+i] = DefinitionReference(name, def, category.key)
+
+				i++
+			}
 		}
 	}
 
