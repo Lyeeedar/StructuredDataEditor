@@ -51,17 +51,9 @@ class TimelineDefinitionTest {
 			</Definitions>
 		""".trimIndent()
 
-		val defMap = Project.parseDefinitionsFile(xml, "")
+		val defMap = xml.parseProjectAndResolve()
 
 		assertEquals(4, defMap.size)
-
-		val maps = HashMap<String, DefinitionMap>()
-		maps[""] = defMap
-
-		for (def in defMap.values)
-		{
-			def.resolve(defMap, maps)
-		}
 
 		val timelineDef = defMap["ActionTimeline"]
 		assertNotNull(timelineDef)

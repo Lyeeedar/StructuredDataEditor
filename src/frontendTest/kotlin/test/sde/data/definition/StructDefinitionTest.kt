@@ -51,17 +51,9 @@ class StructDefinitionTest
 			</Definitions>
 		""".trimIndent()
 
-		val defMap = Project.parseDefinitionsFile(xml, "")
+		val defMap = xml.parseProjectAndResolve()
 
 		assertEquals(2, defMap.size)
-
-		val maps = HashMap<String, DefinitionMap>()
-		maps[""] = defMap
-
-		for (def in defMap.values)
-		{
-			def.resolve(defMap, maps)
-		}
 
 		val blockDef = defMap["Block"]
 		assertNotNull(blockDef)
