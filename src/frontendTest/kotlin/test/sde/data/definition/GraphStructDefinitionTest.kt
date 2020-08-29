@@ -15,6 +15,7 @@ import kotlin.test.assertTrue
 
 class GraphStructDefinitionTest
 {
+	// basic struct tests
 	@Test
 	fun testParse()
 	{
@@ -48,17 +49,9 @@ class GraphStructDefinitionTest
 			</Definitions>
 		""".trimIndent()
 
-		val defMap = Project.parseDefinitionsFile(xml, "")
+		val defMap = xml.parseProjectAndResolve()
 
 		assertEquals(2, defMap.size)
-
-		val maps = HashMap<String, DefinitionMap>()
-		maps[""] = defMap
-
-		for (def in defMap.values)
-		{
-			def.resolve(defMap, maps)
-		}
 
 		val blockDef = defMap["Block"]
 		assertNotNull(blockDef)
@@ -176,5 +169,150 @@ class GraphStructDefinitionTest
 				<IsAwesome>true</IsAwesome>
 			</Block>
 		""".trimIndent(), data.def.saveItem(data).toString())
+	}
+
+	// flat data tests
+	fun getDefFile(): String {
+		val def: String = """
+			<Definitions Colour="121,252,218" Icon="Sprites/Icons/CardIcon.png" xmlns:meta="Editor">
+				<Definition Name="BehaviourTree" AllowCircularLinks="True" FlattenData="True" NodeStoreName="NodeMap" Nullable="False" TextColour="14,204,14" meta:RefKey="GraphStruct">
+					<Data Name="Root" DefKey="AbstractBehaviourNodeDefs" Nullable="False" SkipIfDefault="False" meta:RefKey="GraphReference" />
+				</Definition>
+				<Definition Name="AbstractBehaviourAction" Nullable="False" TextColour="111,204,111" Extends="AbstractBehaviourTreeItem" meta:RefKey="StructDef">
+				</Definition>
+				<Definition Name="AbstractBehaviourActionDefs" Keys="(UseAbility),Action(Attack,Kill,MoveTo,ProcessInput,Wait),Data(ClearValue,ConvertToPosition,Datascope,PickOneFrom,SetValue),Debug(Breakpoint),Entity(GetAgro,GetAllVisible),Flow Control(Branch,Import,Node,SetState)" meta:RefKey="ReferenceDef" />
+				<Definition Name="AbstractBehaviourNodeDefs" Keys="Other(RunAll,RunOneRandomly),Until(RunUntilNotCompleted,RunUntilNotFailed,RunUntilState)" meta:RefKey="ReferenceDef" />
+				<Definition Name="AbstractBehaviourTreeItem" Nullable="False" TextColour="210,210,100" meta:RefKey="StructDef">
+				</Definition>
+				<Definition Name="AbstractBehaviourTreeItemDefs" Keys="(UseAbility),Action(Attack,Kill,MoveTo,ProcessInput,Wait),Data(ClearValue,ConvertToPosition,Datascope,PickOneFrom,SetValue),Debug(Breakpoint),Entity(GetAgro,GetAllVisible),Flow Control(Branch,Import,Node,SetState),Other(RunAll,RunOneRandomly),Until(RunUntilNotCompleted,RunUntilNotFailed,RunUntilState)" meta:RefKey="ReferenceDef" />
+				<Definition Name="Attack" Nullable="False" TextColour="19,214,214" Extends="AbstractBehaviourAction" meta:RefKey="StructDef">
+					<Const Name="classID">Attack</Const>
+					<Data Name="Key" SkipIfDefault="False" Default="" meta:RefKey="String" />
+				</Definition>
+				<Definition Name="Branch" Nullable="False" TextColour="238,94,94" Extends="AbstractBehaviourAction" meta:RefKey="StructDef">
+					<Const Name="classID">Branch</Const>
+					<Data Name="Branches" Keys="ConditionAndNode" meta:RefKey="Collection" />
+				</Definition>
+				<Definition Name="Breakpoint" Nullable="False" TextColour="67,204,67" Extends="AbstractBehaviourAction" meta:RefKey="StructDef">
+					<Const Name="classID">Breakpoint</Const>
+					<Data Name="Context" SkipIfDefault="False" Default="" meta:RefKey="String" />
+				</Definition>
+				<Definition Name="ClearValue" Nullable="False" TextColour="250,250,39" Extends="AbstractBehaviourAction" meta:RefKey="StructDef">
+					<Const Name="classID">ClearValue</Const>
+					<Data Name="Key" SkipIfDefault="False" Default="" meta:RefKey="String" />
+				</Definition>
+				<Definition Name="ConditionAndNode" Nullable="False" TextColour="204,204,4" meta:RefKey="StructDef">
+					<Data Name="Condition" SkipIfDefault="False" Default="1" ToolTip="Known variables: else" meta:RefKey="String" />
+					<Data Name="Node" DefKey="AbstractBehaviourNodeDefs" UseParentDescription="True" Nullable="False" SkipIfDefault="False" meta:RefKey="GraphReference" />
+				</Definition>
+				<Definition Name="ConvertToPosition" Nullable="False" TextColour="132,204,204" Extends="AbstractBehaviourAction" meta:RefKey="StructDef">
+					<Const Name="classID">ConvertToPosition</Const>
+					<Data Name="Input" SkipIfDefault="False" Default="" meta:RefKey="String" />
+					<Data Name="Output" SkipIfDefault="False" Default="" meta:RefKey="String" />
+				</Definition>
+				<Definition Name="Datascope" Nullable="False" TextColour="241,17,17" Extends="AbstractBehaviourAction" meta:RefKey="StructDef">
+					<Const Name="classID">Datascope</Const>
+					<Data Name="Node" DefKey="AbstractBehaviourNodeDefs" Nullable="False" SkipIfDefault="False" meta:RefKey="GraphReference" />
+				</Definition>
+				<Definition Name="GetAgro" Nullable="False" TextColour="210,210,123" Extends="AbstractBehaviourAction" meta:RefKey="StructDef">
+					<Const Name="classID">GetAgro</Const>
+					<Data Name="Key" SkipIfDefault="False" Default="" meta:RefKey="String" />
+				</Definition>
+				<Definition Name="GetAllVisible" Nullable="False" TextColour="204,127,127" Extends="AbstractBehaviourAction" meta:RefKey="StructDef">
+					<Const Name="classID">GetAllVisible</Const>
+					<Data Name="Type" EnumValues="Tiles,Allies,Enemies" SkipIfDefault="False" meta:RefKey="Enum" />
+					<Data Name="Key" SkipIfDefault="False" Default="" meta:RefKey="String" />
+				</Definition>
+				<Definition Name="Import" Nullable="False" TextColour="244,117,244" Extends="AbstractBehaviourAction" meta:RefKey="StructDef">
+					<Const Name="classID">Import</Const>
+					<Data Name="Path" StripExtension="True" ResourceType="BehaviourTree" SkipIfDefault="False" Default="" meta:RefKey="File" />
+				</Definition>
+				<Definition Name="Kill" Nullable="False" TextColour="17,17,204" Extends="AbstractBehaviourAction" meta:RefKey="StructDef">
+					<Const Name="classID">Kill</Const>
+				</Definition>
+				<Definition Name="MoveTo" Nullable="False" TextColour="228,18,228" Extends="AbstractBehaviourAction" meta:RefKey="StructDef">
+					<Const Name="classID">MoveTo</Const>
+					<Data Name="Dst" Type="Int" Default="0" SkipIfDefault="True" meta:RefKey="Number" />
+					<Data Name="Towards" SkipIfDefault="True" Default="true" meta:RefKey="Boolean" />
+					<Data Name="Key" SkipIfDefault="False" Default="" meta:RefKey="String" />
+				</Definition>
+				<Definition Name="Node" Nullable="False" TextColour="26,204,204" Extends="AbstractBehaviourAction" meta:RefKey="StructDef">
+					<Const Name="classID">Node</Const>
+					<Data Name="Node" DefKey="AbstractBehaviourNodeDefs" Nullable="False" SkipIfDefault="False" meta:RefKey="GraphReference" />
+				</Definition>
+				<Definition Name="PickOneFrom" Nullable="False" TextColour="15,218,15" Extends="AbstractBehaviourAction" meta:RefKey="StructDef">
+					<Const Name="classID">PickOneFrom</Const>
+					<Data Name="Input" SkipIfDefault="False" Default="" meta:RefKey="String" />
+					<Data Name="Output" SkipIfDefault="False" Default="" meta:RefKey="String" />
+					<Data Name="Condition" SkipIfDefault="False" Default="dist" ToolTip="Known variables: dist,hp,level,damage,random" meta:RefKey="String" />
+					<Data Name="Minimum" SkipIfDefault="True" Default="true" meta:RefKey="Boolean" />
+				</Definition>
+				<Definition Name="ProcessInput" Nullable="False" TextColour="253,253,85" Extends="AbstractBehaviourAction" meta:RefKey="StructDef">
+					<Const Name="classID">ProcessInput</Const>
+				</Definition>
+				<Definition Name="RunAll" DefKey="AbstractBehaviourActionDefs" Background="204,28,28" meta:RefKey="GraphCollectionDef">
+				</Definition>
+				<Definition Name="RunOneRandomly" DefKey="AbstractBehaviourActionDefs" Background="26,204,26" meta:RefKey="GraphCollectionDef">
+				</Definition>
+				<Definition Name="RunUntilNotCompleted" DefKey="AbstractBehaviourActionDefs" Background="49,49,204" meta:RefKey="GraphCollectionDef">
+				</Definition>
+				<Definition Name="RunUntilNotFailed" DefKey="AbstractBehaviourActionDefs" Background="53,204,53" meta:RefKey="GraphCollectionDef">
+				</Definition>
+				<Definition Name="RunUntilState" DefKey="AbstractBehaviourActionDefs" Background="78,204,204" HasAttributes="True" meta:RefKey="GraphCollectionDef">
+					<Attributes meta:RefKey="Attributes">
+						<Data Name="TargetState" EnumValues="Completed,Running,Failed" SkipIfDefault="False" meta:RefKey="Enum" />
+					</Attributes>
+				</Definition>
+				<Definition Name="SetState" Nullable="False" TextColour="20,20,204" Extends="AbstractBehaviourAction" meta:RefKey="StructDef">
+					<Const Name="classID">SetState</Const>
+					<Data Name="OutputMap" Nullable="False" SkipIfDefault="False" meta:RefKey="Struct">
+						<Data Name="Completed" EnumValues="Completed,Running,Failed" meta:RefKey="Enum" />
+						<Data Name="Running" EnumValues="Completed,Running,Failed" meta:RefKey="Enum" />
+						<Data Name="Failed" EnumValues="Completed,Running,Failed" meta:RefKey="Enum" />
+					</Data>
+					<Data Name="Node" DefKey="AbstractBehaviourNodeDefs" Nullable="False" SkipIfDefault="False" meta:RefKey="GraphReference" />
+				</Definition>
+				<Definition Name="SetValue" Nullable="False" TextColour="22,204,22" Extends="AbstractBehaviourAction" meta:RefKey="StructDef">
+					<Const Name="classID">SetValue</Const>
+					<Data Name="Key" SkipIfDefault="False" Default="" meta:RefKey="String" />
+					<Data Name="Value" SkipIfDefault="False" Default="1" meta:RefKey="String" />
+				</Definition>
+				<Definition Name="UseAbility" Nullable="False" TextColour="82,82,204" Extends="AbstractBehaviourAction" meta:RefKey="StructDef">
+					<Const Name="classID">UseAbility</Const>
+					<Data Name="Key" SkipIfDefault="False" Default="" meta:RefKey="String" />
+				</Definition>
+				<Definition Name="Wait" Nullable="False" TextColour="206,206,2" Extends="AbstractBehaviourAction" meta:RefKey="StructDef">
+					<Const Name="classID">Wait</Const>
+					<Data Name="Count" SkipIfDefault="False" Default="1" meta:RefKey="String" />
+				</Definition>
+			</Definitions>
+		""".trimIndent()
+		assertNotNull(def)
+		assertTrue { def.contains("Name=\"BehaviourTree\" ") }
+
+		return def
+	}
+
+	@Test
+	fun parseLarge() {
+		val defRaw = getDefFile()
+		val parsed = defRaw.parseProjectAndResolve()
+
+		assertEquals(30, parsed.size)
+		assertNotNull(parsed["Wait"])
+
+		val nodeDefs = parsed["AbstractBehaviourNodeDefs"]
+		assertNotNull(nodeDefs)
+		assertTrue(nodeDefs is ReferenceDefinition)
+		assertEquals(5, nodeDefs.contentsMap.size)
+
+		val behaviourTreeDef = parsed["BehaviourTree"]
+		assertNotNull(behaviourTreeDef)
+		assertTrue(behaviourTreeDef is GraphStructDefinition)
+		assertEquals(true, behaviourTreeDef.flattenData)
+		assertEquals(true, behaviourTreeDef.allowCircularLinks)
+		assertEquals(true, behaviourTreeDef.allowReferenceLinks)
+		assertEquals("NodeMap", behaviourTreeDef.nodeStoreName)
+		assertEquals(5, behaviourTreeDef.nodeDefs.size)
 	}
 }
