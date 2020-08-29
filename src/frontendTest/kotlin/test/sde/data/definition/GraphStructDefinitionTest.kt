@@ -80,7 +80,7 @@ class GraphStructDefinitionTest
 		""".trimIndent().parseXml().toXDocument()
 
 		val dataXml = """
-			<Block>
+			<Block meta:X="240" meta:Y="0" GUID="mahguid" xmlns:meta="Editor">
 				<Num>4</Num>
 				<IsAwesome>true</IsAwesome>
 			</Block>
@@ -94,6 +94,9 @@ class GraphStructDefinitionTest
 		assertTrue(data is GraphStructItem)
 		assertEquals("Block", data.name)
 		assertEquals(2, data.children.size)
+		assertEquals(240.0, data.nodePositionX)
+		assertEquals(0.0, data.nodePositionY)
+		assertEquals("mahguid", data.guid)
 
 		val child2 = data.children[1]
 		assertTrue(child2 is BooleanItem)
@@ -111,7 +114,7 @@ class GraphStructDefinitionTest
 		""".trimIndent().parseXml().toXDocument()
 
 		val dataXml = """
-			<Block>
+			<Block meta:X="240" meta:Y="0" GUID="mahguid" xmlns:meta="Editor">
 				<Num>4</Num>
 				<IsAwesome>true</IsAwesome>
 			</Block>
@@ -123,7 +126,7 @@ class GraphStructDefinitionTest
 		val data = def.loadItem(dataDoc, dataXml.root)
 
 		assertEquals("""
-			<Block>
+			<Block meta:X="240" meta:Y="0" GUID="mahguid">
 				<Num>4</Num>
 				<IsAwesome>true</IsAwesome>
 			</Block>
@@ -314,5 +317,96 @@ class GraphStructDefinitionTest
 		assertEquals(true, behaviourTreeDef.allowReferenceLinks)
 		assertEquals("NodeMap", behaviourTreeDef.nodeStoreName)
 		assertEquals(5, behaviourTreeDef.nodeDefs.size)
+	}
+
+	@Test
+	fun createLarge() {
+		val defRaw = getDefFile()
+		val parsed = defRaw.parseProjectAndResolve()
+
+		val behaviourTreeDef = parsed["BehaviourTree"]
+		assertNotNull(behaviourTreeDef)
+
+		val document = DataDocument("")
+		val item = behaviourTreeDef.createItem(document)
+
+		assertTrue(item is GraphStructItem)
+		assertNotNull(item.nodeStore)
+	}
+
+	@Test
+	fun loadLarge() {
+		val dataXml = """
+			<BehaviourTree meta:X="0" meta:Y="0" GUID="d0c70fe6-69bf-4558-a133-f017c5ce17c4" xmlns:meta="Editor">
+				<Root meta:RefKey="RunOneRandomly">9c535ca3-cc30-490a-adf2-b299f9395c45</Root>
+				<NodeMap>
+					<RunOneRandomly meta:X="240" meta:Y="0" GUID="9c535ca3-cc30-490a-adf2-b299f9395c45">
+						<!--25% chance to explore-->
+						<Wait>
+							<classID>Wait</classID>
+							<Count>1</Count>
+						</Wait>
+						<Wait>
+							<classID>Wait</classID>
+							<Count>1</Count>
+						</Wait>
+						<Wait>
+							<classID>Wait</classID>
+							<Count>1</Count>
+						</Wait>
+						<Node>
+							<classID>Node</classID>
+							<Node meta:RefKey="RunUntilNotCompleted">875dbd75-563f-4f6b-95aa-5028fded4b69</Node>
+						</Node>
+					</RunOneRandomly>
+					<RunUntilNotCompleted meta:X="555" meta:Y="0" GUID="875dbd75-563f-4f6b-95aa-5028fded4b69">
+						<!--Set explore pos if not set-->
+						<Branch>
+							<classID>Branch</classID>
+							<Branches>
+								<ConditionAndNode>
+									<Condition>explorePos==0</Condition>
+									<Node meta:RefKey="RunUntilNotCompleted">004dd7df-8f40-4bac-b359-87a520903c1d</Node>
+								</ConditionAndNode>
+							</Branches>
+						</Branch>
+						<!--Move to explore pos, then clear-->
+						<MoveTo>
+							<classID>MoveTo</classID>
+							<Key>explorePos</Key>
+						</MoveTo>
+						<ClearValue>
+							<classID>ClearValue</classID>
+							<Key>explorePos</Key>
+						</ClearValue>
+					</RunUntilNotCompleted>
+					<RunUntilNotCompleted meta:X="1050" meta:Y="0" GUID="004dd7df-8f40-4bac-b359-87a520903c1d">
+						<!--Select random tile-->
+						<GetAllVisible>
+							<classID>GetAllVisible</classID>
+							<Type>Tiles</Type>
+							<Key>tiles</Key>
+						</GetAllVisible>
+						<PickOneFrom>
+							<classID>PickOneFrom</classID>
+							<Input>tiles</Input>
+							<Output>explorePos</Output>
+							<Condition>random</Condition>
+						</PickOneFrom>
+					</RunUntilNotCompleted>
+				</NodeMap>
+			</BehaviourTree>
+		""".trimIndent().parseXml().toXDocument()
+
+		val defRaw = getDefFile()
+		val parsed = defRaw.parseProjectAndResolve()
+
+		val behaviourTreeDef = parsed["BehaviourTree"]
+		assertNotNull(behaviourTreeDef)
+
+		val document = DataDocument("")
+		val loaded = behaviourTreeDef.loadItem(document, dataXml.root)
+
+		assertTrue(loaded is GraphStructItem)
 	}
 }

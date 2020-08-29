@@ -97,6 +97,11 @@ class XElement() : XData()
 		return this.getAttribute(name)?.value?.toFloat() ?: fallback
 	}
 
+	fun getAttributeValue(name: String, fallback: Double): Double
+	{
+		return this.getAttribute(name)?.value?.toFloat()?.toDouble() ?: fallback
+	}
+
 	override fun write(output: ArrayList<String>, indentation: Int)
 	{
 		val indentationStr = "\t".repeat(indentation)

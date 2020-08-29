@@ -1,6 +1,9 @@
 package sde.utils
 
+import kotlin.js.Date
+import kotlin.math.floor
 import kotlin.math.min
+import kotlin.random.Random
 
 fun String.getExtension(): String {
 	val split = this.getFileName().split('.')
@@ -125,4 +128,34 @@ fun String.prepareStackForToast(): String {
 	val lines = this.split('\n')
 	val simpleLines = lines.map { it.split("@webpack")[0] }
 	return simpleLines.joinToString("<br />")
+}
+
+fun generateUUID(): String {
+	val template = "xxxxxxxx-xxxx-Mxxx-Nxxx-xxxxxxxxxxxx"
+	val xs = "0123456789abcdef"
+	val ms = "12345"
+	val ns = "89ab"
+
+	val output = StringBuilder()
+
+	for (char in template) {
+		val values = when(char) {
+			'x' -> xs
+			'M' -> ms
+			'N' -> ns
+			else -> {
+				""
+			}
+		}
+
+		if (values.isBlank()) {
+			output.append(char)
+			continue
+		}
+
+		val c = values[Random.nextInt(values.length)]
+		output.append(c)
+	}
+
+	return output.toString()
 }

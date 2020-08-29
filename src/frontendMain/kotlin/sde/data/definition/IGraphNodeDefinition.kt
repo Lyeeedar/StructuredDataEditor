@@ -2,6 +2,7 @@ package sde.data.definition
 
 import sde.data.DataDocument
 import sde.data.item.IGraphNodeItem
+import sde.util.XAttribute
 import sde.util.XElement
 import sde.utils.DefinitionLoadException
 
@@ -51,6 +52,10 @@ class GraphNodeDefinition : IGraphNodeDefinition
 				}
 			}
 		}
+
+		item.nodePositionX = node.getAttributeValue("meta:X", item.nodePositionX)
+		item.nodePositionY = node.getAttributeValue("meta:Y", item.nodePositionY)
+		item.guid = node.getAttributeValue("GUID", item.guid)
 	}
 
 	override fun saveGraphNode(node: XElement, item: IGraphNodeItem) {
@@ -59,6 +64,10 @@ class GraphNodeDefinition : IGraphNodeDefinition
 			val saved = nodeStore.def.saveItem(nodeStore)
 			node.children.add(saved)
 		}
+
+		node.attributes.add(XAttribute("meta:X", item.nodePositionX.toString()))
+		node.attributes.add(XAttribute("meta:Y", item.nodePositionY.toString()))
+		node.attributes.add(XAttribute("GUID", item.guid))
 	}
 
 	override fun resolveGraphNode(dataDefinition: DataDefinition) {
