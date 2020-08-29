@@ -1,7 +1,5 @@
 package sde.data.definition
 
-import org.w3c.dom.Element
-import org.w3c.dom.Node
 import sde.data.DataDocument
 import sde.data.item.AbstractDataItem
 import sde.data.item.DataItem

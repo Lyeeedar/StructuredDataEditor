@@ -485,7 +485,8 @@ class GraphStructDefinitionTest
 		val data = dataDoc.loadItem(def, dataXml.root)
 
 		assertTrue(data is GraphStructItem)
+		dataDoc.root = data
 
-		assertEquals(dataRaw, data.def.saveItem(data).toString())
+		assertEquals(dataRaw, dataDoc.save().toString())
 	}
 }

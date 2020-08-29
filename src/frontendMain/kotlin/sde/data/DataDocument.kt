@@ -20,6 +20,7 @@ import sde.data.item.IRemovable
 import sde.pages.AbstractPage
 import sde.ui.*
 import sde.ui.graph.Graph
+import sde.util.XAttribute
 import sde.util.XElement
 import sde.utils.BasicObservableClass
 import sde.utils.UndoRedoManager
@@ -123,9 +124,15 @@ class DataDocument(val path: String) : BasicObservableClass()
 		val root = rootDef.loadItem(this, rootData)
 
 		for (item in root.descendants()) {
-			item.postLoad(item)
+			item.postLoad(root)
 		}
 
 		return root
+	}
+
+	fun save(): XElement {
+		val xml = root.def.saveItem(root)
+		xml.attributes.add(XAttribute("xmlns:meta", "Editor"))
+		return xml
 	}
 }
