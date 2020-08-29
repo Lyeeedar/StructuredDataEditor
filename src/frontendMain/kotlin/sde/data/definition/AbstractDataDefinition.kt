@@ -39,6 +39,21 @@ abstract class AbstractDataDefinition<D: AbstractDataDefinition<D, I>, I: Abstra
 
 	abstract fun children(): List<DataDefinition>
 
+	fun descendants(): Sequence<DataDefinition> {
+		return sequence {
+			val children = children()
+
+			for (child in children) {
+				yield(child)
+
+				val childDescendants = child.descendants()
+				for (cd in childDescendants) {
+					yield(cd)
+				}
+			}
+		}
+	}
+
 	fun registerReference(name: String, defName: String, category: String = "")
 	{
 		referenceMap[name] = DefinitionReference(name, defName, category)

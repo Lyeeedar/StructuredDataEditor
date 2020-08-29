@@ -6,20 +6,11 @@ import sde.data.DataDocument
 import sde.data.item.GraphStructItem
 import sde.util.XElement
 
-class GraphStructDefinition : AbstractStructDefinition<GraphStructDefinition, GraphStructItem>(), IGraphNodeDefinition
+class GraphStructDefinition : AbstractStructDefinition<GraphStructDefinition, GraphStructItem>(), IGraphNodeDefinition by GraphNodeDefinition()
 {
-	override var allowReferenceLinks: Boolean = true
-	override var allowCircularLinks: Boolean = true
-	override var flattenData: Boolean = true
-	override var nodeStoreName: String = "Nodes"
-	override var background: String = colours["Struct"]!!
-
-	override fun doParseInstanceInternal(node: XElement) {
-		allowReferenceLinks = node.getAttributeValue("AllowReferenceLinks", allowReferenceLinks)
-		allowCircularLinks = node.getAttributeValue("AllowCircularLinks", allowCircularLinks)
-		flattenData = node.getAttributeValue("FlattenData", flattenData)
-		nodeStoreName = node.getAttributeValue("NodeStoreName", nodeStoreName)
-		background = node.getAttributeValue("Background", background)
+	override fun doParseInstanceInternal(node: XElement)
+	{
+		parseGraphNode(node)
 	}
 
 	protected override fun createItemInstanceInternal(document: DataDocument): GraphStructItem
@@ -27,13 +18,22 @@ class GraphStructDefinition : AbstractStructDefinition<GraphStructDefinition, Gr
 		return GraphStructItem(this, document)
 	}
 
-	protected override fun loadItemInstanceInternal(document: DataDocument): GraphStructItem
+	protected override fun loadItemInstanceInternal(document: DataDocument, xml: XElement): GraphStructItem
 	{
-		return GraphStructItem(this, document)
+		val item = GraphStructItem(this, document)
+		loadGraphNode(xml, item, document)
+		return item
 	}
 
 	protected override fun saveItemInstanceInternal(item: GraphStructItem): XElement
 	{
-		return XElement(name)
+		val node = XElement(name)
+		saveGraphNode(node, item)
+		return node
+	}
+
+	override fun doPostResolveInstance()
+	{
+		resolveGraphNode(this)
 	}
 }

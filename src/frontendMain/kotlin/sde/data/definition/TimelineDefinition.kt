@@ -11,7 +11,7 @@ class TimelineDefinition : AbstractCollectionDefinition<TimelineDefinition, Time
 		return TimelineItem(this, document)
 	}
 
-	override fun loadItemInstanceInternal(document: DataDocument): TimelineItem
+	override fun loadItemInstanceInternal(document: DataDocument, xml: XElement): TimelineItem
 	{
 		return TimelineItem(this, document)
 	}

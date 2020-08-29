@@ -67,7 +67,7 @@ abstract class AbstractCollectionDefinition<D: AbstractCollectionDefinition<D, I
 
 	protected override fun loadItemInstance(document: DataDocument, xml: XElement): I
 	{
-		val item = loadItemInstanceInternal(document)
+		val item = loadItemInstanceInternal(document, xml)
 
 		val remainingChildren = ArrayList(xml.children)
 
@@ -99,7 +99,7 @@ abstract class AbstractCollectionDefinition<D: AbstractCollectionDefinition<D, I
 
 		return item
 	}
-	protected abstract fun loadItemInstanceInternal(document: DataDocument): I
+	protected abstract fun loadItemInstanceInternal(document: DataDocument, xml: XElement): I
 
 	protected override fun saveItemInstance(item: I): XElement
 	{
@@ -137,7 +137,7 @@ class CollectionDefinition : AbstractCollectionDefinition<CollectionDefinition, 
 		return CollectionItem(this, document)
 	}
 
-	override fun loadItemInstanceInternal(document: DataDocument): CollectionItem
+	override fun loadItemInstanceInternal(document: DataDocument, xml: XElement): CollectionItem
 	{
 		return CollectionItem(this, document)
 	}

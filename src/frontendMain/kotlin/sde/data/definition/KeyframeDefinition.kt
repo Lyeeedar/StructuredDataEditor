@@ -16,7 +16,7 @@ class KeyframeDefinition : AbstractStructDefinition<KeyframeDefinition, Keyframe
         return KeyframeItem(this, document)
     }
 
-    override fun loadItemInstanceInternal(document: DataDocument): KeyframeItem {
+    override fun loadItemInstanceInternal(document: DataDocument, xml: XElement): KeyframeItem {
         return KeyframeItem(this, document)
     }
 

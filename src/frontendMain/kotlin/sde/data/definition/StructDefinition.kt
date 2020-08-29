@@ -55,7 +55,7 @@ abstract class AbstractStructDefinition<D: AbstractStructDefinition<D, I>, I: Ab
 
 	protected override fun loadItemInstance(document: DataDocument, xml: XElement): I
 	{
-		val item = loadItemInstanceInternal(document)
+		val item = loadItemInstanceInternal(document, xml)
 
 		if (!nullable || xml.children.size > 0) {
 
@@ -84,7 +84,7 @@ abstract class AbstractStructDefinition<D: AbstractStructDefinition<D, I>, I: Ab
 
 		return item
 	}
-	protected abstract fun loadItemInstanceInternal(document: DataDocument): I
+	protected abstract fun loadItemInstanceInternal(document: DataDocument, xml: XElement): I
 
 	protected override fun saveItemInstance(item: I): XElement
 	{
@@ -120,7 +120,7 @@ class StructDefinition : AbstractStructDefinition<StructDefinition, StructItem>(
 		return StructItem(this, document)
 	}
 
-	protected override fun loadItemInstanceInternal(document: DataDocument): StructItem
+	protected override fun loadItemInstanceInternal(document: DataDocument, xml: XElement): StructItem
 	{
 		return StructItem(this, document)
 	}
