@@ -77,31 +77,15 @@ class Graph(val document: DataDocument) : Canvas()
 		}
     }
 
-	private fun getGraphNodeItems(): Sequence<IGraphNodeItem> {
+	internal fun getGraphNodeItems(): Sequence<IGraphNodeItem> {
 		return sequence {
 			if (document.root is IGraphNodeItem) {
 				yield(document.root as IGraphNodeItem)
 
-				for (child in getGraphNodeItems(document.root)) {
-					yield(child)
-				}
-			}
-		}
-	}
-
-	private fun getGraphNodeItems(item: CompoundDataItem): Sequence<IGraphNodeItem> {
-		return sequence {
-			for (child in item.children) {
-				if (child is IGraphNodeItem) {
-					yield(child as IGraphNodeItem)
-				}
-				if (child is ReferenceItem && child.createdItem is IGraphNodeItem) {
-					yield(child.createdItem as IGraphNodeItem)
-				}
-
-				if (child is AbstractCompoundDataItem) {
-					for (descendant in getGraphNodeItems(child)) {
-						yield(descendant)
+				for (child in document.root.descendants()) {
+					if (child is IGraphNodeItem)
+					{
+						yield(child as IGraphNodeItem)
 					}
 				}
 			}
@@ -109,7 +93,7 @@ class Graph(val document: DataDocument) : Canvas()
 	}
 
 	private val nodeCache = HashMap<IGraphNodeItem, GraphNode>()
-	private fun getGraphNodes(): Sequence<GraphNode> {
+	internal fun getGraphNodes(): Sequence<GraphNode> {
 		return sequence {
 			for (item in getGraphNodeItems()) {
 				if (item is CompoundDataItem)

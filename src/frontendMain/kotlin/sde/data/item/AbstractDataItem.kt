@@ -127,20 +127,33 @@ abstract class AbstractDataItem<D: DataDefinition>(val def: D, val document: Dat
 		}, "Remove $name from ${collection.name}")
 	}
 
-	fun descendants(): Sequence<DataItem> {
+	fun descendants(returnedSet: HashSet<DataItem> = HashSet()): Sequence<DataItem> {
 		return sequence {
 			val children = ArrayList<DataItem>()
 			val thisRef = this@AbstractDataItem
 
+			if (thisRef is IGraphNodeItem) {
+				if (thisRef.nodeStore != null) {
+					children.add(thisRef.nodeStore!!)
+				}
+			}
+
 			if (thisRef is ReferenceItem && thisRef.createdItem != null) {
 				children.add(thisRef.createdItem!!)
-			} else if (thisRef is CompoundDataItem) {
+			}
+
+			if (thisRef is CompoundDataItem) {
 				children.addAll(thisRef.children)
 			}
 
 			for (child in children) {
+				if (returnedSet.contains(child)) {
+					continue
+				}
+				returnedSet.add(child)
+
 				yield(child)
-				yieldAll(child.descendants())
+				yieldAll(child.descendants(returnedSet))
 			}
 		}
 	}

@@ -37,13 +37,18 @@ abstract class AbstractDataDefinition<D: AbstractDataDefinition<D, I>, I: Abstra
 
 	abstract fun children(): List<DataDefinition>
 
-	fun descendants(): Sequence<DataDefinition> {
+	fun descendants(returnedSet: HashSet<DataDefinition> = HashSet()): Sequence<DataDefinition> {
 		return sequence {
 			val children = children()
 
 			for (child in children) {
+				if (returnedSet.contains(child)) {
+					continue
+				}
+				returnedSet.add(child)
+
 				yield(child)
-				yieldAll(child.descendants())
+				yieldAll(child.descendants(returnedSet))
 			}
 		}
 	}
