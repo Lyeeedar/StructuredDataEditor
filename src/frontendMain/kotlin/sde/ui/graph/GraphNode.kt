@@ -55,7 +55,10 @@ class GraphNode(val node: CompoundDataItem, val graph: Graph) : IGraphContents
             for (child in node.children) {
                 yield(child)
 
-                if (child is AbstractCompoundDataItem) {
+                if (child is GraphReferenceItem) {
+
+                }
+                else if (child is CompoundDataItem) {
                     for (descendant in getDataItems(child)) {
                         if (descendant is GraphReferenceItem) {
                             yield(descendant)

@@ -21,7 +21,15 @@ class GraphReferenceItem(definition: GraphReferenceDefinition, document: DataDoc
 					if (node is IGraphNodeItem && selectedItemGuid == node.guid) {
 						selectedItemGuid = null
 						selectedDefinition = node.def
-						setCreatedItem(node)
+						attributes.addAll(node.attributes)
+
+						if (node is CompoundDataItem) {
+							children.addAll(node.children)
+						}
+
+						document.undoRedoManager.disableUndoScope {
+							createdItem = node
+						}
 						break
 					}
 				}

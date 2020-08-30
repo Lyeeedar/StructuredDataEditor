@@ -46,8 +46,14 @@ abstract class AbstractDataItem<D: DataDefinition>(val def: D, val document: Dat
 	}
 
 	fun bubbleEvent() {
+		val visited = HashSet<DataItem>()
 		var current: AbstractDataItem<*>? = this@AbstractDataItem
 		while (current != null) {
+			if (visited.contains(current)) {
+				break
+			}
+			visited.add(current)
+
 			current.raiseEvent("childEvent")
 
 			current = current.parent
@@ -56,8 +62,14 @@ abstract class AbstractDataItem<D: DataDefinition>(val def: D, val document: Dat
 
 	fun updateDescriptions() {
 		document.scope?.launch {
-			var current: AbstractDataItem<*>? = this@AbstractDataItem
+			val visited = HashSet<DataItem>()
+			var current: DataItem? = this@AbstractDataItem
 			while (current != null) {
+				if (visited.contains(current)) {
+					break
+				}
+				visited.add(current)
+
 				current.raiseEvent(DataItem::description.name)
 
 				delay(100)
@@ -127,7 +139,12 @@ abstract class AbstractDataItem<D: DataDefinition>(val def: D, val document: Dat
 		}, "Remove $name from ${collection.name}")
 	}
 
-	fun descendants(returnedSet: HashSet<DataItem> = HashSet()): Sequence<DataItem> {
+	fun descendants(): Sequence<DataItem> {
+		val set = HashSet<DataItem>()
+		return descendants(set)
+	}
+
+	private fun descendants(returnedSet: HashSet<DataItem>): Sequence<DataItem> {
 		return sequence {
 			val children = ArrayList<DataItem>()
 			val thisRef = this@AbstractDataItem
