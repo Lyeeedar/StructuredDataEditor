@@ -96,4 +96,11 @@ class StringExtensionsTest
 		assertEquals("../file.txt", relPath("C:/Users/Philip/file.txt", "C:/Users/Philip/Documents"))
 		assertEquals("../Other/file.txt", relPath("C:/Users/Philip/Documents/Other/file.txt", "C:/Users/Philip/Documents/Folder"))
 	}
+
+    @Test
+    fun removeTags() {
+        assertEquals("stuff", "<b>stuff</b>".removeTags())
+        assertEquals("stuff", "<span style=\"color: red\">stuff</span>".removeTags())
+        assertEquals("stuff, stuff, stuff  ", "<b>stuff</b>,<b> stuff</b>, <b>stuff </b> ".removeTags())
+    }
 }

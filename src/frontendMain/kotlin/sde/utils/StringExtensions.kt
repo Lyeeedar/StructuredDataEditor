@@ -159,3 +159,7 @@ fun generateUUID(): String {
 
 	return output.toString()
 }
+
+fun String.removeTags(): String {
+	return this.replace(Regex("<[^>]*>"), "")
+}
