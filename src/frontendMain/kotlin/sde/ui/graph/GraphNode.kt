@@ -89,6 +89,14 @@ class GraphNode(val node: CompoundDataItem, val graph: Graph) : IGraphContents
         return graphItem
     }
 
+    fun getHeaderBounds(context2D: CanvasRenderingContext2D): BoundingBox {
+        val height = getBounds(context2D, emptyList())
+        val full = getBounds(context2D)
+        full.height = height.height
+
+        return full
+    }
+
     fun getBounds(context2D: CanvasRenderingContext2D, items: List<AbstractGraphNodeDataItem> = getGraphDataItems().toList()): BoundingBox {
         val margin = margin * graph.scale
         val itemsWidth = items.map { it.getWidth(context2D) }.max() ?: 0.0

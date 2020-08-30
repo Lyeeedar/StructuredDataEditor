@@ -7,6 +7,10 @@ import pl.treksoft.kvision.html.Align
 class BoundingBox(var x: Double, var y: Double, var width: Double, var height: Double)
 {
     constructor(bounds: BoundingBox): this(bounds.x, bounds.y, bounds.width, bounds.height)
+
+    fun inBounds(x: Double, y: Double): Boolean {
+        return x >= this.x && x <= this.x + width && y >= this.y && y <= this.y + height
+    }
 }
 
 fun CanvasRenderingContext2D.fillRect(colour: dynamic, bounds: BoundingBox) {

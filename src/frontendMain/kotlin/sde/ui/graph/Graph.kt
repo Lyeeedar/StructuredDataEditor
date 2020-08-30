@@ -28,6 +28,8 @@ class Graph(val document: DataDocument) : Canvas()
 	private var mouseY = 0.0
 	private var isMouseOver = false
 	var isPanning = false
+	var isDraggingNode = false
+	var draggedNode: GraphNode? = null
 
     init {
         afterInsert {
@@ -165,18 +167,46 @@ class Graph(val document: DataDocument) : Canvas()
 	}
 
 	private fun onMouseDown(mouseEvent: MouseEvent) {
+		for (node in getGraphNodes()) {
+			if (node.getHeaderBounds(context2D).inBounds(mouseX, mouseY)) {
+				isDraggingNode = true
+				draggedNode = node
+
+				return
+			}
+		}
+
 		isPanning = true
 	}
 
 	private fun onMouseUp() {
-		isPanning = false
+		endDrag()
 	}
 
 	private fun onMouseMove(deltaX: Double, deltaY: Double, button: Short, pointerId: Int) {
+		val leftMouseDown = button == 1.toShort()
+		if (!leftMouseDown) {
+			endDrag()
+		}
+
 		if (isPanning) {
 			onPan(deltaX, deltaY, pointerId)
+		} else if (isDraggingNode) {
+			onDragNode(deltaX, deltaY, pointerId, draggedNode!!)
 		} else {
-			cursor = Cursor.AUTO
+			var overNode = false
+			for (node in getGraphNodes()) {
+				if (node.getHeaderBounds(context2D).inBounds(mouseX, mouseY)) {
+					overNode = true
+					break
+				}
+			}
+
+			if (overNode) {
+				cursor = Cursor.GRAB
+			} else {
+				cursor = Cursor.AUTO
+			}
 		}
 	}
 
@@ -194,4 +224,23 @@ class Graph(val document: DataDocument) : Canvas()
 		}
 	}
 
+	private fun onDragNode(deltaX: Double, deltaY: Double, pointerId: Int, node: GraphNode) {
+		cursor = Cursor.GRABBING
+
+		node.graphItem.nodePositionX += deltaX
+		node.graphItem.nodePositionY += deltaY
+
+		redraw()
+
+		val el = getElement() as? Element
+		if (el != null) {
+			el.setPointerCapture(pointerId)
+		}
+	}
+
+	private fun endDrag() {
+		isPanning = false
+		isDraggingNode = false
+		draggedNode = null
+	}
 }
