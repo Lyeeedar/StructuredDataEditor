@@ -4,6 +4,7 @@ import sde.data.DataDocument
 import sde.data.Project
 import sde.data.definition.*
 import sde.data.item.BooleanItem
+import sde.data.item.CompoundDataItem
 import sde.data.item.GraphStructItem
 import sde.data.item.StructItem
 import sde.utils.parseXml
@@ -144,7 +145,7 @@ class GraphStructDefinitionTest
 		""".trimIndent().parseXml().toXDocument()
 
 		val dataXml = """
-			<Block>
+			<Block meta:X="240" meta:Y="0" GUID="mahguid" xmlns:meta="Editor">
 				<Num>4</Num>
 				<IsAwesome>true</IsAwesome>
 			</Block>
@@ -160,18 +161,19 @@ class GraphStructDefinitionTest
 
 		val dataDoc = DataDocument("")
 		val data = dataDoc.loadItem(def, dataXml.root)
+		dataDoc.root = data as CompoundDataItem
 
 		assertTrue(data is GraphStructItem)
 		assertEquals("Block", data.name)
 		assertEquals(3, data.children.size)
 
 		assertEquals("""
-			<Block>
+			<Block meta:X="240" meta:Y="0" GUID="mahguid" xmlns:meta="Editor">
 				<Num>4</Num>
 				<!-- comment -->
 				<IsAwesome>true</IsAwesome>
 			</Block>
-		""".trimIndent(), data.def.saveItem(data).toString())
+		""".trimIndent(), dataDoc.save().toString())
 	}
 
 	// flat data tests
