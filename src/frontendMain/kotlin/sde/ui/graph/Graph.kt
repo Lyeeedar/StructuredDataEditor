@@ -169,7 +169,21 @@ class Graph(val document: DataDocument) : Canvas()
 		while (tpos < actualWidth) {
 			context2D.strokeLine(borderDarkColour, 1.0, tpos, 0.0, tpos, actualHeight)
 
+			for (i in 0 until 3) {
+				val minorStep = indicatorStep / 4
+				val mpos = (tpos - indicatorStep) + i * minorStep + minorStep
+
+				context2D.strokeLine(borderDarkColour, 0.5, mpos, 0.0, mpos, actualHeight)
+			}
+
 			tpos += indicatorStep
+		}
+
+		for (i in 0 until 3) {
+			val minorStep = indicatorStep / 4
+			val mpos = (tpos - indicatorStep) + i * minorStep + minorStep
+
+			context2D.strokeLine(borderDarkColour, 0.5, mpos, 0.0, mpos, actualHeight)
 		}
 	}
 

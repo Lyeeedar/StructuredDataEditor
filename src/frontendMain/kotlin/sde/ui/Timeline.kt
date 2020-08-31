@@ -285,12 +285,12 @@ class Timeline(val timelineItem: TimelineItem) : Canvas(canvasWidth = 1000, canv
 			time = round(((tpos - timelineItem.leftPad) / pixelsASecond) / bestStep) * bestStep
 			if (time > timelineItem.maxTime) break
 
-			for (i in 0 until 5) {
-				val minorStep = indicatorStep / 6
+			for (i in 0 until 3) {
+				val minorStep = indicatorStep / 4
 				val mpos = (tpos - indicatorStep) + i * minorStep + minorStep
 
 				context2D.strokeStyle = borderDarkColour
-				context2D.lineWidth = 1.0
+				context2D.lineWidth = 0.5
 				context2D.beginPath()
 				context2D.moveTo(mpos, 20.0)
 				context2D.lineTo(mpos, actualHeight - 20)
