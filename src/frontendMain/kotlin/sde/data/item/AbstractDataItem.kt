@@ -122,7 +122,15 @@ abstract class AbstractDataItem<D: DataDefinition>(val def: D, val document: Dat
 	}
 
 	fun getRoot(): DataItem {
-		return parent?.getRoot() ?: this
+		return getRoot(this)
+	}
+
+	private tailrec fun getRoot(current: DataItem): DataItem {
+		if (current.parent == null) {
+			return this
+		}
+
+		return getRoot(parent!!)
 	}
 
 	fun removeFromCollection()
