@@ -351,6 +351,10 @@ afterEvaluate {
         getByName("frontendBrowserProductionWebpack", KotlinWebpack::class) {
             dependsOn("copyFrontendWebpackConfig")
         }
+	    create("cleanFrontendTestResources", Delete::class) {
+		    delete("src/frontendMain/resources/test")
+		    group = "build"
+	    }
         getByName("frontendProcessResources", Copy::class) {
             dependsOn("compileKotlinFrontend")
             exclude("**/*.pot")
@@ -391,6 +395,18 @@ afterEvaluate {
                 }
             }
         }
+	    create("copyFrontendTestResources", Copy::class) {
+		    dependsOn("cleanFrontendTestResources")
+		    group = "build"
+		    from("src/frontendTest/resources")
+		    into("src/frontendMain/resources/test")
+	    }
+	    getByName("cleanWebpackConfig") {
+		    dependsOn("cleanFrontendTestResources")
+	    }
+	    getByName("frontendTestPackageJson") {
+		    dependsOn("copyFrontendTestResources")
+	    }
         create("frontendArchive", Jar::class).apply {
             dependsOn("frontendBrowserProductionWebpack")
             group = "package"
@@ -416,7 +432,9 @@ afterEvaluate {
                 )
             }
         }
-	    getByName("frontendRun").group = "run"
+	    getByName("frontendRun") {
+		    group = "run"
+	    }
         getByName("compileKotlinFrontend") {
             dependsOn("compileKotlinMetadata")
             dependsOn("copyFrontendWebpackConfig")
