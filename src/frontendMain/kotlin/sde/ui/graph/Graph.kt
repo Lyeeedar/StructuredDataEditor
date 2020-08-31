@@ -8,7 +8,11 @@ import pl.treksoft.kvision.html.Canvas
 import sde.data.DataDocument
 import sde.data.item.*
 import sde.ui.backgroundReallyDarkColour
+import sde.ui.borderDarkColour
+import sde.ui.strokeLine
 import sde.utils.afterInsert
+import kotlin.math.absoluteValue
+import kotlin.math.floor
 
 class Graph(val document: DataDocument) : Canvas()
 {
@@ -148,7 +152,28 @@ class Graph(val document: DataDocument) : Canvas()
         context2D.fillStyle = backgroundReallyDarkColour
         context2D.fillRect(0.0, 0.0, actualWidth, actualHeight)
 
+		drawGrid()
+
 	    val graphNodes = getGraphNodes().toList()
+
+		drawLinks(graphNodes)
+		drawNodes(graphNodes)
+    }
+
+	private fun drawGrid() {
+		val bestStep = 50
+		val indicatorStep = bestStep * scale
+
+		var tpos = offsetX.rem(indicatorStep)
+
+		while (tpos < actualWidth) {
+			context2D.strokeLine(borderDarkColour, 1.0, tpos, 0.0, tpos, actualHeight)
+
+			tpos += indicatorStep
+		}
+	}
+
+	private fun drawLinks(graphNodes: List<GraphNode>) {
 		for (node in graphNodes) {
 			for (item in node.getGraphDataItems()) {
 				if (item is LinkGraphNodeDataItem) {
@@ -158,11 +183,13 @@ class Graph(val document: DataDocument) : Canvas()
 				}
 			}
 		}
+	}
 
-	    for (node in graphNodes) {
-		    node.draw(context2D)
-	    }
-    }
+	private fun drawNodes(graphNodes: List<GraphNode>) {
+		for (node in graphNodes) {
+			node.draw(context2D)
+		}
+	}
 
 	private fun onScroll(amount: Double) {
 		if (amount < 0) {
