@@ -69,3 +69,12 @@ fun CanvasRenderingContext2D.strokeCircle(colour: dynamic, lineWidth: Double, x:
     strokeStyle = colour
     stroke()
 }
+
+fun CanvasRenderingContext2D.strokeLine(colour: dynamic, lineWidth: Double, x1: Double, y1: Double, x2: Double, y2: Double) {
+    strokeStyle = colour
+    this.lineWidth = lineWidth
+    beginPath()
+    moveTo(x1, y1)
+    lineTo(x2, y2)
+    stroke()
+}

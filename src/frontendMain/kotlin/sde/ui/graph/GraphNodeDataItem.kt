@@ -99,6 +99,8 @@ class LinkGraphNodeDataItem(item: GraphReferenceItem, node: GraphNode) : Abstrac
     private val margin = 2
     private val linkSize = 12
 
+    val link = GraphLink(this, null)
+
     override fun getWidth(context2D: CanvasRenderingContext2D): Double {
         val margin = margin * node.graph.scale
         val nameBounds = context2D.measureText((fontSize * node.graph.scale).toInt(), item.name)

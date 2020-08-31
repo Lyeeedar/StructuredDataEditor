@@ -105,7 +105,7 @@ class Graph(val document: DataDocument) : Canvas()
 			}
 		}
 	}
-	private fun getGraphNode(item: CompoundDataItem): GraphNode {
+	fun getGraphNode(item: CompoundDataItem): GraphNode {
 		var node = nodeCache[item as IGraphNodeItem]
 		if (node == null)
 		{
@@ -149,6 +149,16 @@ class Graph(val document: DataDocument) : Canvas()
         context2D.fillRect(0.0, 0.0, actualWidth, actualHeight)
 
 	    val graphNodes = getGraphNodes().toList()
+		for (node in graphNodes) {
+			for (item in node.getGraphDataItems()) {
+				if (item is LinkGraphNodeDataItem) {
+					val link = item.link
+					link.update(this)
+					link.draw(context2D, node.getItemBounds(context2D, item)!!, this)
+				}
+			}
+		}
+
 	    for (node in graphNodes) {
 		    node.draw(context2D)
 	    }

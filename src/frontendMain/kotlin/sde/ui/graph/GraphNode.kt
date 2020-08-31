@@ -50,6 +50,40 @@ class GraphNode(val node: CompoundDataItem, val graph: Graph) : IGraphContents
         }
     }
 
+    fun getItemBounds(context2D: CanvasRenderingContext2D, itemToFind: AbstractGraphNodeDataItem): BoundingBox? {
+        val margin = margin * graph.scale
+        val headerFontSize = (headerFontSize * graph.scale).toInt()
+
+        val items = getGraphDataItems().toList()
+        if (!items.contains(itemToFind)) {
+            return null
+        }
+
+        val bounds = getBounds(context2D, items)
+
+        val headerBounds = context2D.measureText(headerFontSize, node.name)
+        headerBounds.x = bounds.x + margin
+        headerBounds.y = bounds.y + margin
+
+        // items
+        val x = bounds.x + margin
+        var y = bounds.y + margin * 3 + headerBounds.height
+        val width = bounds.width - margin * 2
+
+        for (item in items) {
+            val height = item.getHeight(context2D)
+            val itemBounds = BoundingBox(x, y, width, height)
+
+            if (itemToFind == item) {
+                return itemBounds
+            }
+
+            y += height + margin
+        }
+
+        return null
+    }
+
     fun getDataItems(node: CompoundDataItem = this.node): Sequence<DataItem> {
         return sequence {
             for (child in node.children) {
