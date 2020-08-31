@@ -38,7 +38,7 @@ class GraphNode(val node: CompoundDataItem, val graph: Graph) : IGraphContents
 
         // items
         val x = bounds.x + margin
-        var y = bounds.y + margin * 2 + headerBounds.height
+        var y = bounds.y + margin * 3 + headerBounds.height
         val width = bounds.width - margin * 2
 
         for (item in items) {
@@ -105,7 +105,7 @@ class GraphNode(val node: CompoundDataItem, val graph: Graph) : IGraphContents
         val headerBounds = context2D.measureText((headerFontSize * graph.scale).toInt(), node.name)
 
         val width = margin * 2 + max(itemsWidth, headerBounds.width)
-        val height = margin * 2 + itemsHeight + headerBounds.height + margin
+        val height = margin * 4 + itemsHeight + headerBounds.height + margin
 
         return BoundingBox(graphItem.nodePositionX + graph.offsetX, graphItem.nodePositionY + graph.offsetY, width, height)
     }

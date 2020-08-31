@@ -3,6 +3,7 @@ package sde.ui
 import org.w3c.dom.CanvasImageSource
 import org.w3c.dom.CanvasRenderingContext2D
 import pl.treksoft.kvision.html.Align
+import kotlin.math.PI
 
 class BoundingBox(var x: Double, var y: Double, var width: Double, var height: Double)
 {
@@ -50,4 +51,21 @@ fun CanvasRenderingContext2D.measureText(size: Int, text: String): BoundingBox {
     val measured = this.measureText(text)
 
     return BoundingBox(0.0, 0.0, measured.width, size.toDouble())
+}
+
+fun CanvasRenderingContext2D.fillCircle(colour: dynamic, x: Double, y: Double, radius: Double) {
+    beginPath()
+    arc(x, y, radius, 0.0, 2 * PI, false)
+
+    fillStyle = colour
+    fill()
+}
+
+fun CanvasRenderingContext2D.strokeCircle(colour: dynamic, lineWidth: Double, x: Double, y: Double, radius: Double) {
+    beginPath()
+    arc(x, y, radius, 0.0, 2 * PI, false)
+
+    this.lineWidth = lineWidth
+    strokeStyle = colour
+    stroke()
 }
