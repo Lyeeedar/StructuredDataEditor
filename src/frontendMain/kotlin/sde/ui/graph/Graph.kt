@@ -16,6 +16,8 @@ import kotlin.math.floor
 
 class Graph(val document: DataDocument) : Canvas()
 {
+	private val possibleValueSteps = doubleArrayOf(10000.0, 7500.0, 5000.0, 2500.0, 1000.0, 750.0, 500.0, 250.0, 100.0, 75.0, 50.0, 25.0, 10.0, 7.5, 5.0, 2.5, 1.0)
+
     private var inserted = false
 
     private val actualWidth: Double
@@ -160,10 +162,22 @@ class Graph(val document: DataDocument) : Canvas()
 		drawNodes(graphNodes)
     }
 
+	private fun findBestIndicatorStep(): Double {
+		for (step in possibleValueSteps) {
+			val steps = floor((actualWidth / scale) / step)
+			if (steps > 5) {
+				return step
+			}
+		}
+
+		return possibleValueSteps.last()
+	}
+
 	private fun drawGrid() {
-		val bestStep = 50
+		val bestStep = findBestIndicatorStep()
 		val indicatorStep = bestStep * scale
 
+		// x
 		var tpos = offsetX.rem(indicatorStep)
 
 		while (tpos < actualWidth) {
@@ -184,6 +198,29 @@ class Graph(val document: DataDocument) : Canvas()
 			val mpos = (tpos - indicatorStep) + i * minorStep + minorStep
 
 			context2D.strokeLine(borderDarkColour, 0.5, mpos, 0.0, mpos, actualHeight)
+		}
+
+		// y
+		tpos = offsetY.rem(indicatorStep)
+
+		while (tpos < actualHeight) {
+			context2D.strokeLine(borderDarkColour, 1.0, 0.0, tpos, actualWidth, tpos)
+
+			for (i in 0 until 3) {
+				val minorStep = indicatorStep / 4
+				val mpos = (tpos - indicatorStep) + i * minorStep + minorStep
+
+				context2D.strokeLine(borderDarkColour, 0.5, 0.0, mpos, actualWidth, mpos)
+			}
+
+			tpos += indicatorStep
+		}
+
+		for (i in 0 until 3) {
+			val minorStep = indicatorStep / 4
+			val mpos = (tpos - indicatorStep) + i * minorStep + minorStep
+
+			context2D.strokeLine(borderDarkColour, 0.5, 0.0, mpos, actualWidth, mpos)
 		}
 	}
 
