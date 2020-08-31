@@ -10,3 +10,4 @@ out/
 *.idea
 
 webpack.config.d/
+src/frontendMain/resources/test/
