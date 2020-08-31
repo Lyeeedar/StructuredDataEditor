@@ -264,8 +264,8 @@ class Graph(val document: DataDocument) : Canvas()
 	private fun onDragNode(deltaX: Double, deltaY: Double, pointerId: Int, node: GraphNode) {
 		cursor = Cursor.GRABBING
 
-		node.graphItem.nodePositionX += deltaX
-		node.graphItem.nodePositionY += deltaY
+		node.graphItem.nodePositionX += deltaX / scale
+		node.graphItem.nodePositionY += deltaY / scale
 
 		redraw()
 
