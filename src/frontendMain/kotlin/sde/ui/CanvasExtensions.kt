@@ -4,6 +4,7 @@ import org.w3c.dom.CanvasImageSource
 import org.w3c.dom.CanvasRenderingContext2D
 import pl.treksoft.kvision.html.Align
 import kotlin.math.PI
+import kotlin.math.abs
 
 class BoundingBox(var x: Double, var y: Double, var width: Double, var height: Double)
 {
@@ -76,5 +77,18 @@ fun CanvasRenderingContext2D.strokeLine(colour: dynamic, lineWidth: Double, x1: 
     beginPath()
     moveTo(x1, y1)
     lineTo(x2, y2)
+    stroke()
+}
+
+fun CanvasRenderingContext2D.strokeBezier(colour: dynamic, lineWidth: Double, x1: Double, y1: Double, x2: Double, y2: Double) {
+    strokeStyle = colour
+    this.lineWidth = lineWidth
+
+    val xDiff = abs(x2 - x1) / 2
+    val yDiff = y2 - y1
+
+    beginPath()
+    moveTo(x1, y1)
+    bezierCurveTo(x1 + xDiff, y1 + yDiff * 0.1, x2 - xDiff, y2 - yDiff * 0.1, x2, y2)
     stroke()
 }
