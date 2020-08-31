@@ -141,6 +141,6 @@ class GraphNode(val node: CompoundDataItem, val graph: Graph) : IGraphContents
         val width = margin * 2 + max(itemsWidth, headerBounds.width)
         val height = margin * 4 + itemsHeight + headerBounds.height + margin
 
-        return BoundingBox(graphItem.nodePositionX + graph.offsetX, graphItem.nodePositionY + graph.offsetY, width, height)
+        return BoundingBox(graphItem.nodePositionX*graph.scale + graph.offsetX, graphItem.nodePositionY*graph.scale + graph.offsetY, width, height)
     }
 }

@@ -24,8 +24,8 @@ class GraphLink(val src: LinkGraphNodeDataItem, var dst: GraphNode? = null)
         val x1 = itemBounds.x + itemBounds.width
         val y1 = itemBounds.y+itemBounds.height/2
 
-        val x2 = dst!!.graphItem.nodePositionX+5*graph.scale + graph.offsetX
-        val y2 = dst!!.graphItem.nodePositionY+5*graph.scale + graph.offsetY
+        val x2 = (dst!!.graphItem.nodePositionX+5)*graph.scale + graph.offsetX
+        val y2 = (dst!!.graphItem.nodePositionY+5)*graph.scale + graph.offsetY
 
         context2D.strokeBezier("lime", 3.0 * graph.scale, x1, y1, x2, y2)
     }
