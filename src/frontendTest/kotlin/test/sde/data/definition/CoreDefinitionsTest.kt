@@ -65,6 +65,7 @@ class CoreDefinitionsTest
 
 		val doc = DataDocument("")
 		val item = def.createItem(doc)
-		assertTrue(item is StructItem)
+		item.createContents()
+		assertEquals(22, item.children.size)
 	}
 }
