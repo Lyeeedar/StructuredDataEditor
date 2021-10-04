@@ -1,7 +1,7 @@
 package sde.data.item
 
-import pl.treksoft.kvision.core.Component
-import pl.treksoft.kvision.html.Div
+import io.kvision.core.Component
+import io.kvision.html.Div
 import sde.data.DataDocument
 import sde.data.definition.ConstDefinition
 

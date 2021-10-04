@@ -3,15 +3,15 @@ package sde.data.item
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import pl.treksoft.kvision.core.*
-import pl.treksoft.kvision.html.Div
-import pl.treksoft.kvision.html.Image
-import pl.treksoft.kvision.html.span
-import pl.treksoft.kvision.panel.DockPanel
-import pl.treksoft.kvision.panel.GridPanel
-import pl.treksoft.kvision.panel.Side
-import pl.treksoft.kvision.panel.gridPanel
-import pl.treksoft.kvision.state.observableListOf
+import io.kvision.core.*
+import io.kvision.html.Div
+import io.kvision.html.Image
+import io.kvision.html.span
+import io.kvision.panel.DockPanel
+import io.kvision.panel.GridPanel
+import io.kvision.panel.Side
+import io.kvision.panel.gridPanel
+import io.kvision.state.observableListOf
 import sde.data.DataDocument
 import sde.data.definition.DataDefinition
 import sde.ui.*
@@ -242,7 +242,7 @@ abstract class AbstractDataItem<D: DataDefinition>(val def: D, val document: Dat
 				{
 					if (item.isExpanded)
 					{
-						add(Image(pl.treksoft.kvision.require("images/OpenArrow.png") as? String).apply {
+						add(Image(io.kvision.require("images/OpenArrow.png") as? String).apply {
 							afterInsert {
 								it.disableSelection()
 							}
@@ -250,7 +250,7 @@ abstract class AbstractDataItem<D: DataDefinition>(val def: D, val document: Dat
 					}
 					else
 					{
-						add(Image(pl.treksoft.kvision.require("images/RightArrow.png") as? String).apply {
+						add(Image(io.kvision.require("images/RightArrow.png") as? String).apply {
 							afterInsert {
 								it.disableSelection()
 							}
@@ -270,7 +270,7 @@ abstract class AbstractDataItem<D: DataDefinition>(val def: D, val document: Dat
 				}
 
 				if (item.isCollectionChild && item.parent is AbstractCollectionItem) {
-					add(ImageButton(pl.treksoft.kvision.require("images/Remove.png") as? String) {
+					add(ImageButton(io.kvision.require("images/Remove.png") as? String) {
 						onClick {
 							item.removeFromCollection()
 						}
@@ -278,7 +278,7 @@ abstract class AbstractDataItem<D: DataDefinition>(val def: D, val document: Dat
 				}
 				else if (item is IRemovable && item.canRemove)
 				{
-					add(ImageButton(pl.treksoft.kvision.require("images/Remove.png") as? String) {
+					add(ImageButton(io.kvision.require("images/Remove.png") as? String) {
 						onClick {
 							item.remove()
 						}
@@ -300,7 +300,7 @@ abstract class AbstractDataItem<D: DataDefinition>(val def: D, val document: Dat
 			}
 			add(editorDiv, 3, 1)
 
-			afterInsertHook = {
+			addAfterInsertHook {
 				val el = getElementJQuery()!!
 				el.hover(
 						{

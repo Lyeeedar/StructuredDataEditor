@@ -2,7 +2,7 @@ package sde.data
 
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
-import pl.treksoft.kvision.toast.Toast
+import io.kvision.toast.Toast
 import sde.Services
 import sde.data.definition.AbstractDataDefinition
 import sde.data.definition.CoreDefinitions

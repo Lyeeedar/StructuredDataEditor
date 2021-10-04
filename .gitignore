@@ -1,6 +1,4 @@
-.git/
-.gradle/
-.idea/
+.*/
 build/
 out/
 /refresh.sh
@@ -8,6 +6,3 @@ out/
 *.ipr
 *.iws
 *.idea
-
-webpack.config.d/
-src/frontendMain/resources/test/

@@ -1,8 +1,0 @@
-appId: structured-data-editor
-electronVersion: 7.1.9
-directories:
-  output: ../electron
-linux:
-  target: AppImage
-win:
-  target: portable

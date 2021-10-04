@@ -1,8 +1,8 @@
 package sde.data.item
 
-import pl.treksoft.kvision.core.Component
-import pl.treksoft.kvision.form.select.SelectInput
-import pl.treksoft.kvision.form.select.SelectOptGroup
+import io.kvision.core.Component
+import io.kvision.form.select.SelectInput
+import io.kvision.form.select.SelectOptGroup
 import sde.data.DataDocument
 import sde.data.definition.EnumDefinition
 

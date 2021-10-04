@@ -2,15 +2,15 @@ package sde.data
 
 import kotlinx.coroutines.*
 import org.w3c.dom.HTMLElement
-import pl.treksoft.kvision.core.*
-import pl.treksoft.kvision.form.select.SelectInput
-import pl.treksoft.kvision.form.select.SelectOptGroup
-import pl.treksoft.kvision.form.text.TextArea
-import pl.treksoft.kvision.form.text.TextAreaInput
-import pl.treksoft.kvision.html.*
-import pl.treksoft.kvision.panel.*
-import pl.treksoft.kvision.require
-import pl.treksoft.kvision.toast.Toast
+import io.kvision.core.*
+import io.kvision.form.select.SelectInput
+import io.kvision.form.select.SelectOptGroup
+import io.kvision.form.text.TextArea
+import io.kvision.form.text.TextAreaInput
+import io.kvision.html.*
+import io.kvision.panel.*
+import io.kvision.require
+import io.kvision.toast.Toast
 import sde.data.definition.AbstractCompoundDefinition
 import sde.data.definition.DataDefinition
 import sde.data.item.CompoundDataItem

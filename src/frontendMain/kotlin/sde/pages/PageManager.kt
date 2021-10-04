@@ -1,9 +1,9 @@
 package sde.pages
 
-import pl.treksoft.kvision.core.onEvent
-import pl.treksoft.kvision.html.Div
-import pl.treksoft.kvision.panel.Root
-import pl.treksoft.kvision.panel.TabPanel
+import io.kvision.core.onEvent
+import io.kvision.html.Div
+import io.kvision.panel.Root
+import io.kvision.panel.TabPanel
 import sde.ui.TabControl
 
 class PageManager

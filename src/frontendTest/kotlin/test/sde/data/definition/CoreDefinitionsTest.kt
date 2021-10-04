@@ -33,8 +33,8 @@ class CoreDefinitionsTest
 
 	@Test
 	fun sandbox() {
-		val xml = pl.treksoft.kvision.require("test/TestProject/Definitions/Sandbox.xmldef") as String
-		val auxXml = pl.treksoft.kvision.require("test/TestProject/Definitions/AuxFiles.xmldef") as String
+		val xml = io.kvision.require("./TestProject/Definitions/Sandbox.xmldef") as String
+		val auxXml = io.kvision.require("./TestProject/Definitions/AuxFiles.xmldef") as String
 
 		val maps = HashMap<String, DefinitionMap>()
 		maps["Sandbox"] = Project.parseDefinitionsFile(xml, "Sandbox")

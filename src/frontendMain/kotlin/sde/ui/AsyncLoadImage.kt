@@ -2,11 +2,11 @@ package sde.ui
 
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
-import pl.treksoft.kvision.core.Container
-import pl.treksoft.kvision.core.CssSize
-import pl.treksoft.kvision.core.UNIT
-import pl.treksoft.kvision.html.Div
-import pl.treksoft.kvision.html.image
+import io.kvision.core.Container
+import io.kvision.core.CssSize
+import io.kvision.core.UNIT
+import io.kvision.html.Div
+import io.kvision.html.image
 import sde.utils.afterInsert
 import sde.utils.disableSelection
 import sde.utils.imageFromFile
@@ -14,6 +14,7 @@ import sde.utils.imageFromFile
 class AsyncLoadImage(val src: String, val fallback: String, val loadScope: CoroutineScope, val size: Int = 16, init: (AsyncLoadImage.() -> Unit)? = null) : Div()
 {
     init {
+	    val size = this.size
         image(fallback) {
             width = CssSize(size, UNIT.px)
             height = CssSize(size, UNIT.px)

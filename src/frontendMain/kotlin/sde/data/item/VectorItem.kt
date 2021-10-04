@@ -1,12 +1,12 @@
 package sde.data.item
 
-import pl.treksoft.kvision.core.Component
-import pl.treksoft.kvision.core.CssSize
-import pl.treksoft.kvision.core.UNIT
-import pl.treksoft.kvision.form.spinner.ForceType
-import pl.treksoft.kvision.form.spinner.spinnerInput
-import pl.treksoft.kvision.html.span
-import pl.treksoft.kvision.panel.HPanel
+import io.kvision.core.Component
+import io.kvision.core.CssSize
+import io.kvision.core.UNIT
+import io.kvision.form.spinner.ForceType
+import io.kvision.form.spinner.spinnerInput
+import io.kvision.html.span
+import io.kvision.panel.HPanel
 import sde.data.DataDocument
 import sde.data.definition.VectorDefinition
 

@@ -1,6 +1,6 @@
 package sde.ui
 
-import pl.treksoft.kvision.core.Color
+import io.kvision.core.Color
 
 val backgroundReallyDarkColour = Color("#0d0d0d")
 val backgroundDarkColour = Color("#1E1E1E")

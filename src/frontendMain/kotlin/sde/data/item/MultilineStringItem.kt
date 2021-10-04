@@ -1,8 +1,8 @@
 package sde.data.item
 
-import pl.treksoft.kvision.core.Component
-import pl.treksoft.kvision.form.text.TextInput
-import pl.treksoft.kvision.form.text.TextInputType
+import io.kvision.core.Component
+import io.kvision.form.text.TextInput
+import io.kvision.form.text.TextInputType
 import sde.data.DataDocument
 import sde.data.definition.MultilineStringDefinition
 

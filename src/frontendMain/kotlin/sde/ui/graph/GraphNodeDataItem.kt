@@ -1,7 +1,7 @@
 package sde.ui.graph
 
 import org.w3c.dom.CanvasRenderingContext2D
-import pl.treksoft.kvision.html.Align
+import io.kvision.html.Align
 import sde.data.item.CommentItem
 import sde.data.item.DataItem
 import sde.data.item.GraphReferenceItem

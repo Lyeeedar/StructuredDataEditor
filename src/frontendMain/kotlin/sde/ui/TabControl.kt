@@ -1,13 +1,13 @@
 package sde.ui
 
-import pl.treksoft.kvision.core.*
-import pl.treksoft.kvision.html.Bold
-import pl.treksoft.kvision.html.Button
-import pl.treksoft.kvision.html.Div
-import pl.treksoft.kvision.html.div
-import pl.treksoft.kvision.panel.DockPanel
-import pl.treksoft.kvision.panel.HPanel
-import pl.treksoft.kvision.panel.Side
+import io.kvision.core.*
+import io.kvision.html.B
+import io.kvision.html.Button
+import io.kvision.html.Div
+import io.kvision.html.div
+import io.kvision.panel.DockPanel
+import io.kvision.panel.HPanel
+import io.kvision.panel.Side
 import sde.utils.afterInsert
 import sde.utils.disableSelection
 import sde.utils.hover
@@ -39,7 +39,7 @@ class TabControl : DockPanel()
     }
 
     fun addTab(header: String, body: Component, key: Any, closeable: Boolean = true, onClosing: (()->Boolean)? = null, onClosed: (()->Unit)? = null, onFocused: (()->Unit)? = null) {
-        addTab(Bold(header), body, key, closeable, onClosing, onClosed, onFocused)
+        addTab(B(header), body, key, closeable, onClosing, onClosed, onFocused)
     }
 
     fun addTab(header: Component, body: Component, key: Any, closeable: Boolean = true, onClosing: (()->Boolean)? = null, onClosed: (()->Unit)? = null, onFocused: (()->Unit)? = null) {
@@ -62,7 +62,7 @@ class TabControl : DockPanel()
             }
 
             if (closeable) {
-                add(ImageButton(pl.treksoft.kvision.require("images/Remove.png") as? String) {
+                add(ImageButton(io.kvision.require("images/Remove.png") as? String) {
                     backgroundCol = Color("transparent")
                     borderCol = Color("transparent")
                     marginLeft = CssSize(3, UNIT.px)

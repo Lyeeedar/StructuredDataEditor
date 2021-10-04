@@ -1,10 +1,8 @@
 package sde.utils
 
-import pl.treksoft.kvision.core.Component
-import pl.treksoft.kvision.core.TooltipOptions
-import pl.treksoft.kvision.core.onClick
-import pl.treksoft.kvision.require
-import pl.treksoft.kvision.state.observableListOf
+import io.kvision.core.*
+import io.kvision.require
+import io.kvision.state.observableListOf
 import sde.ui.ImageButton
 import kotlin.js.Date
 import kotlin.properties.ObservableProperty

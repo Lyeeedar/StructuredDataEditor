@@ -1,15 +1,13 @@
 package sde.pages
 
-import kotlinx.coroutines.launch
 import kotlinx.serialization.Serializable
-import pl.treksoft.kvision.core.*
-import pl.treksoft.kvision.form.*
-import pl.treksoft.kvision.form.text.Text
-import pl.treksoft.kvision.html.*
-import pl.treksoft.kvision.modal.Modal
-import pl.treksoft.kvision.panel.FlexWrap
-import pl.treksoft.kvision.panel.hPanel
-import pl.treksoft.kvision.panel.vPanel
+import io.kvision.core.*
+import io.kvision.form.*
+import io.kvision.form.text.Text
+import io.kvision.html.*
+import io.kvision.modal.Modal
+import io.kvision.panel.hPanel
+import io.kvision.panel.vPanel
 import sde.Services
 import sde.project.ProjectDef
 import sde.project.ProjectExplorerPage
@@ -34,7 +32,7 @@ class StartPage(pageManager: PageManager) : AbstractPage(pageManager)
 	lateinit var recentProjectsDiv: Div
 
 	override fun createTabHeader(): Component {
-		return Bold("Start Page") {
+		return B("Start Page") {
 			afterInsert {
 				it.disableSelection()
 			}

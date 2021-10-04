@@ -1,8 +1,8 @@
 package sde.pages
 
 import kotlinx.coroutines.*
-import pl.treksoft.kvision.core.Component
-import pl.treksoft.kvision.toast.Toast
+import io.kvision.core.Component
+import io.kvision.toast.Toast
 import sde.AppModel
 import sde.utils.prepareStackForToast
 

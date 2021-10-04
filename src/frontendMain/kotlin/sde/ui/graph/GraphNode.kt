@@ -1,7 +1,7 @@
 package sde.ui.graph
 
 import org.w3c.dom.CanvasRenderingContext2D
-import pl.treksoft.kvision.html.Align
+import io.kvision.html.Align
 import sde.data.definition.AbstractCompoundDefinition
 import sde.data.definition.IGraphNodeDefinition
 import sde.data.item.*
@@ -133,7 +133,7 @@ class GraphNode(val node: CompoundDataItem, val graph: Graph) : IGraphContents
 
     fun getBounds(context2D: CanvasRenderingContext2D, items: List<AbstractGraphNodeDataItem> = getGraphDataItems().toList()): BoundingBox {
         val margin = margin * graph.scale
-        val itemsWidth = items.map { it.getWidth(context2D) }.max() ?: 0.0
+        val itemsWidth = items.map { it.getWidth(context2D) }.maxOrNull() ?: 0.0
         val itemsHeight = items.sumByDouble { it.getHeight(context2D) + margin }
 
         val headerBounds = context2D.measureText((headerFontSize * graph.scale).toInt(), node.name)

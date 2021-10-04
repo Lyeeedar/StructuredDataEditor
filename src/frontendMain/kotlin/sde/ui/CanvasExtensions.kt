@@ -2,7 +2,7 @@ package sde.ui
 
 import org.w3c.dom.CanvasImageSource
 import org.w3c.dom.CanvasRenderingContext2D
-import pl.treksoft.kvision.html.Align
+import io.kvision.html.Align
 import kotlin.math.PI
 import kotlin.math.abs
 

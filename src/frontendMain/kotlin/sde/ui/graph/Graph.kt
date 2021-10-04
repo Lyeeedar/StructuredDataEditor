@@ -2,9 +2,9 @@ package sde.ui.graph
 
 import org.w3c.dom.Element
 import org.w3c.dom.events.MouseEvent
-import pl.treksoft.kvision.core.Cursor
-import pl.treksoft.kvision.core.onEvent
-import pl.treksoft.kvision.html.Canvas
+import io.kvision.core.Cursor
+import io.kvision.core.onEvent
+import io.kvision.html.Canvas
 import sde.data.DataDocument
 import sde.data.item.*
 import sde.ui.backgroundReallyDarkColour

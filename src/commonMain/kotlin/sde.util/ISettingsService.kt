@@ -1,6 +1,6 @@
 package sde.util
 
-import pl.treksoft.kvision.annotations.KVService
+import io.kvision.annotations.KVService
 
 @KVService
 interface ISettingsService {

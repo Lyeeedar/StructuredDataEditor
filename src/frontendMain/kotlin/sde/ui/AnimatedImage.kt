@@ -4,10 +4,10 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import pl.treksoft.kvision.core.CssSize
-import pl.treksoft.kvision.core.UNIT
-import pl.treksoft.kvision.html.Div
-import pl.treksoft.kvision.html.Image
+import io.kvision.core.CssSize
+import io.kvision.core.UNIT
+import io.kvision.html.Div
+import io.kvision.html.Image
 import sde.utils.*
 
 class AnimatedImage(val loadScope: CoroutineScope, val size: Int = 24, val imagePaths: List<String>) : Image("")

@@ -5,18 +5,18 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.await
 import kotlinx.coroutines.launch
 import org.w3c.dom.*
-import pl.treksoft.kvision.core.Component
-import pl.treksoft.kvision.core.CssSize
-import pl.treksoft.kvision.core.UNIT
-import pl.treksoft.kvision.core.onEvent
-import pl.treksoft.kvision.html.Div
+import io.kvision.core.Component
+import io.kvision.core.CssSize
+import io.kvision.core.UNIT
+import io.kvision.core.onEvent
+import io.kvision.html.Div
 import sde.data.DataDocument
 import sde.data.definition.KeyframeDefinition
 import sde.data.definition.TimelineDefinition
 import sde.ui.Timeline
 import sde.utils.ImageCache
 import sde.utils.afterInsert
-import kotlin.browser.window
+import kotlinx.browser.window
 
 class TimelineItem(definition: TimelineDefinition, document: DataDocument) : AbstractCollectionItem<TimelineDefinition>(definition, document)
 {
@@ -32,7 +32,7 @@ class TimelineItem(definition: TimelineDefinition, document: DataDocument) : Abs
 		}
 
 	val maxTime: Float
-		get() = keyframes.map { it.timeItem.def.maxValue }.max() ?: 1f
+		get() = keyframes.map { it.timeItem.def.maxValue }.maxOrNull() ?: 1f
 
 	var timelineRange: Float = -1f
 		get()

@@ -9,7 +9,7 @@ actual class SettingsService : ISettingsService {
             if (field == null) {
                 field = try {
                     val json = File(settingsFile).readText()
-                    Json.parse(Settings.serializer(), json)
+                    Json.decodeFromString(Settings.serializer(), json)
                 } catch(ex: Exception) {
                     Settings()
                 }
@@ -25,7 +25,7 @@ actual class SettingsService : ISettingsService {
     }
 
     override suspend fun saveSettings(settings: Settings): Boolean {
-        val json = Json.stringify(Settings.serializer(), settings)
+        val json = Json.encodeToString(Settings.serializer(), settings)
         File(settingsFile).writeText(json)
 
         this.settings = settings

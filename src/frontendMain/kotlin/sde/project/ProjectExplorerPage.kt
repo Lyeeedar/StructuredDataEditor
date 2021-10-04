@@ -1,11 +1,11 @@
 package sde.project
 
-import pl.treksoft.kvision.core.*
-import pl.treksoft.kvision.html.*
-import pl.treksoft.kvision.modal.Modal
-import pl.treksoft.kvision.panel.*
-import pl.treksoft.kvision.toast.Toast
-import pl.treksoft.kvision.toast.ToastOptions
+import io.kvision.core.*
+import io.kvision.html.*
+import io.kvision.modal.Modal
+import io.kvision.panel.*
+import io.kvision.toast.Toast
+import io.kvision.toast.ToastOptions
 import sde.data.Project
 import sde.data.definition.CoreDefinitions
 import sde.pages.AbstractPage
@@ -109,7 +109,7 @@ class ProjectExplorerPage(val projectDef: ProjectDef, pageManager: PageManager) 
 
 	override fun createTabHeader(): Component {
 		return VPanel {
-			bold(projectDef.name)
+			b(projectDef.name)
 			span("Project Explorer") {
 				opacity = 0.8
 			}
@@ -122,14 +122,17 @@ class ProjectExplorerPage(val projectDef: ProjectDef, pageManager: PageManager) 
 
 	private val projectItemsComponent = Div()
 	fun updateProjectItemsComponent() {
-		projectItemsComponent.removeAll()
+		projectItemsComponent.singleRender {
+			projectItemsComponent.removeAll()
 
-		projectItemsComponent.add(VPanel {
-			for (item in getVisibleItems()) {
-				val component = item.getComponentCached()
-				add(component)
-			}
-		})
+			projectItemsComponent.add(VPanel {
+				for (item in getVisibleItems())
+				{
+					val component = item.getComponentCached()
+					add(component)
+				}
+			})
+		}
 	}
 
 	override fun createComponent(): Component

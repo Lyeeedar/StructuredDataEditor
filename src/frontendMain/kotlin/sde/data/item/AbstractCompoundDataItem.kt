@@ -1,6 +1,6 @@
 package sde.data.item
 
-import pl.treksoft.kvision.state.observableListOf
+import io.kvision.state.observableListOf
 import sde.data.DataDocument
 import sde.data.definition.AbstractCompoundDefinition
 

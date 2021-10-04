@@ -1,13 +1,13 @@
 package sde.data.item
 
-import pl.treksoft.kvision.core.Component
-import pl.treksoft.kvision.core.CssSize
-import pl.treksoft.kvision.core.UNIT
-import pl.treksoft.kvision.core.onClick
-import pl.treksoft.kvision.form.select.SelectOptGroup
-import pl.treksoft.kvision.form.select.selectInput
-import pl.treksoft.kvision.html.span
-import pl.treksoft.kvision.panel.HPanel
+import io.kvision.core.Component
+import io.kvision.core.CssSize
+import io.kvision.core.UNIT
+import io.kvision.core.onClick
+import io.kvision.form.select.SelectOptGroup
+import io.kvision.form.select.selectInput
+import io.kvision.html.span
+import io.kvision.panel.HPanel
 import sde.data.DataDocument
 import sde.data.definition.AbstractCollectionDefinition
 
@@ -92,7 +92,7 @@ abstract class AbstractCollectionItem<D: AbstractCollectionDefinition<D, *>>(def
 	override fun getEditorComponent(): Component
 	{
 		return HPanel {
-			imageButton(pl.treksoft.kvision.require("images/Add.png") as? String) {
+			imageButton(io.kvision.require("images/Add.png") as? String) {
 				visible = canAdd
 				marginRight = CssSize(5, UNIT.px)
 

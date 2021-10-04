@@ -1,8 +1,9 @@
 package sde.util
 
+import java.awt.FileDialog
+import java.awt.Frame
 import java.io.File
 import java.nio.file.Files
-import javax.swing.JFileChooser
 import javax.swing.JFrame
 
 actual class DiskService : IDiskService {
@@ -88,28 +89,26 @@ actual class DiskService : IDiskService {
 
     override suspend fun browseFolder(initialDirectory: String?): String {
         return chooseFile {
-            it.fileSelectionMode = JFileChooser.DIRECTORIES_ONLY
+            //it.
         }?.canonicalPath?.replace('\\', '/') ?: ""
     }
 
-    private fun chooseFile(init: ((JFileChooser)->Unit)? = null): File?
+    private fun chooseFile(init: ((FileDialog)->Unit)? = null): File?
     {
-        val frame = JFrame()
-        frame.isVisible = true
-        frame.extendedState = JFrame.ICONIFIED
-        frame.extendedState = JFrame.NORMAL
+	    val dialog = FileDialog(null as Frame?, "Choose a file", FileDialog.LOAD)
+	    dialog.isVisible = true
+	    dialog.isAlwaysOnTop = true
+	    dialog.toFront()
+	    dialog.requestFocus()
 
-        val fc = JFileChooser()
+        init?.invoke(dialog)
 
-        init?.invoke(fc)
-
-        if (JFileChooser.APPROVE_OPTION == fc.showOpenDialog(null)) {
-            frame.isVisible = false
-            frame.dispose()
-            return fc.selectedFile
+        if (dialog.file != null) {
+			val file = dialog.files[0]
+			dialog.dispose()
+            return file
         }
-        frame.isVisible = false
-        frame.dispose()
+	    dialog.dispose()
         return null
     }
 }

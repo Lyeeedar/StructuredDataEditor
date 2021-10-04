@@ -11,12 +11,13 @@ import org.w3c.files.Blob
 import org.w3c.files.BlobPropertyBag
 import org.w3c.files.File
 import org.w3c.files.FileReaderSync
-import pl.treksoft.jquery.JQuery
-import pl.treksoft.kvision.core.Widget
-import pl.treksoft.kvision.core.onEvent
-import pl.treksoft.kvision.html.Image
+import io.kvision.jquery.JQuery
+import io.kvision.core.Widget
+import io.kvision.core.getElementJQuery
+import io.kvision.core.onEvent
+import io.kvision.html.Image
 import sde.Services
-import kotlin.browser.window
+import kotlinx.browser.window
 
 fun JQuery.hover(funcIn: (JQuery)->Unit, funcOut: (JQuery)->Unit)
 {
@@ -31,7 +32,7 @@ fun JQuery.disableSelection()
 
 fun Widget.afterInsert(actionFunc: (JQuery)->Unit)
 {
-	afterInsertHook = {
+	addAfterInsertHook {
 		val el = getElementJQuery()
 		if (el != null) actionFunc(el)
 	}

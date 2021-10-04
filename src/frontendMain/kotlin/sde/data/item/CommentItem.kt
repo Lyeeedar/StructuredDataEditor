@@ -1,12 +1,12 @@
 package sde.data.item
 
-import pl.treksoft.kvision.core.*
-import pl.treksoft.kvision.html.Align
-import pl.treksoft.kvision.html.Div
-import pl.treksoft.kvision.html.Span
-import pl.treksoft.kvision.panel.DockPanel
-import pl.treksoft.kvision.panel.GridPanel
-import pl.treksoft.kvision.panel.Side
+import io.kvision.core.*
+import io.kvision.html.Align
+import io.kvision.html.Div
+import io.kvision.html.Span
+import io.kvision.panel.DockPanel
+import io.kvision.panel.GridPanel
+import io.kvision.panel.Side
 import sde.data.DataDocument
 import sde.data.definition.CommentDefinition
 import sde.ui.TextBlock

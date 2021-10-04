@@ -4,7 +4,7 @@ import sde.data.Project
 
 object CoreDefinitions
 {
-    private val coreXmlDef: String = pl.treksoft.kvision.require("defs/Core.xmldef") as String
+    private val coreXmlDef: String = io.kvision.require("defs/Core.xmldef") as String
     val coreDefinitions: DefinitionMap = Project.parseDefinitionsFile(coreXmlDef, "")
 	val rootDef = coreDefinitions["Definitions"]!!
 

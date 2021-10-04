@@ -1,16 +1,15 @@
 package sde.data
 
-import pl.treksoft.kvision.core.Color
-import pl.treksoft.kvision.core.Component
-import pl.treksoft.kvision.core.CssSize
-import pl.treksoft.kvision.core.UNIT
-import pl.treksoft.kvision.html.Div
-import pl.treksoft.kvision.html.bold
-import pl.treksoft.kvision.html.span
-import pl.treksoft.kvision.panel.GridPanel
-import pl.treksoft.kvision.panel.HPanel
-import pl.treksoft.kvision.panel.VPanel
-import pl.treksoft.kvision.panel.hPanel
+import io.kvision.core.Color
+import io.kvision.core.Component
+import io.kvision.core.CssSize
+import io.kvision.core.UNIT
+import io.kvision.html.b
+import io.kvision.html.span
+import io.kvision.panel.GridPanel
+import io.kvision.panel.HPanel
+import io.kvision.panel.VPanel
+import io.kvision.panel.hPanel
 import sde.pages.AbstractPage
 import sde.pages.PageManager
 import sde.ui.asyncLoadImage
@@ -32,12 +31,12 @@ class DataDocumentPage(val data: DataDocument, pageManager: PageManager) : Abstr
 
 	override fun createTabHeader(): Component {
 		return VPanel {
-			bold(data.name.split("\\.")[0])
+			b(data.name.split("\\.")[0])
 			hPanel {
 				val def = data.root.def
 
 				val imagePath = data.project.projectRootFolder + "/" + def.fileIcon
-				val fallback = pl.treksoft.kvision.require("images/File.png") as String
+				val fallback = io.kvision.require("images/File.png") as String
 				asyncLoadImage(imagePath, fallback, getPageScope())
 
 				span(data.root.def.name) {

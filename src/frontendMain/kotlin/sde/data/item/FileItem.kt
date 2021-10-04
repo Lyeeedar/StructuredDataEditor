@@ -1,16 +1,16 @@
 package sde.data.item
 
 import kotlinx.coroutines.launch
-import pl.treksoft.kvision.core.Component
-import pl.treksoft.kvision.form.text.TextInput
-import pl.treksoft.kvision.form.text.TextInputType
-import pl.treksoft.kvision.form.text.textInput
-import pl.treksoft.kvision.html.Button
-import pl.treksoft.kvision.html.Div
-import pl.treksoft.kvision.panel.DockPanel
-import pl.treksoft.kvision.panel.GridPanel
-import pl.treksoft.kvision.panel.Side
-import pl.treksoft.kvision.toast.Toast
+import io.kvision.core.Component
+import io.kvision.form.text.TextInput
+import io.kvision.form.text.TextInputType
+import io.kvision.form.text.textInput
+import io.kvision.html.Button
+import io.kvision.html.Div
+import io.kvision.panel.DockPanel
+import io.kvision.panel.GridPanel
+import io.kvision.panel.Side
+import io.kvision.toast.Toast
 import sde.Services
 import sde.data.DataDocument
 import sde.data.definition.FileDefinition

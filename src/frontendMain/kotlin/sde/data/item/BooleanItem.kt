@@ -1,7 +1,7 @@
 package sde.data.item
 
-import pl.treksoft.kvision.core.Component
-import pl.treksoft.kvision.form.check.CheckBox
+import io.kvision.core.Component
+import io.kvision.form.check.CheckBox
 import sde.data.DataDocument
 import sde.data.definition.BooleanDefinition
 

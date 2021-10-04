@@ -1,10 +1,10 @@
 package sde.project
 
-import pl.treksoft.kvision.core.*
-import pl.treksoft.kvision.html.*
-import pl.treksoft.kvision.panel.DockPanel
-import pl.treksoft.kvision.panel.Side
-import pl.treksoft.kvision.panel.dockPanel
+import io.kvision.core.*
+import io.kvision.html.*
+import io.kvision.panel.DockPanel
+import io.kvision.panel.Side
+import io.kvision.panel.dockPanel
 import sde.Services
 import sde.ui.TextBlock
 import sde.ui.mouseOverBackgroundColour
@@ -98,14 +98,14 @@ class ProjectFolderView(item: ProjectItem, page: ProjectExplorerPage) : Abstract
 
                 if (isExpanded)
                 {
-                    add(Image(pl.treksoft.kvision.require("images/OpenArrow.png") as? String), Side.LEFT)
+                    add(Image(io.kvision.require("images/OpenArrow.png") as? String), Side.LEFT)
                 }
                 else
                 {
-                    add(Image(pl.treksoft.kvision.require("images/RightArrow.png") as? String), Side.LEFT)
+                    add(Image(io.kvision.require("images/RightArrow.png") as? String), Side.LEFT)
                 }
 
-                add(Bold(name) {
+                add(B(name) {
                     opacity = 0.7
 
                     afterInsert {
@@ -148,7 +148,7 @@ class ProjectFileView(item: ProjectItem, page: ProjectExplorerPage) : AbstractPr
                 it.disableSelection()
             }
 
-            image(pl.treksoft.kvision.require("images/File.png") as? String) {
+            image(io.kvision.require("images/File.png") as? String) {
                 width = CssSize(16, UNIT.px)
                 height = CssSize(16, UNIT.px)
             }
@@ -157,7 +157,7 @@ class ProjectFileView(item: ProjectItem, page: ProjectExplorerPage) : AbstractPr
         if (item.path.endsWith(".xmldef")) {
             name.color = Color("#acb5ad")
 
-            val newImage = Image(pl.treksoft.kvision.require("images/DefIcon.png") as? String).apply {
+            val newImage = Image(io.kvision.require("images/DefIcon.png") as? String).apply {
                 width = CssSize(16, UNIT.px)
                 height = CssSize(16, UNIT.px)
             }

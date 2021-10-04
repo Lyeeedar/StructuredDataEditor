@@ -3,8 +3,8 @@ package sde.ui
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import pl.treksoft.kvision.html.Div
-import pl.treksoft.kvision.panel.VPanel
+import io.kvision.html.Div
+import io.kvision.panel.VPanel
 import sde.data.item.CompoundDataItem
 import sde.data.item.DataItem
 
@@ -80,32 +80,34 @@ class DataItemEditor(val scope: CoroutineScope) : Div() {
 
     private fun doUpdateComponent()
     {
-        lastRenderedID++
-        removeAll()
+	    singleRender {
+	        lastRenderedID++
+	        removeAll()
 
-        val visibleItems = getVisibleItems().toList()
+	        val visibleItems = getVisibleItems().toList()
 
-        var sensibleHeaderWidth = 150
-        for (item in visibleItems)
-        {
-            val indentation = item.depth * 14
-            val nameLength = item.name.length * 8
+	        var sensibleHeaderWidth = 150
+	        for (item in visibleItems)
+	        {
+	            val indentation = item.depth * 14
+	            val nameLength = item.name.length * 8
 
-            val itemWidth = indentation + nameLength + 16 + 25 // expander and padding
+	            val itemWidth = indentation + nameLength + 16 + 25 // expander and padding
 
-            if (itemWidth > sensibleHeaderWidth)
-            {
-                sensibleHeaderWidth = itemWidth
-            }
+	            if (itemWidth > sensibleHeaderWidth)
+	            {
+	                sensibleHeaderWidth = itemWidth
+	            }
 
-            item.renderedID = lastRenderedID
-        }
+	            item.renderedID = lastRenderedID
+	        }
 
-        add(VPanel {
-            for (item in visibleItems)
-            {
-                add(item.getEditorRow(sensibleHeaderWidth))
-            }
-        })
+		    add(VPanel {
+			    for (item in visibleItems)
+			    {
+				    add(item.getEditorRow(sensibleHeaderWidth))
+			    }
+		    })
+	    }
     }
 }

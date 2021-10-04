@@ -1,8 +1,8 @@
 package sde.ui
 
-import pl.treksoft.kvision.core.*
-import pl.treksoft.kvision.html.Div
-import pl.treksoft.kvision.html.image
+import io.kvision.core.*
+import io.kvision.html.Div
+import io.kvision.html.image
 import sde.utils.afterInsert
 import sde.utils.disableSelection
 

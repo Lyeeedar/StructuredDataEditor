@@ -1,11 +1,11 @@
 package sde.data.item
 
-import pl.treksoft.kvision.core.*
-import pl.treksoft.kvision.html.*
-import pl.treksoft.kvision.panel.DockPanel
-import pl.treksoft.kvision.panel.HPanel
-import pl.treksoft.kvision.panel.Side
-import pl.treksoft.kvision.require
+import io.kvision.core.*
+import io.kvision.html.*
+import io.kvision.panel.DockPanel
+import io.kvision.panel.HPanel
+import io.kvision.panel.Side
+import io.kvision.require
 import sde.data.DataDocument
 import sde.data.definition.AbstractCompoundDefinition
 import sde.data.definition.AbstractStructDefinition
